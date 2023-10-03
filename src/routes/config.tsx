@@ -15,6 +15,8 @@ export interface WrapperRouteProps extends RouteProps {
 const WrapperRouteComponent: FC<WrapperRouteProps> = ({ titleId, auth, ...props }) => {
   const { formatMessage } = useIntl();
 
+  console.log('titleId__________________________', titleId);
+
   if (titleId) {
     document.title = formatMessage({
       id: titleId,

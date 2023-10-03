@@ -53,6 +53,7 @@ const TagsView: FC = () => {
       const menu = menuList.find(m => m.path === location.pathname);
 
       if (menu) {
+        // console.log('chajy roi ne');
         dispatch(
           addTag({
             ...menu,
@@ -62,6 +63,10 @@ const TagsView: FC = () => {
       }
     }
   }, [dispatch, location.pathname, menuList]);
+
+  // console.log('tag viewssssssss', tags);
+  // console.log('menu list tag views____________', menuList);
+  // console.log('local___________', location);
 
   return (
     <div id="pageTabs" style={{ padding: '6px 4px' }}>

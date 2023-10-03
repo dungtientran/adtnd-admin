@@ -71,7 +71,9 @@ const styles = css`
         }
       }
     }
-
+    .ant-table-cell {
+      text-align: center;
+    }
     .ant-pagination {
       padding: 0 10px;
     }

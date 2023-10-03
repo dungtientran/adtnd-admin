@@ -10,24 +10,19 @@ import LayoutPage from '@/pages/layout';
 import LoginPage from '@/pages/login';
 
 import WrapperRouteComponent from './config';
-
+// not Found
 const NotFound = lazy(() => import(/* webpackChunkName: "404'"*/ '@/pages/404'));
-const Documentation = lazy(() => import(/* webpackChunkName: "404'"*/ '@/pages/doucumentation'));
-const Guide = lazy(() => import(/* webpackChunkName: "guide'"*/ '@/pages/guide'));
-const RoutePermission = lazy(() => import(/* webpackChunkName: "route-permission"*/ '@/pages/permission/route'));
-const FormPage = lazy(() => import(/* webpackChunkName: "form'"*/ '@/pages/components/form'));
-const TablePage = lazy(() => import(/* webpackChunkName: "table'"*/ '@/pages/components/table'));
-const SearchPage = lazy(() => import(/* webpackChunkName: "search'"*/ '@/pages/components/search'));
-const TabsPage = lazy(() => import(/* webpackChunkName: "tabs'"*/ '@/pages/components/tabs'));
-const AsidePage = lazy(() => import(/* webpackChunkName: "aside'"*/ '@/pages/components/aside'));
-const RadioCardsPage = lazy(() => import(/* webpackChunkName: "radio-cards'"*/ '@/pages/components/radio-cards'));
-const BusinessBasicPage = lazy(() => import(/* webpackChunkName: "basic-page" */ '@/pages/business/basic'));
-const BusinessWithSearchPage = lazy(() => import(/* webpackChunkName: "with-search" */ '@/pages/business/with-search'));
-const BusinessWithAsidePage = lazy(() => import(/* webpackChunkName: "with-aside" */ '@/pages/business/with-aside'));
+
+// Product Management
+
+const ListOfStocks = lazy(() => import('@/pages/ProductManagement/ListOfStocks/ListOfStocks'));
+const ServicePack = lazy(() => import('@/pages/ProductManagement/ServicePack/ServicePack'));
+const Recommendations = lazy(() => import('@/pages/ProductManagement/Recommendations/Recommendations'));
+
 const BusinessWithRadioCardsPage = lazy(
-  () => import(/* webpackChunkName: "with-aside" */ '@/pages/business/with-radio-cards'),
+  () => import('@/pages/business/with-radio-cards'),
 );
-const BusinessWithTabsPage = lazy(() => import(/* webpackChunkName: "with-tabs" */ '@/pages/business/with-tabs'));
+const BusinessWithTabsPage = lazy(() => import('@/pages/business/with-tabs'));
 
 const routeList: RouteObject[] = [
   {
@@ -46,61 +41,18 @@ const routeList: RouteObject[] = [
         path: 'dashboard',
         element: <WrapperRouteComponent element={<Dashboard />} titleId="title.dashboard" />,
       },
+      // product management
       {
-        path: 'documentation',
-        element: <WrapperRouteComponent element={<Documentation />} titleId="title.documentation" />,
+        path: 'product-managament/list-of-stocks',
+        element: <WrapperRouteComponent element={<ListOfStocks />} titleId="Danh mục cổ phiếu" />,
       },
       {
-        path: 'guide',
-        element: <WrapperRouteComponent element={<Guide />} titleId="title.guide" />,
+        path: 'product-managament/service-pack',
+        element: <WrapperRouteComponent element={<ServicePack />} titleId="Gói dịch vụ" />,
       },
       {
-        path: 'permission/route',
-        element: <WrapperRouteComponent element={<RoutePermission />} titleId="title.permission.route" auth />,
-      },
-      {
-        path: 'component/form',
-        element: <WrapperRouteComponent element={<FormPage />} titleId="title.account" />,
-      },
-      {
-        path: 'component/table',
-        element: <WrapperRouteComponent element={<TablePage />} titleId="title.account" />,
-      },
-      {
-        path: 'component/search',
-        element: <WrapperRouteComponent element={<SearchPage />} titleId="title.account" />,
-      },
-      {
-        path: 'component/tabs',
-        element: <WrapperRouteComponent element={<TabsPage />} titleId="title.account" />,
-      },
-      {
-        path: 'component/aside',
-        element: <WrapperRouteComponent element={<AsidePage />} titleId="title.account" />,
-      },
-      {
-        path: 'component/radio-cards',
-        element: <WrapperRouteComponent element={<RadioCardsPage />} titleId="title.account" />,
-      },
-      {
-        path: 'business/basic',
-        element: <WrapperRouteComponent element={<BusinessBasicPage />} titleId="title.account" />,
-      },
-      {
-        path: 'business/with-search',
-        element: <WrapperRouteComponent element={<BusinessWithSearchPage />} titleId="title.account" />,
-      },
-      {
-        path: 'business/with-aside',
-        element: <WrapperRouteComponent element={<BusinessWithAsidePage />} titleId="title.account" />,
-      },
-      {
-        path: 'business/with-radio-cards',
-        element: <WrapperRouteComponent element={<BusinessWithRadioCardsPage />} titleId="title.account" />,
-      },
-      {
-        path: 'business/with-tabs',
-        element: <WrapperRouteComponent element={<BusinessWithTabsPage />} titleId="title.account" />,
+        path: 'product-managament/recommendations',
+        element: <WrapperRouteComponent element={<Recommendations />} titleId="Khuyến nghị" />,
       },
       {
         path: '*',

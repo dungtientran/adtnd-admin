@@ -12,7 +12,9 @@ import { getMenuList } from '@/api/layout.api';
 import { setUserItem } from '@/stores/user.store';
 import { getFirstPathCode } from '@/utils/getFirstPathCode';
 import { getGlobalState } from '@/utils/getGloabal';
+import { menuListHandle } from '@/utils/menulist';
 
+// import { menuList } from '@/utils/menulist';
 import { useGuide } from '../guide/useGuide';
 import HeaderComponent from './header';
 import MenuComponent from './menu';
@@ -38,6 +40,7 @@ const LayoutPage: FC = () => {
 
     setOpenkey(code);
     setSelectedKey(location.pathname);
+    console.log(code);
   }, [location.pathname]);
 
   const toggle = () => {
@@ -78,7 +81,12 @@ const LayoutPage: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    fetchMenuList();
+    // fetchMenuList();
+    dispatch(
+      setUserItem({
+        menuList: initMenuListAll(menuListHandle),
+      }),
+    );
   }, [fetchMenuList]);
 
   useEffect(() => {
@@ -99,6 +107,7 @@ const LayoutPage: FC = () => {
   useEffect(() => {
     newUser && driverStart();
   }, [newUser]);
+  console.log('menu___________', menuList);
 
   return (
     <Layout className="layout-page">
@@ -115,7 +124,7 @@ const LayoutPage: FC = () => {
             breakpoint="md"
           >
             <MenuComponent
-              menuList={menuList}
+              menuList={menuListHandle}
               openKey={openKey}
               onChangeOpenKey={k => setOpenkey(k)}
               selectedKey={selectedKey}
