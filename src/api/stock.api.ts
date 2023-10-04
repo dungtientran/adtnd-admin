@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { axiosInstance } from './request';
 
 export const getStockList = async (params: string) => {
   try {
@@ -11,3 +12,10 @@ export const getStockList = async (params: string) => {
     console.log(error);
   }
 };
+
+
+export const searchStock = (text: string | null): Promise<any> =>
+  axiosInstance
+    .get<any>('/stock/search?searchText=' + text)
+    .then(({ data }) => data)
+    .catch((error) => console.log(error));

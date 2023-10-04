@@ -5,15 +5,16 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { getGlobalState } from '@/utils/getGloabal';
+import { json } from 'stream/consumers';
 
 const initialState: UserState = {
   ...getGlobalState(),
   noticeCount: 0,
   locale: (localStorage.getItem('locale')! || 'en_US') as Locale,
   newUser: JSON.parse(localStorage.getItem('newUser')!) ?? true,
-  logged: localStorage.getItem('t') ? true : false,
+  logged: localStorage.getItem('logged') ? true : false,
   menuList: [],
-  username: localStorage.getItem('username') || '',
+  user: JSON.parse(localStorage.getItem('user') || '{}') ,
   role: (localStorage.getItem('username') || '') as Role,
 };
 
@@ -22,17 +23,20 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUserItem(state, action: PayloadAction<Partial<UserState>>) {
-      const { username } = action.payload;
-
-      if (username !== state.username) {
-        localStorage.setItem('username', action.payload.username || '');
-      }
-
-      Object.assign(state, action.payload);
+      Object.assign(state.user,action.payload.user)
     },
+    loginSuccess(state, action: PayloadAction<Partial<UserState>>) {
+      
+      Object.assign(state.user,action.payload.user)
+      state.logged = action.payload.logged ? true : false;
+    },
+    logout(state, action: PayloadAction<Partial<UserState>>) {
+      Object.assign(state.user,{})
+      state.logged = false
+    }
   },
 });
 
-export const { setUserItem } = userSlice.actions;
+export const { setUserItem ,loginSuccess,logout} = userSlice.actions;
 
 export default userSlice.reducer;

@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import Avator from '@/assets/header/avator.jpeg';
+import Guest from '@/assets/header/guest.png';
 import { ReactComponent as EnUsSvg } from '@/assets/header/en_US.svg';
 import { ReactComponent as LanguageSvg } from '@/assets/header/language.svg';
 import Logo from '@/assets/header/logo.png';
@@ -30,7 +31,7 @@ interface HeaderProps {
 type Action = 'userInfo' | 'userSetting' | 'logout';
 
 const HeaderComponent: FC<HeaderProps> = ({ collapsed, toggle }) => {
-  const { logged, locale, device } = useSelector(state => state.user);
+  const { logged, locale, device, user } = useSelector(state => state.user);
   const { theme } = useSelector(state => state.global);
   const navigate = useNavigate();
   const token = antTheme.useToken();
@@ -146,7 +147,7 @@ const HeaderComponent: FC<HeaderProps> = ({ collapsed, toggle }) => {
               }}
             >
               <span className="user-action">
-                <img src={Avator} className="user-avator" alt="avator" />
+                <img src={user?.avatar_url || Guest} className="user-avator" alt="avator"  style={{borderRadius: 6}}/>
               </span>
             </Dropdown>
           ) : (

@@ -3,7 +3,7 @@ import type { FC } from 'react';
 
 import './index.less';
 
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Checkbox, Form, Input, notification } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ import { formatSearch } from '@/utils/formatSearch';
 import { loginAsync } from '../../stores/user.action';
 
 const initialValues: LoginParams = {
-  username: 'guest',
+  email: 'guest',
   password: 'guest',
   // remember: true
 };
@@ -25,13 +25,18 @@ const LoginForm: FC = () => {
   const { formatMessage } = useLocale();
 
   const onFinished = async (form: LoginParams) => {
-    const res = dispatch(await loginAsync(form));
-
-    if (!!res) {
+    const res: any = await dispatch(await loginAsync(form));
+    if (res.success) {
       const search = formatSearch(location.search);
       const from = search.from || { pathname: '/' };
-
+      notification.success({
+        message: res.message
+      })
       navigate(from);
+    }else {
+      notification.error({
+        message: res.message
+      })
     }
   };
 
