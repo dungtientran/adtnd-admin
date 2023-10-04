@@ -49,8 +49,11 @@
   table {
     height: 100%;
   }
-  .ant-table-cell {
+  tr .ant-table-cell {
     text-align: center !important;
+  }
+  .ant-table-cell {
+    text-align: center ;
     height: 70px;
   }
   .ant-pagination {
@@ -59,4 +62,9 @@
   .ant-table-column-title {
     text-align: center;
   }
- 
+ .ant-table-row .ant-table-cell:nth-child(3) {
+  text-align: left !important;
+ }
+ .ant-table-row .ant-table-cell:nth-child(4) {
+  text-align: left !important;
+ }

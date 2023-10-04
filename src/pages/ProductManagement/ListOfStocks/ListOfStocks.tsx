@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { InputRef } from 'antd';
 import type { ColumnsType, ColumnType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterConfirmProps, FilterValue } from 'antd/es/table/interface';
@@ -46,10 +47,12 @@ const Recommendations: React.FC = () => {
       pageSize: 10,
     },
   });
+  
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
   const [listStock, setListStock] = useState([]);
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['getListStock', tableParams],
     queryFn: () => getStockList(qs.stringify(getRandomuserParams(tableParams))),
@@ -160,7 +163,6 @@ const Recommendations: React.FC = () => {
       sorter: true,
       width: '20%',
       ...getColumnSearchProps('code'),
-
     },
     {
       title: 'Tên công ty (tiếng Việt)',
@@ -239,8 +241,6 @@ const Recommendations: React.FC = () => {
       setListStock(data?.rows);
     }
   }, [data]);
-
-  // console.log('urlLogo__________________________', urlLogo);
 
   return (
     <div className="">
