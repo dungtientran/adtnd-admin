@@ -42,7 +42,7 @@ const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo }) => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       <Typography.Text type="danger">Hình ảnh</Typography.Text>
       <Upload
-        action="https://api.cloudinary.com/v1_1/dbkgkyh4h/image/upload"
+        // action="https://api.cloudinary.com/v1_1/dbkgkyh4h/image/upload"
         listType="picture"
         maxCount={1}
         accept=".png, .jpg"

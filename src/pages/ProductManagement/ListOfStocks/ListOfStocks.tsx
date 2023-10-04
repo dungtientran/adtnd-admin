@@ -1,14 +1,12 @@
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import type { FilterValue, SorterResult } from 'antd/es/table/interface';
+import type { FilterValue } from 'antd/es/table/interface';
 
-import { UploadOutlined } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
-import { Avatar, Button, message, Space, Table, Typography, Upload } from 'antd';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Avatar, Button, message, Space, Table, Typography } from 'antd';
 import qs from 'qs';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { getStockList } from '@/api/stock.api';
-import MyButton from '@/components/basic/button';
+import { apiUpdateLogoStock, getStockList } from '@/api/stock.api';
 import MyModal from '@/components/basic/modal';
 import MyUpLoad from '@/components/core/upload';
 
@@ -35,8 +33,10 @@ const getRandomuserParams = (params: TableParams) => ({
 });
 
 const Recommendations: React.FC = () => {
+  const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [urlLogo, setUrlLogo] = useState<string>('');
+  const [idStock, setIdStock] = useState<string>('');
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
@@ -46,6 +46,17 @@ const Recommendations: React.FC = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['getListStock', tableParams],
     queryFn: () => getStockList(qs.stringify(getRandomuserParams(tableParams))),
+  });
+  const updateLogo = useMutation({
+    mutationFn: _ => apiUpdateLogoStock(idStock, urlLogo),
+    onSuccess: _ => {
+      queryClient.invalidateQueries(['getListStock']);
+      setModalOpen(false);
+      message.success('Update logo thành công');
+    },
+    onError: _ => {
+      message.error('Update logo thất bại');
+    },
   });
 
   const columns: ColumnsType<DataType> = [
@@ -58,6 +69,11 @@ const Recommendations: React.FC = () => {
         { text: 'Hnx', value: 'HNX' },
         { text: 'Upcom', value: 'UPCOM' },
       ],
+      width: '20%',
+    },
+    {
+      title: 'Mã cổ phiếu',
+      dataIndex: 'code',
       width: '20%',
     },
     {
@@ -81,7 +97,7 @@ const Recommendations: React.FC = () => {
             <Button
               type="primary"
               onClick={() => {
-                setModalOpen(true), console.log('record______________', record);
+                setModalOpen(true), setIdStock(record.id);
               }}
             >
               +
@@ -105,7 +121,7 @@ const Recommendations: React.FC = () => {
   };
 
   const handleUpdateLogo = () => {
-    console.log('1321312');
+    updateLogo.mutate();
   };
 
   useEffect(() => {
@@ -119,7 +135,6 @@ const Recommendations: React.FC = () => {
       });
     }
   }, [data]);
-  console.log('url______________', urlLogo);
 
   return (
     <div className="aaa">
