@@ -1,54 +1,102 @@
 import { UploadOutlined } from '@ant-design/icons';
-import { Typography, Upload } from 'antd';
+import { Avatar, Image, message, Space, Typography, Upload } from 'antd';
 import axios from 'axios';
-import { useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 import MyButton from '@/components/basic/button';
 
 interface IMyUpload {
-  setUrlLogo: (url: string) => void;
+  setUrlLogo: (url: any) => void;
+  record?: any;
 }
 
-const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo }) => {
+const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record }) => {
   const [fileList, setFileList] = useState<any[]>([]);
 
-  const handleChange = (info: any) => {
-    setFileList(info.fileList);
+  const checkImageType = (file: any) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file types!');
+    }
+
+    return isJpgOrPng;
   };
 
-  const handleUpload = async (info: any) => {
-    setFileList(info.fileList);
+  const handleChange = (info: any) => {
+    if (checkImageType(info.file)) {
+      setFileList(info.fileList);
+      const formData = new FormData();
 
-    const formData = new FormData();
-
-    fileList.forEach(file => {
-      formData.append('file', file.originFileObj);
+      formData.append('file', info.file);
       formData.append('upload_preset', 'qfxfgji7');
-    });
-
-    try {
-      const response = await axios.post(`https://api.cloudinary.com/v1_1/dbkgkyh4h/image/upload`, formData);
-
-      if (response.status === 200) {
-        // console.log('Upload successful:', response);
-        setUrlLogo(response.data.url);
-      }
-    } catch (error) {
-    //   console.error('Error uploading:', error);
+      setUrlLogo(formData);
     }
   };
 
+  const handleUpload = async (info: any) => {
+    if (checkImageType(info.file)) {
+      setFileList(info.fileList);
+      const formData = new FormData();
+
+      formData.append('file', info.file);
+      formData.append('upload_preset', 'qfxfgji7');
+
+      try {
+        const response = await axios.post(`https://api.cloudinary.com/v1_1/dbkgkyh4h/image/upload`, formData);
+
+        if (response.status === 200) {
+          // console.log('Upload successful:', response);
+          setUrlLogo(response.data.url);
+        }
+      } catch (error) {
+        //   console.error('Error uploading:', error);
+      }
+    }
+
+    return false;
+  };
+
+  useEffect(() => {
+    if (fileList.length === 0) {
+      setUrlLogo('');
+    }
+  }, [fileList]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-      <Typography.Text type="danger">Hình ảnh</Typography.Text>
+      {record?.logo_url && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+          <Typography.Text type="success">Logo hiện tại: </Typography.Text>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+            <Image src={record.logo_url} width={100} height={100} style={{ borderRadius: '8px' }} />
+            <Typography.Text>{record.name}</Typography.Text>
+          </div>
+        </div>
+      )}
+      {record?.logo_url ? (
+        <Typography.Text type="danger">Thay đổi</Typography.Text>
+      ) : (
+        <Fragment>
+          <Typography.Text>{record.name}</Typography.Text>
+          <Typography.Text type="warning">Hình ảnh</Typography.Text>
+        </Fragment>
+      )}
+
       <Upload
-        action="https://api.cloudinary.com/v1_1/dbkgkyh4h/image/upload"
+        action=""
         listType="picture"
         maxCount={1}
-        accept=".png, .jpg"
-        onChange={handleUpload}
+        accept="image/png, image/gif, image/jpeg"
+        onChange={handleChange}
+        beforeUpload={_ => {
+          return false;
+        }}
+        // fileList={[...fileList]}
       >
-        <MyButton icon={<UploadOutlined />}>Upload (Max: 1)</MyButton>
+        <Space size="large">
+          <MyButton icon={<UploadOutlined />}>Upload (Max: 1)</MyButton>
+        </Space>
       </Upload>
     </div>
   );
