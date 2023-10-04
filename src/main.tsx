@@ -1,5 +1,4 @@
 import './styles/index.less';
-import './mock';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools/build/lib/devtools';
