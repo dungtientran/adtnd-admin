@@ -2,11 +2,13 @@ import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 
 import { BorderOuterOutlined, UploadOutlined } from '@ant-design/icons';
-import { Avatar, Button, Popconfirm, Space, Table, Typography, Upload } from 'antd';
+import { useQuery } from '@tanstack/react-query';
+import { Avatar, Button, Popconfirm, Space, Table, Typography, Upload, message } from 'antd';
 import axios from 'axios';
 import qs from 'qs';
 import React, { useEffect, useState } from 'react';
 
+import { getStockList } from '@/api/stock.api';
 import MyButton from '@/components/basic/button';
 import MyModal from '@/components/basic/modal';
 
@@ -27,20 +29,22 @@ interface TableParams {
 }
 
 const getRandomuserParams = (params: TableParams) => ({
-  results: params.pagination?.pageSize,
+  size: params.pagination?.pageSize,
   page: params.pagination?.current,
-  ...params,
+  market: params.filters?.market,
 });
 
 const Recommendations: React.FC = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
       pageSize: 10,
     },
+  });
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['getListStock', tableParams],
+    queryFn: () => getStockList(qs.stringify(getRandomuserParams(tableParams))),
   });
 
   const columns: ColumnsType<DataType> = [
@@ -49,9 +53,9 @@ const Recommendations: React.FC = () => {
       dataIndex: 'market',
       // sorter: true,
       filters: [
-        { text: 'Hose', value: 'hose' },
-        { text: 'Hnx', value: 'hnx' },
-        { text: 'Upcom', value: 'upcom' },
+        { text: 'Hose', value: 'HOSE' },
+        { text: 'Hnx', value: 'HNX' },
+        { text: 'Upcom', value: 'UPCOM' },
       ],
       width: '20%',
     },
@@ -82,33 +86,6 @@ const Recommendations: React.FC = () => {
     },
   ];
 
-  const fetchStock = async () => {
-    setLoading(true);
-    // fetch(`https://randomuser.me/api?${qs.stringify(getRandomuserParams(tableParams))}`)
-    const res = await axios.get(
-      `https://yys2edw6d6.execute-api.ap-southeast-1.amazonaws.com/dev/stock/get-list-stock?size=${tableParams.pagination?.pageSize}&page=${tableParams.pagination?.current}`,
-    );
-
-    console.log(res.data);
-
-    if (res.data?.code === 200) {
-      setData(res.data?.data?.rows);
-      setTableParams({
-        ...tableParams,
-        pagination: {
-          ...tableParams.pagination,
-          total: res.data?.data?.count,
-        },
-      });
-    }
-
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchStock();
-  }, [JSON.stringify(tableParams)]);
-
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     setTableParams({
       pagination,
@@ -117,13 +94,22 @@ const Recommendations: React.FC = () => {
     });
 
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setData([]);
+      // setData([]);
     }
   };
 
-  console.log('tableParams___________', tableParams);
-  // console.log('data_________________', data);
-
+  useEffect(() => {
+    if (data) {
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          total: data?.count,
+        },
+      });
+    }
+  }, [data]);
+  
   return (
     <div className="aaa">
       <div style={{ textAlign: 'center' }}>
@@ -132,9 +118,9 @@ const Recommendations: React.FC = () => {
       <Table
         columns={columns}
         rowKey={record => record.id}
-        dataSource={data}
+        dataSource={data?.rows}
         pagination={tableParams.pagination}
-        loading={loading}
+        loading={isLoading}
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
       />
