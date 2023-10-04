@@ -1,7 +1,7 @@
 import type { InputRef } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 
-import { Button, Form, Input, Popconfirm, Table } from 'antd';
+import { Button, Form, Input, Popconfirm, Space, Table, Typography } from 'antd';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
@@ -117,21 +117,19 @@ const ServicePack = () => {
       id: '1',
       service_pack: 'Trial',
       description: 'Gói dùng thử',
-      status: 'Đang hoạt động'
+      status: 'Đang hoạt động',
     },
     {
       id: '2',
       service_pack: 'Vip',
       description: 'Gói Vip',
       status: 'Đang hoạt động',
-
     },
     {
       id: '3',
       service_pack: 'Premium',
       description: 'Gói Premium',
       status: 'Đang hoạt động',
-
     },
   ]);
 
@@ -168,7 +166,9 @@ const ServicePack = () => {
       render: (record: { key: React.Key }) =>
         dataSource.length >= 1 ? (
           <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-            <Button danger size='small'>Vô hiệu hóa</Button>
+            <Button danger size="small">
+              Vô hiệu hóa
+            </Button>
           </Popconfirm>
         ) : null,
     },
@@ -177,9 +177,10 @@ const ServicePack = () => {
   const handleAdd = () => {
     const newData: DataType = {
       key: count,
-      name: `Edward King ${count}`,
-      age: '32',
-      address: `London, Park Lane no. ${count}`,
+      id: count + '',
+      service_pack: `Gói ${count}`,
+      description: `Gói ${count}`,
+      status: `Đang hoạt động`,
     };
 
     setDataSource([...dataSource, newData]);
@@ -223,10 +224,18 @@ const ServicePack = () => {
   });
 
   return (
-    <div>
-      <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
-        Add a row
-      </Button>
+    <div className='aaa'>
+      <div style={{ textAlign: 'center' }}>
+        <Typography.Title level={2}>Gói dịch vụ</Typography.Title>
+      </div>
+      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px'}}>
+        <Space>
+          Tình trạng:
+        </Space>
+        <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
+          Add a row
+        </Button>
+      </div>
       <Table
         components={components}
         rowClassName={() => 'editable-row'}
