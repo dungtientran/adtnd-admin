@@ -15,7 +15,6 @@ import { getGlobalState } from '@/utils/getGloabal';
 import { menuListHandle } from '@/utils/menulist';
 
 // import { menuList } from '@/utils/menulist';
-import { useGuide } from '../guide/useGuide';
 import HeaderComponent from './header';
 import MenuComponent from './menu';
 import TagsView from './tagView';
@@ -33,7 +32,6 @@ const LayoutPage: FC = () => {
 
   const isMobile = device === 'MOBILE';
   const dispatch = useDispatch();
-  const { driverStart } = useGuide();
 
   useEffect(() => {
     const code = getFirstPathCode(location.pathname);
@@ -105,7 +103,7 @@ const LayoutPage: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    newUser && driverStart();
+    newUser
   }, [newUser]);
 
   return (

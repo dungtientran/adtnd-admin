@@ -19,10 +19,6 @@ const ListOfStocks = lazy(() => import('@/pages/ProductManagement/ListOfStocks/L
 const ServicePack = lazy(() => import('@/pages/ProductManagement/ServicePack/ServicePack'));
 const Recommendations = lazy(() => import('@/pages/ProductManagement/Recommendations/Recommendations'));
 
-const BusinessWithRadioCardsPage = lazy(
-  () => import('@/pages/business/with-radio-cards'),
-);
-const BusinessWithTabsPage = lazy(() => import('@/pages/business/with-tabs'));
 
 const routeList: RouteObject[] = [
   {
