@@ -107,7 +107,6 @@ const LayoutPage: FC = () => {
   useEffect(() => {
     newUser && driverStart();
   }, [newUser]);
-  console.log('menu___________', menuList);
 
   return (
     <Layout className="layout-page">

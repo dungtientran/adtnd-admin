@@ -12,4 +12,4 @@ export const getMenuList = (config: AxiosRequestConfig = {}) => request<MenuList
 /** Provides the mock notification list to be shown
  * in the notification dropdown
  */
-export const getNoticeList = (config: AxiosRequestConfig = {}) => request<Notice[]>('get', '/user/notice', {}, config);
+export const getNoticeList = (config: AxiosRequestConfig = {}) => request<Notice[]>('get', '/kaak', {}, config);

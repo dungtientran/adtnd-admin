@@ -8,7 +8,8 @@ import { setGlobalState } from '@/stores/global.store';
 // import { history } from '@/routes/history';
 
 const axiosInstance = axios.create({
-  timeout: 6000,
+  // timeout: 6000,
+  baseURL: 'https://yys2edw6d6.execute-api.ap-southeast-1.amazonaws.com/dev',
 });
 
 axiosInstance.interceptors.request.use(
@@ -73,6 +74,7 @@ axiosInstance.interceptors.response.use(
 );
 
 export type Response<T = any> = {
+  [x: string]: any;
   status: boolean;
   message: string;
   result: T;

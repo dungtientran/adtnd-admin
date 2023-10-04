@@ -71,7 +71,7 @@ const App: React.FC = () => {
       locale={getAntdLocale()}
       componentSize="middle"
       theme={{
-        token: { colorPrimary: '#13c2c2' },
+        token: { colorPrimary: '#FF6E00' },
         algorithm: theme === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
       }}
     >

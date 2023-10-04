@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import Avator from '@/assets/header/avator.jpeg';
 import { ReactComponent as EnUsSvg } from '@/assets/header/en_US.svg';
 import { ReactComponent as LanguageSvg } from '@/assets/header/language.svg';
+import Logo from '@/assets/header/logo.png';
 import { ReactComponent as MoonSvg } from '@/assets/header/moon.svg';
 import { ReactComponent as SunSvg } from '@/assets/header/sun.svg';
 import { ReactComponent as ZhCnSvg } from '@/assets/header/zh_CN.svg';
@@ -77,11 +78,7 @@ const HeaderComponent: FC<HeaderProps> = ({ collapsed, toggle }) => {
     <Header className="layout-page-header bg-2" style={{ backgroundColor: token.token.colorBgContainer }}>
       {device !== 'MOBILE' && (
         <div className="logo" style={{ width: collapsed ? 80 : 200 }}>
-          <img
-            src='https://mixmathsomehow.bluecore.vn//ImagesUpload/product_images/1656_40_20230823033634942.jpg'
-            alt="Logo"
-            style={{ marginRight: collapsed ? '2px' : '20px' }} />
-          {/* <img src={AntdSvg} alt="" /> */}
+          <img src={Logo} alt="Logo" style={{ marginRight: collapsed ? '2px' : '20px' }} />
         </div>
       )}
       <div className="layout-page-header-main">
@@ -100,30 +97,30 @@ const HeaderComponent: FC<HeaderProps> = ({ collapsed, toggle }) => {
               })}
             </span>
           </Tooltip>
-          <HeaderNoticeComponent />
-          <Dropdown
-            menu={{
-              onClick: info => selectLocale(info),
-              items: [
-                {
-                  key: 'zh_CN',
-                  icon: <ZhCnSvg />,
-                  disabled: locale === 'zh_CN',
-                  label: '简体中文',
-                },
-                {
-                  key: 'en_US',
-                  icon: <EnUsSvg />,
-                  disabled: locale === 'en_US',
-                  label: 'English',
-                },
-              ],
-            }}
-          >
-            <span>
-              <LanguageSvg id="language-change" />
-            </span>
-          </Dropdown>
+          {/* <HeaderNoticeComponent /> */}
+            {/* <Dropdown
+              menu={{
+                onClick: info => selectLocale(info),
+                items: [
+                  {
+                    key: 'zh_CN',
+                    icon: <ZhCnSvg />,
+                    disabled: locale === 'zh_CN',
+                    label: '简体中文',
+                  },
+                  {
+                    key: 'en_US',
+                    icon: <EnUsSvg />,
+                    disabled: locale === 'en_US',
+                    label: 'English',
+                  },
+                ],
+              }}
+            >
+              <span>
+                <LanguageSvg id="language-change" />
+              </span>
+            </Dropdown> */}
 
           {logged ? (
             <Dropdown

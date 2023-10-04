@@ -1,62 +1,164 @@
-import type { FC } from 'react';
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
+import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 
-import { Space, Tag } from 'antd';
+import { BorderOuterOutlined, UploadOutlined } from '@ant-design/icons';
+import { Avatar, Button, Popconfirm, Space, Table, Typography, Upload } from 'antd';
+import axios from 'axios';
+import qs from 'qs';
+import React, { useEffect, useState } from 'react';
 
 import MyButton from '@/components/basic/button';
-import MyTable from '@/components/core/table';
+import MyModal from '@/components/basic/modal';
 
-const { Column, ColumnGroup } = MyTable;
-
-interface ColumnType {
-  stock_code: string;
-  mart: string;
-  name_vi: string;
-  name_en: string;
-  sorter?: () => void;
+interface DataType {
+  id: string;
+  code: string;
+  en_name: string;
+  logo_url: string;
+  market: string;
+  name: string;
 }
 
-const data: ColumnType[] = [
-  {
-    stock_code: '1',
-    mart: 'HOSE',
-    name_en: 'Company',
-    name_vi: 'Công ty',
-  },
-];
+interface TableParams {
+  pagination?: TablePaginationConfig;
+  sortField?: string;
+  sortOrder?: string;
+  filters?: Record<string, FilterValue>;
+}
 
-new Array(100).fill(undefined).forEach((item, index) => {
-  data.push({
-    stock_code: index + 2 + '',
-    mart: 'Hose' + index,
-    name_vi: 'Công ty' + index,
-    name_en: 'Company' + index,
-  });
+const getRandomuserParams = (params: TableParams) => ({
+  results: params.pagination?.pageSize,
+  page: params.pagination?.current,
+  ...params,
 });
 
-const ListOfStocks = () => {
+const Recommendations: React.FC = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [tableParams, setTableParams] = useState<TableParams>({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const columns: ColumnsType<DataType> = [
+    {
+      title: 'Thị trường',
+      dataIndex: 'market',
+      // sorter: true,
+      filters: [
+        { text: 'Hose', value: 'hose' },
+        { text: 'Hnx', value: 'hnx' },
+        { text: 'Upcom', value: 'upcom' },
+      ],
+      width: '20%',
+    },
+    {
+      title: 'Tên công ty (tiếng Việt)',
+      dataIndex: 'name',
+    },
+    {
+      title: 'Tên công ty (tiếng Anh)',
+      dataIndex: 'en_name',
+    },
+    {
+      title: 'Logo',
+      dataIndex: 'logo_url',
+      key: 'logo_url',
+      // render: () => <Avatar />,
+      render: (_, record) => (
+        <Space size="middle">
+          {record.logo_url ? (
+            <Avatar src={record.logo_url} size="large" />
+          ) : (
+            <Button type="primary" onClick={() => setModalOpen(true)}>
+              +
+            </Button>
+          )}
+        </Space>
+      ),
+    },
+  ];
+
+  const fetchStock = async () => {
+    setLoading(true);
+    // fetch(`https://randomuser.me/api?${qs.stringify(getRandomuserParams(tableParams))}`)
+    const res = await axios.get(
+      `https://yys2edw6d6.execute-api.ap-southeast-1.amazonaws.com/dev/stock/get-list-stock?size=${tableParams.pagination?.pageSize}&page=${tableParams.pagination?.current}`,
+    );
+
+    console.log(res.data);
+
+    if (res.data?.code === 200) {
+      setData(res.data?.data?.rows);
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          total: res.data?.data?.count,
+        },
+      });
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchStock();
+  }, [JSON.stringify(tableParams)]);
+
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+
+    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      setData([]);
+    }
+  };
+
+  console.log('tableParams___________', tableParams);
+  // console.log('data_________________', data);
+
   return (
     <div className="aaa">
-      <h1>KKAKAKAKAKA</h1>
-      <MyTable<ColumnType> dataSource={data} rowKey={record => record.stock_code} height="100%">
-        <Column title="Thị trường" dataIndex="mart" key="mart" />
-        <Column title="Mã chứng khoán" dataIndex="stock_code" key="stock_code" />
-        <ColumnGroup title="Tên công ty">
-          <Column title="Tên tiếng Việt" dataIndex="name_vi" key="name_vi" />
-          <Column title="Tên tiếng Anh" dataIndex="name_en" key="name_en" />
-        </ColumnGroup>
-        <Column
-          title="Logo"
-          key="logo"
-          render={(text, record: any) => (
-            <Space size="middle">
-              {/* <MyButton type="text">Invite {record.lastName}</MyButton> */}
-              <MyButton type="primary">+</MyButton>
-            </Space>
-          )}
-        />
-      </MyTable>
+      <div style={{ textAlign: 'center' }}>
+        <Typography.Title level={2}>Danh mục cổ phiếu</Typography.Title>
+      </div>
+      <Table
+        columns={columns}
+        rowKey={record => record.id}
+        dataSource={data}
+        pagination={tableParams.pagination}
+        loading={loading}
+        onChange={handleTableChange}
+        scroll={{ x: 'max-content', y: '100%' }}
+      />
+      <MyModal
+        title="Cập nhật logo"
+        centered
+        open={modalOpen}
+        onOk={() => setModalOpen(false)}
+        onCancel={() => setModalOpen(false)}
+      >
+        <div>
+          <Typography.Title level={5}>Hình ảnh</Typography.Title>
+          <Upload
+            action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+            listType="picture"
+            maxCount={1}
+            // beforeUpload={beforeUpload}
+          >
+            <MyButton icon={<UploadOutlined />}>Upload (Max: 1)</MyButton>
+          </Upload>
+        </div>
+      </MyModal>
     </div>
   );
 };
 
-export default ListOfStocks;
+export default Recommendations;
