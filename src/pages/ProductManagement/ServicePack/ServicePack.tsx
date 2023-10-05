@@ -224,14 +224,12 @@ const ServicePack = () => {
   });
 
   return (
-    <div className='aaa'>
+    <div className="aaa">
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Gói dịch vụ</Typography.Title>
       </div>
-      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px'}}>
-        <Space>
-          Tình trạng:
-        </Space>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px' }}>
+        <Space>Tình trạng:</Space>
         <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
           Add a row
         </Button>

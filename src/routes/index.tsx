@@ -11,14 +11,13 @@ import LoginPage from '@/pages/login';
 
 import WrapperRouteComponent from './config';
 // not Found
-const NotFound = lazy(() => import(/* webpackChunkName: "404'"*/ '@/pages/404'));
+const NotFound = lazy(() => import('@/pages/404'));
 
 // Product Management
 
 const ListOfStocks = lazy(() => import('@/pages/ProductManagement/ListOfStocks/ListOfStocks'));
 const ServicePack = lazy(() => import('@/pages/ProductManagement/ServicePack/ServicePack'));
 const Recommendations = lazy(() => import('@/pages/ProductManagement/Recommendations/Recommendations'));
-
 
 const routeList: RouteObject[] = [
   {
