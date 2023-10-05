@@ -11,7 +11,6 @@ interface HistoryRouterProps {
 }
 
 export const HistoryRouter: React.FC<HistoryRouterProps> = ({ history, children }) => {
-  const dispatch = useDispatch();
 
   const [state, setState] = React.useState({
     action: history.action,
@@ -21,8 +20,6 @@ export const HistoryRouter: React.FC<HistoryRouterProps> = ({ history, children 
   React.useLayoutEffect(() => {
     history.listen(setState);
   }, [history]);
-  React.useLayoutEffect(() => {
-    dispatch(getSubscriptions())
-  }, [])
+ 
   return React.createElement(Router, Object.assign({ children, navigator: history }, state));
 };
