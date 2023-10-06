@@ -479,18 +479,17 @@ const Recommendations: React.FC = () => {
                             </Radio.Group>
                         </div>
                     </Col>
-                    <Col xs={12} lg={6}>
+                    <Col xs={12} lg={12}>
                         <div className='flex items-center'>
                             <Typography className='me-[10px]' >Tình trạng</Typography>
                             <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                                 <Radio.Button value={''}>Tất cả</Radio.Button>
-                                <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
-                                <Radio.Button value={'open'}>Đã duyệt</Radio.Button>
+                                <Radio.Button value={'open'}>Đang mở</Radio.Button>
                                 <Radio.Button value={'closed'}>Đã đóng</Radio.Button>
                             </Radio.Group>
                         </div>
                     </Col>
-                    <Col lg={12} xs={12} className='flex justify-end'>
+                    <Col lg={6} xs={12} className='flex justify-end'>
                         <Button onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
                     </Col>
                 </Row>
