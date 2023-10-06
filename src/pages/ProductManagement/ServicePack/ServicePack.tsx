@@ -1,147 +1,155 @@
-import type { InputRef } from 'antd';
-import type { FormInstance } from 'antd/es/form';
-
-import { Button, Form, Input, Popconfirm, Space, Table, Typography } from 'antd';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-
-const EditableContext = React.createContext<FormInstance<any> | null>(null);
+import { Button, Form, Input, InputNumber, Popconfirm, Select, Space, Table, Tag, Typography } from 'antd';
+import React, { Fragment, useState } from 'react';
 
 interface Item {
-  key: string;
-  name: string;
-  age: string;
-  address: string;
-}
-
-interface EditableRowProps {
-  index: number;
-}
-
-const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
-  const [form] = Form.useForm();
-
-  return (
-    <Form form={form} component={false}>
-      <EditableContext.Provider value={form}>
-        <tr {...props} />
-      </EditableContext.Provider>
-    </Form>
-  );
-};
-
-interface EditableCellProps {
-  title: React.ReactNode;
-  editable: boolean;
-  children: React.ReactNode;
-  dataIndex: keyof Item;
-  record: Item;
-  handleSave: (record: Item) => void;
-}
-
-const EditableCell: React.FC<EditableCellProps> = ({
-  title,
-  editable,
-  children,
-  dataIndex,
-  record,
-  handleSave,
-  ...restProps
-}) => {
-  const [editing, setEditing] = useState(false);
-  const inputRef = useRef<InputRef>(null);
-  const form = useContext(EditableContext)!;
-
-  useEffect(() => {
-    if (editing) {
-      inputRef.current!.focus();
-    }
-  }, [editing]);
-
-  const toggleEdit = () => {
-    setEditing(!editing);
-    form.setFieldsValue({ [dataIndex]: record[dataIndex] });
-  };
-
-  const save = async () => {
-    try {
-      const values = await form.validateFields();
-
-      toggleEdit();
-      handleSave({ ...record, ...values });
-    } catch (errInfo) {
-      console.log('Save failed:', errInfo);
-    }
-  };
-
-  let childNode = children;
-
-  if (editable) {
-    childNode = editing ? (
-      <Form.Item
-        style={{ margin: 0 }}
-        name={dataIndex}
-        rules={[
-          {
-            required: true,
-            message: `${title} is required.`,
-          },
-        ]}
-      >
-        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
-      </Form.Item>
-    ) : (
-      <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={toggleEdit}>
-        {children}
-      </div>
-    );
-  }
-
-  return <td {...restProps}>{childNode}</td>;
-};
-
-type EditableTableProps = Parameters<typeof Table>[0];
-
-interface DataType {
-  key?: React.Key;
+  key: React.Key;
   id: string;
   service_pack: string;
   description: string;
   status: string;
 }
 
-type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
+interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
+  editing: boolean;
+  dataIndex: string;
+  title: any;
+  inputType: 'number' | 'text';
+  record: Item;
+  index: number;
+  children: React.ReactNode;
+}
 
-const ServicePack = () => {
-  const [dataSource, setDataSource] = useState<DataType[]>([
+const EditableCell: React.FC<EditableCellProps> = ({
+  editing,
+  dataIndex,
+  title,
+  inputType,
+  record,
+  index,
+  children,
+  ...restProps
+}) => {
+  const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+
+  return (
+    <td {...restProps}>
+      {editing ? (
+        <Form.Item
+          name={dataIndex}
+          style={{ margin: 0 }}
+          rules={[
+            {
+              required: true,
+              message: `Please Input ${title}!`,
+            },
+          ]}
+        >
+          {inputNode}
+        </Form.Item>
+      ) : (
+        children
+      )}
+    </td>
+  );
+};
+
+const ServicePack: React.FC = () => {
+  const [form] = Form.useForm();
+  const [isEdit, setIsEdit] = useState(false);
+  const [isAdd, setIsAdd] = useState(false);
+  const [count, setCount] = useState(4);
+  const [editingKey, setEditingKey] = useState<any>('');
+  const [add1CaiThoi, setAdd1CaiThoi] = useState<boolean>(false);
+  const [dataSource, setDataSource] = useState<Item[]>([
     {
       id: '1',
       service_pack: 'Trial',
       description: 'Gói dùng thử',
       status: 'Đang hoạt động',
+      key: '1',
     },
     {
       id: '2',
       service_pack: 'Vip',
       description: 'Gói Vip',
       status: 'Đang hoạt động',
+      key: '2',
     },
     {
       id: '3',
       service_pack: 'Premium',
       description: 'Gói Premium',
       status: 'Đang hoạt động',
+      key: '3',
     },
   ]);
 
-  const [count, setCount] = useState(2);
+  const handleAdd = () => {
+    const newData: Item = {
+      key: count,
+      id: '',
+      service_pack: `Gói ${count}`,
+      description: `Gói ${count}`,
+      status: `Đang hoạt động`,
+    };
 
-  const handleDelete = (key: React.Key) => {
-    const newData = dataSource.filter(item => item.key !== key);
-
-    setDataSource(newData);
+    setAdd1CaiThoi(true);
+    setIsEdit(true);
+    setEditingKey(newData.key);
+    isEditing(newData);
+    setIsAdd(true);
+    setDataSource([newData, ...dataSource]);
+    setCount(count + 1);
   };
 
-  const defaultColumns = [
+  const isEditing = (record: Item) => record.key === editingKey;
+
+  const edit = (record: any) => {
+    form.setFieldsValue({ service_pack: '', description: '', status: '', ...record });
+    setEditingKey(record.key);
+  };
+
+  const cancel = () => {
+    setEditingKey('');
+    setAdd1CaiThoi(false);
+    setIsEdit(false);
+
+    if (isAdd) {
+      const newData = dataSource.slice(1);
+
+      setDataSource(newData);
+    }
+
+    setIsAdd(false);
+  };
+
+  const save = async (key: any) => {
+    try {
+      const row = (await form.validateFields()) as Item;
+
+      const newData = [...dataSource];
+      const index = newData.findIndex(item => key === item.key);
+
+      if (index > -1) {
+        const item = newData[index];
+
+        newData.splice(index, 1, {
+          ...item,
+          ...row,
+        });
+        setDataSource(newData);
+        setEditingKey('');
+      } else {
+        newData.push(row);
+        setDataSource(newData);
+        setEditingKey('');
+      }
+    } catch (errInfo) {
+      console.log('Validate Failed:', errInfo);
+    }
+  };
+
+  const columns = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -150,6 +158,7 @@ const ServicePack = () => {
       title: 'Gói dịch vụ',
       dataIndex: 'service_pack',
       width: '30%',
+      editable: isEdit,
     },
     {
       title: 'Mô tả',
@@ -159,66 +168,51 @@ const ServicePack = () => {
     {
       title: 'Tình trạng',
       dataIndex: 'status',
+      editable: false,
+      render: (_: any, record: Item) => <Tag color="green">{record.status}</Tag>,
     },
     {
       title: 'Action',
       dataIndex: 'action',
-      render: (record: { key: React.Key }) =>
-        dataSource.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-            <Button danger size="small">
-              Vô hiệu hóa
-            </Button>
-          </Popconfirm>
-        ) : null,
+      render: (_: any, record: Item) => {
+        const editable = isEditing(record);
+
+        return editable ? (
+          <span>
+            <Typography.Link onClick={() => save(record.key)} style={{ marginRight: 8 }}>
+              Save
+            </Typography.Link>
+            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+              <a>Cancel</a>
+            </Popconfirm>
+          </span>
+        ) : (
+          <Space>
+            {/* <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+              Edit
+            </Typography.Link> */}
+            <Typography.Link type="danger" disabled={editingKey !== ''}>
+              Block
+            </Typography.Link>
+          </Space>
+        );
+      },
     },
   ];
 
-  const handleAdd = () => {
-    const newData: DataType = {
-      key: count,
-      id: count + '',
-      service_pack: `Gói ${count}`,
-      description: `Gói ${count}`,
-      status: `Đang hoạt động`,
-    };
-
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
-  };
-
-  const handleSave = (row: DataType) => {
-    const newData = [...dataSource];
-    const index = newData.findIndex(item => row.key === item.key);
-    const item = newData[index];
-
-    newData.splice(index, 1, {
-      ...item,
-      ...row,
-    });
-    setDataSource(newData);
-  };
-
-  const components = {
-    body: {
-      row: EditableRow,
-      cell: EditableCell,
-    },
-  };
-
-  const columns = defaultColumns.map(col => {
+  const mergedColumns = columns.map(col => {
     if (!col.editable) {
       return col;
     }
 
     return {
       ...col,
-      onCell: (record: DataType) => ({
+      onCell: (record: Item) => ({
         record,
-        editable: col.editable,
+        inputType: col.dataIndex === 'age' ? 'number' : 'text',
         dataIndex: col.dataIndex,
         title: col.title,
-        handleSave,
+        editing: isEditing(record),
       }),
     };
   });
@@ -229,18 +223,40 @@ const ServicePack = () => {
         <Typography.Title level={2}>Gói dịch vụ</Typography.Title>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px' }}>
-        <Space>Tình trạng:</Space>
-        <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
-          Add a row
-        </Button>
+        <Space>
+          <Typography.Text>Trạng thái: </Typography.Text>
+          <Select
+            defaultValue="all"
+            style={{ width: 150 }}
+            disabled={add1CaiThoi}
+            // onChange={handleChange}
+            options={[
+              { value: 'all', label: 'Tất cả' },
+              { value: 'active', label: 'Đang hoạt động' },
+              { value: 'block', label: 'Vô hiệu hóa' },
+            ]}
+          />
+        </Space>
+        {/* <Button disabled={add1CaiThoi} onClick={handleAdd} type="primary">
+          Thêm dịch vụ
+        </Button> */}
       </div>
-      <Table
-        components={components}
-        rowClassName={() => 'editable-row'}
-        bordered
-        dataSource={dataSource}
-        columns={columns as ColumnTypes}
-      />
+      <Form form={form} component={false}>
+        <Table
+          components={{
+            body: {
+              cell: EditableCell,
+            },
+          }}
+          bordered
+          dataSource={dataSource}
+          columns={mergedColumns}
+          rowClassName="editable-row"
+          pagination={{
+            onChange: cancel,
+          }}
+        />
+      </Form>
     </div>
   );
 };

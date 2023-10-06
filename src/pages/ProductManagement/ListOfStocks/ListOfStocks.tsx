@@ -30,12 +30,6 @@ interface TableParams {
 }
 type DataIndex = keyof DataType;
 
-const getRandomuserParams = (params: TableParams) => ({
-  size: params.pagination?.pageSize,
-  page: params.pagination?.current,
-  market: params.filters?.market,
-});
-
 const Recommendations: React.FC = () => {
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -47,15 +41,21 @@ const Recommendations: React.FC = () => {
       pageSize: 10,
     },
   });
-  
+  const [sort, setSort] = useState<string>('');
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
   const [listStock, setListStock] = useState([]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListStock', tableParams],
-    queryFn: () => getStockList(qs.stringify(getRandomuserParams(tableParams))),
+    queryKey: ['getListStock', tableParams, sort],
+    queryFn: () => getStockList(qs.stringify(getRandomuserParams(tableParams)), sort),
+  });
+  const getRandomuserParams = (params: TableParams) => ({
+    size: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    market: params.filters?.market,
+    // code: searchText || undefined,
   });
   const updateLogo = useMutation({
     mutationFn: _ => apiUpdateLogoStock(recordSelected?.id, urlLogo),
@@ -145,6 +145,7 @@ const Recommendations: React.FC = () => {
     },
     render: text => text,
   });
+
   const columns: ColumnsType<DataType> = [
     {
       title: 'Thị trường',
@@ -222,6 +223,16 @@ const Recommendations: React.FC = () => {
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
       // setData([]);
     }
+
+    if (sorter.order === 'ascend') {
+      const sorte = `${sorter.field}_order=ASC`;
+
+      setSort(sorte);
+    } else if (sorter.order === 'descend') {
+      const sorte = `${sorter.field}_order=DESC`;
+
+      setSort(sorte);
+    }
   };
 
   const handleUpdateLogo = async () => {
@@ -241,19 +252,26 @@ const Recommendations: React.FC = () => {
       setListStock(data?.rows);
     }
   }, [data]);
+  // console.log(tableParams);
+  console.log('sort______________', sort);
 
   return (
-    <div className="">
+    <div className="aaa">
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Danh mục cổ phiếu</Typography.Title>
       </div>
       <div style={{ marginBottom: '10px' }}>
-        {data?.count ? (
+        {data?.count && !searchText ? (
           <Typography.Text>
             Có tất cả <Typography.Text strong>{data?.count || 0}</Typography.Text> kết quả
           </Typography.Text>
         ) : (
-          <Typography.Text>Kết quả</Typography.Text>
+          ''
+        )}
+        {searchText && (
+          <Typography.Text>
+            Kết quả tìm kiếm cho <Typography.Text strong>{searchText}</Typography.Text>
+          </Typography.Text>
         )}
       </div>
       <Table

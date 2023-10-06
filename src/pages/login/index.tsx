@@ -3,13 +3,14 @@ import type { FC } from 'react';
 
 import './index.less';
 
-import { Button, Checkbox, Form, Input, notification } from 'antd';
+import { Avatar, Button, Checkbox, Form, Input, notification, Space, Typography } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { LocaleFormatter, useLocale } from '@/locales';
 import { formatSearch } from '@/utils/formatSearch';
 
+import logo from '../../assets/header/logo.png';
 import { loginAsync } from '../../stores/user.action';
 
 const initialValues: LoginParams = {
@@ -26,24 +27,31 @@ const LoginForm: FC = () => {
 
   const onFinished = async (form: LoginParams) => {
     const res: any = await dispatch(await loginAsync(form));
+
     if (res.success) {
       const search = formatSearch(location.search);
       const from = search.from || { pathname: '/' };
+
       notification.success({
-        message: res.message
-      })
+        message: res.message,
+      });
       navigate(from);
-    }else {
+    } else {
       notification.error({
-        message: res.message
-      })
+        message: res.message,
+      });
     }
   };
 
   return (
     <div className="login-page">
       <Form<LoginParams> onFinish={onFinished} className="login-page-form" initialValues={initialValues}>
-        <h2>FILA ADMIN</h2>
+        <Space size='large' style={{ marginBottom: '20px', width: '100%' }}>
+          <Avatar src={logo} size="large" />
+          <Typography.Title level={2} style={{ margin: '0' }}>
+            FILA ADMIN
+          </Typography.Title>
+        </Space>
         <Form.Item
           name="username"
           rules={[
