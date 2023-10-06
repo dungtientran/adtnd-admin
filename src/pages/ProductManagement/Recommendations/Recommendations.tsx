@@ -2,20 +2,21 @@ import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { MenuOutlined } from '@ant-design/icons'
 import { BorderOuterOutlined, UploadOutlined } from '@ant-design/icons';
-import { Avatar, Button, Col, DatePicker, Dropdown, Popconfirm, Row, Select, Slider, Space, Table, Tag, Typography, Upload, notification, } from 'antd';
+import { Avatar, Button, Col, DatePicker, Dropdown, InputNumber, Popconfirm, Radio, Row, Select, Slider, Space, Table, Tag, Typography, Upload, notification, } from 'antd';
 import axios from 'axios';
 import qs from 'qs';
 import React, { useEffect, useState } from 'react';
 
 import MyButton from '@/components/basic/button';
 import MyModal from '@/components/basic/modal';
-import { getSignalList, sendSignalNotification } from '@/api/signal';
+import { approveManySignal, deleteManySignal, getSignalList, sendManySignal, sendSignalNotification } from '@/api/signal';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import ConfirmDeleteModal from '@/components/modal/Signal/ConfirmDeleteModal';
 import SendSignalNotificationModal from '@/components/modal/Signal/SendNotificationModal';
-import CreateSignalModal from '@/components/modal/Signal/CreateSignalModa';
-
+import CreateSignalModal from '@/components/modal/Signal/SendSignalModal';
+import SendSignalModal from '@/components/modal/Signal/SendSignalModal';
+import {getColumnSearchProps} from '../../Signal/ApproveAndCreateSignal'
 interface DataType {
     id: string;
     code: string;
@@ -66,9 +67,9 @@ const Recommendations: React.FC = () => {
         record: {} as any,
     });
     const [updateRow, setUpdateRow] = useState<any | null>(null);
-    const [sendSignalModal, setSendSignalModal] = useState<{ open: boolean; record: any }>({
+    const [sendSignalModal, setSendSignalModal] = useState<{ open: boolean; data: any }>({
         open: false,
-        record: {} as any,
+        data: {} as any,
     });
     const [createDateFilter, setCreateDateFilter] = useState({
         start_date: '',
@@ -78,17 +79,18 @@ const Recommendations: React.FC = () => {
         start_date: '',
         end_date: '',
     });
-    const [priceRangeFilter, setPriceRangeFilter] = useState([0, 150]);
-    const [stoplossPriceRangeFilter, setStoplossPriceRangeFilter] = useState([0, 150]);
-    const [closedPriceRangeFilter, setClosedPriceRangeFilter] = useState([0, 150]);
-    const [targetSellPrice1RangeFilter, setTargetSellPrice1RangeFilter] = useState([0, 150]);
-    const [targetSellPrice2RangeFilter, setTargetSellPrice2RangeFilter] = useState([0, 150]);
-    const [targetSellPrice3RangeFilter, setTargetSellPrice3RangeFilter] = useState([0, 150]);
+    const [priceRangeFilter, setPriceRangeFilter] = useState({
+        from: null,
+        to: null
+    });
+
 
     //enum true: dài hạn,false: ngắn hạn
     const [typeFilter, setTypeFilter] = useState(null);
     //enum ['closed', 'new', 'open']
     const [statusFilter, setStatusFilter] = useState(null);
+    const [codeFilter, setCodeFilter] = useState<string>('');
+    const [dateSort, setDateSort] = useState('DESC')
 
     const [filterQuery, setFilterQuery] = useState('');
     const onFilter = () => {
@@ -116,27 +118,9 @@ const Recommendations: React.FC = () => {
         } else if (statusFilter == 'open') {
             query += '&is_approve=true';
         }
-        query += '&target_buy_price_min=' + priceRangeFilter[0] + '&target_buy_price_max=' + priceRangeFilter[1];
-        query +=
-            '&target_sell_price_1_min=' +
-            targetSellPrice1RangeFilter[0] +
-            '&target_sell_price_1_max=' +
-            targetSellPrice1RangeFilter[1];
-        query +=
-            '&target_sell_price_2_min=' +
-            targetSellPrice2RangeFilter[0] +
-            '&target_sell_price_2_max=' +
-            targetSellPrice2RangeFilter[1];
-        query +=
-            '&target_sell_price_3_min=' +
-            targetSellPrice3RangeFilter[0] +
-            '&target_sell_price_3_max=' +
-            targetSellPrice3RangeFilter[1];
-        query +=
-            '&target_stoploss_min=' + stoplossPriceRangeFilter[0] + '&target_stoploss_max=' + stoplossPriceRangeFilter[1];
-        if (statusFilter == 'closed') {
-            query +=
-                '&closed_price_min=' + closedPriceRangeFilter[0] + '&closed_price_max=' + closedPriceRangeFilter[1];
+        if (priceRangeFilter.from && priceRangeFilter.to) {
+            query += '&target_buy_price_min=' + priceRangeFilter.from + '&target_buy_price_max=' + priceRangeFilter.to;
+
         }
         // cái này để mỗi lần nhất lọc đều triger function
         query += '&rd=' + Math.random().toString();
@@ -145,15 +129,6 @@ const Recommendations: React.FC = () => {
 
     const actions = (record: any) => {
         const actionList = [];
-
-        if (!record.is_approved) {
-            actionList.push({
-                key: '3',
-                label: <Typography onClick={() => {
-                    // onApproveSignal(record)
-                }}>{'Duyệt'}</Typography>,
-            });
-        }
         if (record.is_approved && !record.is_closed) {
             actionList.push({
                 key: '4',
@@ -175,27 +150,6 @@ const Recommendations: React.FC = () => {
                 danger: true,
             });
         }
-        actionList.push({
-            key: '2',
-            label: (
-                <Typography
-                    onClick={() => {
-                        // setUpdateRow(record);
-                        // setIsModalOpen(true);
-                    }}
-                >
-                    {'Sửa'}
-                </Typography>
-            ),
-        });
-        actionList.push({
-            key: '6',
-            label: <Typography onClick={() => {
-                // onDeleteSignal(record)
-            }}>{'Xóa'}</Typography>,
-            danger: true,
-        });
-
         return actionList;
     };
 
@@ -214,16 +168,40 @@ const Recommendations: React.FC = () => {
 
     const columns: ColumnsType<any> = [
         {
+            title: 'Ngày tạo',
+            dataIndex: 'action_date',
+            width: '10%',
+            sorter: () => {
+                if (dateSort == 'DESC') {
+                    setDateSort('ASC')
+                } else {
+                    setDateSort('DESC')
+                }
+                return 1
+            },
+            sortDirections: ['ascend', 'descend'],
+        },
+        {
             title: 'Mã CK',
             dataIndex: 'code',
             width: '5%',
+            ...getColumnSearchProps({
+                setCodeFilter
+            })
             // sorter: (a: any, b: any) => a.code.localeCompare(b.code),
             // sortDirections: ['ascend', 'descend', 'ascend'],
         },
         {
-            title: 'Mô tả',
-            dataIndex: 'description',
-            width: '10%',
+            title: 'Loại',
+            dataIndex: 'is_long_term',
+            width: '8%',
+            render: (is_long_term: boolean) => {
+                if (is_long_term) {
+                    return 'Dài hạn';
+                } else {
+                    return 'Ngắn hạn';
+                }
+            },
         },
         {
             title: 'Giá mua',
@@ -243,25 +221,19 @@ const Recommendations: React.FC = () => {
         {
             title: 'Giá bán mục tiêu 3',
             dataIndex: 'target_sell_price_3',
-            width: '8%',
+            width: '10%',
         },
         {
             title: 'Giá cắt lỗ',
             dataIndex: 'target_stop_loss',
-            width: '6%',
+            width: '10%',
         },
         {
             title: 'Giá đóng',
             dataIndex: 'closed_price',
-            width: '8%',
+            width: '10%',
         },
-        {
-            title: 'Ngày bắt đầu',
-            dataIndex: 'action_date',
-            width: '12%',
-            sorter: (a: any, b: any) => a.action_date.localeCompare(b.action_date),
-            sortDirections: ['ascend', 'descend', 'ascend'],
-        },
+
         {
             title: 'Ngày đóng',
             dataIndex: 'closed_date',
@@ -269,18 +241,6 @@ const Recommendations: React.FC = () => {
             sorter: (a: any, b: any) => a.closed_date.localeCompare(b.closed_date),
             sortDirections: ['ascend', 'descend', 'ascend'],
 
-        },
-        {
-            title: 'Loại',
-            dataIndex: 'is_long_term',
-            width: '10%',
-            render: (is_long_term: boolean) => {
-                if (is_long_term) {
-                    return 'Dài hạn';
-                } else {
-                    return 'Ngắn hạn';
-                }
-            },
         },
         {
             title: 'Tình trạng',
@@ -298,12 +258,12 @@ const Recommendations: React.FC = () => {
                 </>
             ),
         },
-        actionsColumn,
+        actionsColumn
     ];
 
     const getSignal = async () => {
         setLoading(true);
-        await getSignalList(tableParams.pagination, filterQuery).then(data => {
+        await getSignalList(tableParams.pagination, codeFilter, filterQuery, dateSort).then(data => {
             if (data.code === 200) {
                 setTableParams({
                     ...tableParams,
@@ -324,7 +284,7 @@ const Recommendations: React.FC = () => {
 
     useEffect(() => {
         getSignal();
-    }, [JSON.stringify(tableParams), filterQuery]);
+    }, [JSON.stringify(tableParams), filterQuery, codeFilter, dateSort]);
 
     const handleTableChange = (pagination: any, filters: any, sorter: any) => {
         console.log(pagination)
@@ -341,7 +301,19 @@ const Recommendations: React.FC = () => {
 
 
     const handleDeleteMany = async () => {
-
+        await deleteManySignal(selectedRow)
+            .then((data: any) => {
+                if (data.code == 200) {
+                    notification.success({ message: 'Xóa thành công !' });
+                    setSelectedRow([]);
+                }
+            })
+            .catch((error) => {
+                console.log(error.response);
+                notification.error({ message: error.message });
+            }).finally(() => {
+                setConfirmDeleteModalOpen(false)
+            })
     }
 
     const handlesendSinalNotification = async () => {
@@ -373,204 +345,111 @@ const Recommendations: React.FC = () => {
 
 
     }
+    const handleSendManySignal = async (target: any) => {
+        await sendManySignal({
+            signal_ids: selectedRow || [],
+            target: target
+        }).then(res => {
+            console.log('res: ', res)
+            notification.success({
+                message: 'Gửi thành công'
+            })
+            setSendSignalModal({
+                open: false,
+                data: null
+            })
+        }).catch((err) => {
+            console.log(err)
+            notification.error({
+                message: err.message
+            })
+        })
+    }
     return (
         <div className="aaa">
             <div style={{ textAlign: 'center' }}>
                 <Typography.Title level={2}>Khuyến nghị</Typography.Title>
             </div>
             <div>
-                <Row>
-                    <Col>
-                        <Typography style={{ marginBottom: 3, marginTop: 10 }}>Gói dịch vụ</Typography>
-                        <Select
-                            style={{ width: 300 }}
-                            placeholder={'Chọn gói dịch vụ'}
-                            mode="multiple"
-                            onChange={(value) => { }}
-                            options={[...subscriptions?.map((item: any) => ({ label: item.name, value: item.id }))]}
-                        />
-                    </Col>
-                </Row>
-                <Row gutter={[10, 10]} align={'middle'} style={{ marginBottom: 10 }}>
-                    <Col>
-                        <Typography style={{ marginBottom: 3, marginTop: 10 }}>Ngày tạo</Typography>
-                        <RangePicker
-                            style={{
-                                width: '300px',
-                                marginBottom: 3,
-                            }}
-                            onChange={(value: any) => {
-                                console.log(value);
-                                if (value?.length > 0) {
-                                    setCreateDateFilter({
-                                        start_date: moment(value[0].$d).format('MM/DD/YYYY'),
-                                        end_date: moment(value[1].$d).format('MM/DD/YYYY'),
-                                    });
-                                } else {
-                                    setCreateDateFilter({
-                                        start_date: '',
-                                        end_date: '',
-                                    });
-                                }
-                            }}
-                        />
-                    </Col>
-                    <Col>
-                        <Typography style={{ marginBottom: 3, marginTop: 10 }}>Loại</Typography>
-                        <Select
-                            defaultValue="Tất cả"
-                            style={{ width: 120 }}
-                            onChange={(value: any) => {
-                                setTypeFilter(value);
-                            }}
-                            options={[
-                                { value: 0, label: 'Tất cả' },
-                                { value: 1, label: 'Ngắn hạn' },
-                                { value: 2, label: 'Dài hạn' },
-                            ]}
-                        />
-                    </Col>
-                    <Col>
-                        <Typography style={{ marginBottom: 3, marginTop: 10 }}>Tình trạng</Typography>
-                        <Select
-                            defaultValue="Tất cả"
-                            style={{ width: 120 }}
-                            onChange={(value: any) => {
-                                setStatusFilter(value);
-                            }}
-                            options={[
-                                { value: 'all', label: 'Tất cả' },
-                                { value: 'new', label: 'Mới' },
-                                { value: 'open', label: 'Đang mở' },
-                                { value: 'closed', label: 'Đã đóng' },
-                            ]}
-                        />
-                    </Col>
-                    {statusFilter == 'closed' && (
-                        <Col>
-                            <Typography style={{ marginBottom: 3, marginTop: 10 }}>Ngày đóng</Typography>
+                <div className='mb-[20px]'>
+                    <Row>
+                        <Col xs={12} lg={6}>
+                            <div className='flex items-center'>
+                                <Typography className='me-[10px]'>Loại</Typography>
+                                <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
+                                    <Radio.Button value={''}>Tất cả</Radio.Button>
+                                    <Radio.Button value={1}>Ngắn hạn</Radio.Button>
+                                    <Radio.Button value={2}>Dài hạn</Radio.Button>
+                                </Radio.Group>
+                            </div>
+                        </Col>
+                        <Col xs={12} lg={6}>
+                            <div className='flex items-center'>
+                                <Typography className='me-[10px]' >Tình trạng</Typography>
+                                <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
+                                    <Radio.Button value={''}>Tất cả</Radio.Button>
+                                    <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
+                                    <Radio.Button value={'open'}>Đã duyệt</Radio.Button>
+                                    <Radio.Button value={'closed'}>Đã đóng</Radio.Button>
+                                </Radio.Group>
+                            </div>
+                        </Col>
+                    </Row>
+                    <div className='flex items-center mt-[15px] gap-5'>
+                        <div className='flex items-center mt-[15px]'>
+                            <Typography>Giá mua : Từ</Typography>
+                            <InputNumber className='mx-[7px]'
+                                onChange={(value: any) => {
+                                    setPriceRangeFilter({
+                                        ...priceRangeFilter,
+                                        from: value
+                                    })
+                                }}
+                            />
+                            <Typography> Đến </Typography>
+                            <InputNumber
+                                className='mx-[7px]'
+                                onChange={(value: any) => {
+                                    setPriceRangeFilter({
+                                        ...priceRangeFilter,
+                                        to: value
+                                    })
+                                }}
+                            />
+
+                        </div>
+                        <div className='flex items-center mt-[15px]'>
+                            <Typography className='me-[10px]'>Ngày tạo</Typography>
                             <RangePicker
                                 style={{
                                     width: '300px',
-                                    marginBottom: 3
+                                    marginBottom: 3,
                                 }}
                                 onChange={(value: any) => {
                                     console.log(value);
                                     if (value?.length > 0) {
-                                        setClosedDateFilter({
+                                        setCreateDateFilter({
                                             start_date: moment(value[0].$d).format('MM/DD/YYYY'),
                                             end_date: moment(value[1].$d).format('MM/DD/YYYY'),
                                         });
                                     } else {
-                                        setClosedDateFilter({
+                                        setCreateDateFilter({
                                             start_date: '',
                                             end_date: '',
                                         });
                                     }
                                 }}
                             />
-                        </Col>
-                    )}
-                </Row>
-                <Row gutter={[20, 20]}>
-                    <Col>
-                        <Typography style={{ marginBottom: 3, marginTop: 10 }}>Giá mua</Typography>
-                        <Slider
-                            range
-                            defaultValue={[0, 150]}
-                            step={0.01}
-                            min={1}
-                            max={150}
-                            style={{ width: 300 }}
-                            onChange={(value) => {
-                                setPriceRangeFilter(value);
-                            }}
-                        />
-                    </Col>
-
-                    <Col>
-                        <Typography style={{ marginBottom: 3, marginTop: 10 }}>Giá cắt lỗ</Typography>
-                        <Slider
-                            range
-                            defaultValue={[0, 150]}
-                            step={0.01}
-                            min={1}
-                            max={150}
-                            style={{ width: 300 }}
-                            onChange={(value) => {
-                                setStoplossPriceRangeFilter(value);
-                            }}
-                        />
-                    </Col>
-                    {statusFilter == 'closed' && (
-                        <Col>
-                            <Typography style={{ marginBottom: 3, marginTop: 10 }}>Giá đóng</Typography>
-                            <Slider
-                                range
-                                defaultValue={[0, 150]}
-                                step={0.01}
-                                min={1}
-                                max={150}
-                                style={{ width: 300 }}
-                                onChange={(value) => {
-                                    setClosedPriceRangeFilter(value);
-                                }}
-                            />
-                        </Col>
-                    )}
-                </Row>
-                <Row gutter={[20, 20]}>
-                    <Col>
-                        <Typography style={{ marginBottom: 3, marginTop: 10 }}>Giá chốt lời 1</Typography>
-                        <Slider
-                            range
-                            defaultValue={[0, 150]}
-                            step={0.01}
-                            min={1}
-                            max={150}
-                            style={{ width: 300 }}
-                            onChange={(value) => {
-                                setTargetSellPrice1RangeFilter(value);
-                            }}
-                        />
-                    </Col>
-                    <Col>
-                        <Typography style={{ marginBottom: 3, marginTop: 10 }}>Giá chốt lời 2</Typography>
-                        <Slider
-                            range
-                            defaultValue={[0, 150]}
-                            step={0.01}
-                            min={1}
-                            max={150}
-                            style={{ width: 300 }}
-                            onChange={(value) => {
-                                setTargetSellPrice2RangeFilter(value);
-                            }}
-                        />
-                    </Col>
-                    <Col>
-                        <Typography style={{ marginBottom: 3, marginTop: 10 }}>Giá chốt lời 3</Typography>
-                        <Slider
-                            range
-                            defaultValue={[0, 150]}
-                            step={0.01}
-                            min={1}
-                            max={150}
-                            style={{ width: 300 }}
-                            onChange={(value) => {
-                                setTargetSellPrice3RangeFilter(value);
-                            }}
-                        />
-                    </Col>
-                </Row>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Col style={{ marginBottom: 10 }}>
-                        <Button type="primary" onClick={() => onFilter()}>
-                            {'Lọc'}
-                        </Button>
-                    </Col>
+                        </div>
+                        <div className="flex">
+                            <Button className='mt-[10px]' onClick={onFilter}>
+                                <Typography >Lọc</Typography>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+                <div className='flex justify-between mb-4'>
                     <div>
-                        
                         {selectedRow.length > 0 && (
                             <>
                                 <Button type="primary" danger onClick={() => {
@@ -579,7 +458,6 @@ const Recommendations: React.FC = () => {
                                     Xóa
                                 </Button>
                                 <Button
-                                    type="primary"
                                     onClick={() => {
                                         setNotificationModalOpen(true)
                                         setNotificationForm({
@@ -588,7 +466,19 @@ const Recommendations: React.FC = () => {
                                         })
                                     }}
                                 >
-                                    Gửi thông báo
+                                    <Typography>Gửi thông báo</Typography>
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        setSendSignalModal({
+                                            open: true,
+                                            data: {
+                                                signal_ids: selectedRow
+                                            }
+                                        })
+                                    }}
+                                >
+                                    <Typography>Gửi Khuyến nghị</Typography>
                                 </Button>
                             </>
                         )}
@@ -637,7 +527,16 @@ const Recommendations: React.FC = () => {
                 setForm={setNotificationForm}
                 handleCancel={() => setNotificationModalOpen(false)}
             />
-            {/* <CreateSignalModal/> */}
+            <SendSignalModal
+                open={sendSignalModal.open}
+                handleOk={handleSendManySignal}
+                handleCancel={() => {
+                    setSendSignalModal({
+                        ...sendSignalModal,
+                        open: false
+                    })
+                }}
+            />
         </div>
 
     );

@@ -16,6 +16,8 @@ const NotFound = lazy(() => import('@/pages/404'));
 // Product Management
 
 const ListOfStocks = lazy(() => import('@/pages/ProductManagement/ListOfStocks/ListOfStocks'));
+const CreateSignal = lazy(() => import('@/pages/Signal/CreateSignal'));
+const ApproveAndCreateSignal = lazy(() => import('@/pages/Signal/ApproveAndCreateSignal'));
 const ServicePack = lazy(() => import('@/pages/ProductManagement/ServicePack/ServicePack'));
 const Recommendations = lazy(() => import('@/pages/ProductManagement/Recommendations/Recommendations'));
 
@@ -48,6 +50,14 @@ const routeList: RouteObject[] = [
       {
         path: 'product-managament/recommendations',
         element: <WrapperRouteComponent element={<Recommendations />} titleId="Khuyến nghị" />,
+      },
+      {
+        path: 'signal/create',
+        element: <WrapperRouteComponent element={<CreateSignal />} titleId="Khuyến nghị" />,
+      },
+      {
+        path: 'signal/create-and-approve',
+        element: <WrapperRouteComponent element={<ApproveAndCreateSignal />} titleId="Duyệt/ Tạo Khuyến nghị" />,
       },
       {
         path: '*',
