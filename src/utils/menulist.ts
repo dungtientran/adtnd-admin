@@ -11,7 +11,7 @@ export const menuListHandle: MenuList = [
     code: 'dashboard',
     icon: 'documentation',
     label: {
-      en_US: 'Quản lý sản phầm',
+      en_US: 'Quản lý sản phẩm',
       zh_CN: '文档',
     },
     path: '/documentation',
@@ -32,10 +32,30 @@ export const menuListHandle: MenuList = [
         },
         path: '/product-managament/service-pack',
       },
+      
+    ],
+  },
+  {
+    code: 'dashboard',
+    icon: 'documentation',
+    label: {
+      en_US: 'Quản lý khuyến nghị',
+      zh_CN: '文档',
+    },
+    path: '/documentation',
+    children: [
+      {
+        code: 'service-pack',
+        label: {
+          en_US: 'Duyệt khuyến nghị',
+          zh_CN: '基本',
+        },
+        path: '/signal/create-and-approve',
+      },
       {
         code: 'recommendations',
         label: {
-          en_US: 'Khuyến nghị',
+          en_US: 'Danh sách khuyến nghị',
           zh_CN: '基本',
         },
         path: '/product-managament/recommendations',
