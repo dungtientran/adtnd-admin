@@ -1,10 +1,11 @@
 import axios from 'axios';
+
 import { axiosInstance } from './request';
 
-export const getStockList = async (params: string) => {
+export const getStockList = async (params: string, sort: string) => {
   try {
     const res = await axios.get(
-      `https://yys2edw6d6.execute-api.ap-southeast-1.amazonaws.com/dev/stock/get-list-stock?${params}`,
+      `https://yys2edw6d6.execute-api.ap-southeast-1.amazonaws.com/dev/stock/get-list-stock?${sort}&${params}`,
     );
 
     return res.data?.data;
@@ -13,16 +14,16 @@ export const getStockList = async (params: string) => {
   }
 };
 
-
 export const searchStock = (text: string | null): Promise<any> =>
   axiosInstance
     .get<any>('/stock/search?searchText=' + text)
     .then(({ data }) => data)
-    .catch((error) => console.log(error));
+    .catch(error => console.log(error));
+
 export const apiUpdateLogoStock = async (idStock: string, formData: any) => {
   try {
     const getUrlImage = await axios.post(`https://api.cloudinary.com/v1_1/dbkgkyh4h/image/upload`, formData);
-    
+
     if (getUrlImage.status === 200) {
       const res = await axios.put(
         `https://yys2edw6d6.execute-api.ap-southeast-1.amazonaws.com/dev/stock/update_logo/${idStock}`,
