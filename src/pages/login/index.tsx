@@ -42,7 +42,6 @@ const LoginForm: FC = () => {
       });
     }
   };
-
   return (
     <div className="login-page">
       <Form<LoginParams> onFinish={onFinished} className="login-page-form" initialValues={initialValues}>
