@@ -234,7 +234,6 @@ const Recommendations: React.FC = () => {
       setSort(sorte);
     }
   };
-
   const handleUpdateLogo = async () => {
     updateLogo.mutate();
     setUrlLogo('');
