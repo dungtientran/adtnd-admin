@@ -33,22 +33,22 @@ function SendSignalNotificationModal({
             <div>
                 <div>
                     <Typography>Tiêu đề</Typography>
-                    <Input 
+                    <Input
                         value={form.title}
                         onChange={e => setForm({
                             ...form,
                             title: e.target.value
-                        })} 
+                        })}
                     />
                 </div>
                 <div>
                     <Typography>Nội dung</Typography>
-                    <TextArea 
+                    <TextArea
                         value={form.description}
                         onChange={e => setForm({
                             ...form,
                             description: e.target.value
-                        })} 
+                        })}
                         autoSize
                     />
                 </div>

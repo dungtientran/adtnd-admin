@@ -57,6 +57,12 @@ interface ApproveSignal {
   approve: boolean
 }
 
+interface ClosedSignal {
+  id: string
+  closed_price: number
+  closed_reason: string
+}
+
 export const getSignalList = (
   pagination?: TablePaginationConfig | null,
   searchText?: string,
@@ -64,10 +70,9 @@ export const getSignalList = (
   dateSort?: string
 ): Promise<any> => {
   return axiosInstance.get<any>(
-    `/signal/admin/signal_list?page=${
-      pagination?.current || 1
+    `/signal/admin/signal_list?page=${pagination?.current || 1
     }&size=${pagination?.pageSize || 10}${searchText ? `&searchText=${searchText}` : ''
-    }${filter ? filter : ''}${dateSort? `&date_order=${dateSort}` : ''}`,
+    }${filter ? filter : ''}${dateSort ? `&date_order=${dateSort}` : ''}`,
   )
     .then((data) => data)
     .catch((error) => {
@@ -85,12 +90,16 @@ export const createSignal = async (createData: CreateSignalData) => {
     .catch(error => { throw error });
 }
 
-export const updateSignal = async (signalData: UpdateSignal)=>{
+export const updateSignal = async (signalData: UpdateSignal) => {
   return axiosInstance.put('/signal/admin/update_signal_v2', signalData).then(({ data }) => data).catch(error => { throw error });
 }
 
-export const closeSignal = (closeData: SignalModel): Promise<any> =>
-  axiosInstance.put<any>('/signal/admin/closed_signal', closeData).then(({ data }) => data);
+export const closeSignal = async(closeData: ClosedSignal) => {
+
+  return axiosInstance.put('/signal/admin/closed_signal', closeData)
+    .then((data) => data)
+    .catch(error => { throw error });
+}
 
 export const approveSignal = (id: string): Promise<any> =>
   axiosInstance.post<any>(`/signal/admin/approve/${id}`).then(({ data }) => data);
@@ -110,11 +119,11 @@ export const sendManySignal = async (data: SendManySignal) => {
 }
 
 
-export const deleteSignal = async(id: string) => {
-  
+export const deleteSignal = async (id: string) => {
+
   return axiosInstance.delete(`/signal/admin/delete_signal/${id}`)
-  .then((data) => data)
-  .catch((error) => { throw error});
+    .then((data) => data)
+    .catch((error) => { throw error });
 }
 export const sendSignalNotification = async (notiData: SendSignalNotification): Promise<any> => {
   return axiosInstance.post(
@@ -123,10 +132,10 @@ export const sendSignalNotification = async (notiData: SendSignalNotification): 
   ).then(({ data }) => data).catch(error => { throw error; });
 }
 
-export const deleteManySignal = async(list: Array<string>) =>
+export const deleteManySignal = async (list: Array<string>) =>
   axiosInstance
-    .post<any>(`/signal/admin/delete_many`, list)
-    .then(( data ) => data)
+    .post(`/signal/admin/delete_many`, list)
+    .then((data) => data)
     .catch((err) => {
       throw err;
     });

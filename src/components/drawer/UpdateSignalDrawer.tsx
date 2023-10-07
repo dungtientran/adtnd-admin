@@ -2,9 +2,10 @@ import { createSignal } from '@/api/signal';
 import { searchStock } from '@/api/stock.api';
 import { IlistStock } from '@/interface/stock/stock.interface';
 import { useStates } from '@/utils/use-states';
-import { AutoComplete, Button, Col, DatePicker, Drawer, Form, Input, InputNumber, Radio, Row, Select, Space, Typography } from 'antd'
+import { AutoComplete, Button, Checkbox, Col, DatePicker, Drawer, Form, Input, InputNumber, Radio, Row, Select, Space, Typography } from 'antd'
 import TextArea from 'antd/es/input/TextArea';
 import { error } from 'console';
+import { setPriority } from 'os';
 import React, { useState, useEffect } from 'react'
 const { Option } = Select;
 interface UpdateSingalDrawerProps {
@@ -21,9 +22,10 @@ function UpdateSingalDrawer({
     data
 }: UpdateSingalDrawerProps) {
     const [form] = Form.useForm();
-    
+
 
     const [stockId, setStockId] = useState<any>('')
+    const [priority, setPriority] = useState<boolean>(false)
     const [stockList, setStockList] = useState<IlistStock[]>([]);
 
     const handleSearchStock = async (query: string) => {
@@ -37,7 +39,8 @@ function UpdateSingalDrawer({
         console.log('stock_id: ', stockId)
         await onSubmit({
             ...value,
-            stock_id: stockId
+            stock_id: stockId,
+            priority: priority,
         })
 
     }
@@ -45,6 +48,7 @@ function UpdateSingalDrawer({
         if (data) {
             form.setFieldsValue(data)
             handleSearchStock(data.code)
+            setPriority(data.priority)
         }
     }, [data])
 
@@ -58,9 +62,9 @@ function UpdateSingalDrawer({
             bodyStyle={{ paddingBottom: 80 }}
             extra={
                 <Space>
-                    <Button onClick={onClose}>Hủy</Button>
+                    <Button onClick={onClose}><Typography>Hủy</Typography></Button>
                     <Button onClick={() => form.submit()} type="primary">
-                        Tạo
+                        <Typography>Cập nhật</Typography>
                     </Button>
                 </Space>
             }
@@ -73,6 +77,11 @@ function UpdateSingalDrawer({
                             <Radio.Button value={true}>Dài hạn</Radio.Button>
                         </Radio.Group>
                     </Form.Item>
+                    {data?.is_closed && (
+                        <Form.Item label={'Ưu tiên hiển thị trước'} name="is_send_all" >
+                            <Checkbox name="is_send_all" checked={priority} onChange={(e) => setPriority(e.target.checked)} />
+                        </Form.Item>
+                    )}
                     <Typography className='mb-[5px]'>Mã chứng khoán</Typography>
                     <Form.Item
 

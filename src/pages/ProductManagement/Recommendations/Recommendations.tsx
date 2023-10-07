@@ -9,14 +9,16 @@ import React, { useEffect, useState } from 'react';
 
 import MyButton from '@/components/basic/button';
 import MyModal from '@/components/basic/modal';
-import { approveManySignal, deleteManySignal, getSignalList, sendManySignal, sendSignalNotification } from '@/api/signal';
+import { approveManySignal, closeSignal, deleteManySignal, getSignalList, sendManySignal, sendSignalNotification } from '@/api/signal';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import ConfirmDeleteModal from '@/components/modal/Signal/ConfirmDeleteModal';
 import SendSignalNotificationModal from '@/components/modal/Signal/SendNotificationModal';
 import CreateSignalModal from '@/components/modal/Signal/SendSignalModal';
 import SendSignalModal from '@/components/modal/Signal/SendSignalModal';
-import {getColumnSearchProps} from '../../Signal/ApproveAndCreateSignal'
+import { getColumnSearchProps } from '../../Signal/ApproveAndCreateSignal'
+import ClosedSignalModal from '@/components/modal/Signal/ClosedSignalModal';
+import { SignalModel } from '@/interface/signal';
 interface DataType {
     id: string;
     code: string;
@@ -40,10 +42,10 @@ const getRandomuserParams = (params: TableParams) => ({
 });
 
 const Recommendations: React.FC = () => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<any>([]);
     const subscriptions = useSelector(state => state.subsciptions.subscriptions)
     const [loading, setLoading] = useState(false);
-    const [selectedRow, setSelectedRow] = useState([]);
+    const [selectedRow, setSelectedRow] = useState<any>([]);
     const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState<boolean>(false);
 
     // notifications state
@@ -55,6 +57,21 @@ const Recommendations: React.FC = () => {
         signal_ids: [],
         loading: false,
     });
+    const [noteForm, setNoteForm] = useState({
+        note: '',
+        signal_id: '',
+        signal_ids: [],
+        loading: false,
+    });
+    const [closeSignalModal, setCloseSignalModal] = useState<{ open: boolean; data: any }>({
+        open: false,
+        data: {
+            id: '',
+            closed_price: 0,
+            closed_reason: '',
+            loading: false,
+        },
+    });
 
     const [tableParams, setTableParams] = useState<TableParams>({
         pagination: {
@@ -62,11 +79,6 @@ const Recommendations: React.FC = () => {
             pageSize: 10,
         },
     });
-    const [closeSignalModal, setCloseSignalModal] = useState<{ open: boolean; record: any }>({
-        open: false,
-        record: {} as any,
-    });
-    const [updateRow, setUpdateRow] = useState<any | null>(null);
     const [sendSignalModal, setSendSignalModal] = useState<{ open: boolean; data: any }>({
         open: false,
         data: {} as any,
@@ -131,25 +143,41 @@ const Recommendations: React.FC = () => {
         const actionList = [];
         if (record.is_approved && !record.is_closed) {
             actionList.push({
-                key: '4',
-                label: <Typography onClick={() => {
-                    console.log(record.id)
-                    setNotificationModalOpen(true)
-                    setNotificationForm({
-                        ...notificationForm,
-                        signal_id: record.id
-                    })
-                }}>{'Gửi thông báo'}</Typography>,
-            });
-            actionList.push({
                 key: '5',
                 label: <Typography onClick={() => {
                     console.log(record)
-                    setCloseSignalModal({ open: true, record })
+                    setCloseSignalModal({
+                        open: true, data: {
+                            ...closeSignalModal.data,
+                            id: record.id
+                        }
+                    })
                 }}>{'Đóng'}</Typography>,
                 danger: true,
             });
         }
+        actionList.push({
+            key: '4',
+            label: <Typography onClick={() => {
+                console.log(record.id)
+                setNotificationModalOpen(true)
+                setNotificationForm({
+                    ...notificationForm,
+                    signal_id: record.id
+                })
+            }}>{'Gửi thông báo'}</Typography>,
+        });
+        actionList.push({
+            key: '54',
+            label: <Typography onClick={() => {
+                console.log(record.id)
+                setNotificationModalOpen(true)
+                setNotificationForm({
+                    ...notificationForm,
+                    signal_id: record.id
+                })
+            }}>{'Cập nhật ghi chú'}</Typography>,
+        });
         return actionList;
     };
 
@@ -209,17 +237,17 @@ const Recommendations: React.FC = () => {
             width: '8%',
         },
         {
-            title: 'Giá bán mục tiêu 1',
+            title: 'Giá chốt lời 1',
             dataIndex: 'target_sell_price_1',
             width: '8%',
         },
         {
-            title: 'Giá bán mục tiêu 2',
+            title: 'Giá chốt lời 2',
             dataIndex: 'target_sell_price_2',
             width: '8%',
         },
         {
-            title: 'Giá bán mục tiêu 3',
+            title: 'Giá chốt lời 3',
             dataIndex: 'target_sell_price_3',
             width: '10%',
         },
@@ -302,9 +330,12 @@ const Recommendations: React.FC = () => {
 
     const handleDeleteMany = async () => {
         await deleteManySignal(selectedRow)
-            .then((data: any) => {
-                if (data.code == 200) {
+            .then((res: any) => {
+                console.log(res)
+                if (res.code == 200) {
                     notification.success({ message: 'Xóa thành công !' });
+                    const new_data = [...data].filter((item: any) => !selectedRow.includes(item.id));
+                    setData(new_data);
                     setSelectedRow([]);
                 }
             })
@@ -364,6 +395,49 @@ const Recommendations: React.FC = () => {
                 message: err.message
             })
         })
+    }
+
+    const handleClosedSignal = async () => {
+        if (closeSignalModal.data.closed_price == 0) {
+            return notification.error({
+                message: 'Giá đóng phải lớn hơn 0'
+            })
+        } else {
+            await closeSignal(closeSignalModal.data).then((res: any) => {
+                console.log('closed signal : ', res)
+                if (res.code == 200) {
+                    notification.success({
+                        message: 'Đóng khuyến nghị thành công'
+                    })
+
+                    const new_data = [...data].map((item: SignalModel) => {
+                        if (item.id == res.data.id) {
+                            return {
+                                ...item,
+                                closed_date: moment().format('DD/MM/YYYY'),
+                                is_closed: true,
+                                closed_price: res.data.closed_price
+                            }
+                        }
+                        return item
+                    })
+                    setData(new_data)
+                    setCloseSignalModal({
+                        open: false,
+                        data: {
+                            id: '',
+                            closed_price: 0,
+                            closed_reason: '',
+                            loading: false,
+                        },
+                    })
+                }
+            }).catch((err) => {
+                notification.error({
+                    message: err.message
+                })
+            });
+        }
     }
     return (
         <div className="aaa">
@@ -526,6 +600,18 @@ const Recommendations: React.FC = () => {
                 form={notificationForm}
                 setForm={setNotificationForm}
                 handleCancel={() => setNotificationModalOpen(false)}
+            />
+            <ClosedSignalModal
+                open={closeSignalModal.open}
+                handleOk={() => {
+                    handleClosedSignal()
+                }}
+                data={closeSignalModal}
+                setData={setCloseSignalModal}
+                handleCancel={() => setCloseSignalModal({
+                    ...closeSignalModal,
+                    open: false
+                })}
             />
             <SendSignalModal
                 open={sendSignalModal.open}

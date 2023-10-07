@@ -109,7 +109,7 @@ function CreateSingalDrawer({
                         {
                             validator(_, value: string) {
                                 const buy_price = form.getFieldValue('target_buy_price')
-                                if (buy_price >= value) {
+                                if (buy_price > value) {
                                     return Promise.resolve()
                                 }
                                 return Promise.reject(new Error('Giá cắt lỗ phải bé hơn giá mua'));
@@ -127,7 +127,7 @@ function CreateSingalDrawer({
                         {
                             validator(_, value: number) {
                                 const buy_price = form.getFieldValue('target_buy_price')
-                                if (buy_price <= value) {
+                                if (buy_price < value) {
                                     return Promise.resolve()
                                 }
                                 return Promise.reject(new Error('Giá chốt lời 1 phải lớn hơn giá mua'));
@@ -143,7 +143,7 @@ function CreateSingalDrawer({
                         {
                             validator(_, value: number) {
                                 const sell_1 = form.getFieldValue('target_sell_price_1')
-                                if (sell_1 <= value) {
+                                if (sell_1 < value) {
                                     return Promise.resolve()
                                 }
                                 return Promise.reject(new Error('Giá chốt lời 2 phải lớn hơn chốt lời 1'));
@@ -160,7 +160,7 @@ function CreateSingalDrawer({
                         {
                             validator(_, value: number) {
                                 const sell_2 = form.getFieldValue('target_sell_price_2')
-                                if (sell_2 <= value) {
+                                if (sell_2 < value) {
                                     return Promise.resolve()
                                 }
                                 return Promise.reject(new Error('Giá chốt lời 3 phải lớn hơn chốt lời 2'));
