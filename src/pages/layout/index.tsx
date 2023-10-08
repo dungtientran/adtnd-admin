@@ -38,7 +38,6 @@ const LayoutPage: FC = () => {
 
     setOpenkey(code);
     setSelectedKey(location.pathname);
-    console.log(code);
   }, [location.pathname]);
 
   const toggle = () => {
@@ -66,25 +65,25 @@ const LayoutPage: FC = () => {
   };
 
   const fetchMenuList = useCallback(async () => {
-    const { status, result } = await getMenuList();
+    // const { status, result } = await getMenuList();
 
-    if (status) {
-      setMenuList(result);
-      dispatch(
-        setUserItem({
-          menuList: initMenuListAll(result),
-        }),
-      );
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    // fetchMenuList();
+    // if (status) {
+    setMenuList(menuListHandle);
     dispatch(
       setUserItem({
         menuList: initMenuListAll(menuListHandle),
       }),
     );
+    // }
+  }, [dispatch]);
+
+  useEffect(() => {
+    fetchMenuList();
+    // dispatch(
+    //   setUserItem({
+    //     menuList: initMenuListAll(menuListHandle),
+    //   }),
+    // );
   }, [fetchMenuList]);
 
   useEffect(() => {
@@ -100,11 +99,14 @@ const LayoutPage: FC = () => {
         }),
       );
     };
+    // console.log("deviceeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
   }, [dispatch]);
 
   useEffect(() => {
-    newUser
+    newUser;
   }, [newUser]);
+  // console.log('menuListHandle', menuListHandle);
+  // console.log('initMenuListAll', initMenuListAll(menuListHandle));
 
   return (
     <Layout className="layout-page">

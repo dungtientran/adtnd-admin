@@ -35,6 +35,7 @@ const MenuComponent: FC<MenuProps> = props => {
   const onMenuClick = (path: string) => {
     onChangeSelectedKey(path);
     navigate(path);
+
     if (device !== 'DESKTOP') {
       dispatch(setUserItem({ collapsed: true }));
     }
@@ -42,10 +43,11 @@ const MenuComponent: FC<MenuProps> = props => {
 
   const onOpenChange = (keys: string[]) => {
     const key = keys.pop();
-
+    // console.log("key_____________", key);
     onChangeOpenKey(key);
   };
 
+  // console.log('menu____________', menuList);
 
   return (
     <Menu

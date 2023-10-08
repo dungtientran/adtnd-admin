@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import Avator from '@/assets/header/avator.jpeg';
-import Guest from '@/assets/header/guest.png';
 import { ReactComponent as EnUsSvg } from '@/assets/header/en_US.svg';
+import Guest from '@/assets/header/guest.png';
 import { ReactComponent as LanguageSvg } from '@/assets/header/language.svg';
 import Logo from '@/assets/header/logo.png';
 import { ReactComponent as MoonSvg } from '@/assets/header/moon.svg';
@@ -97,7 +97,7 @@ const HeaderComponent: FC<HeaderProps> = ({ collapsed, toggle }) => {
             </span>
           </Tooltip>
           {/* <HeaderNoticeComponent /> */}
-            {/* <Dropdown
+          {/* <Dropdown
               menu={{
                 onClick: info => selectLocale(info),
                 items: [
@@ -147,7 +147,7 @@ const HeaderComponent: FC<HeaderProps> = ({ collapsed, toggle }) => {
               }}
             >
               <span className="user-action">
-                <img src={user?.avatar_url || Guest} className="user-avator" alt="avator"  style={{borderRadius: 6}}/>
+                <img src={user?.avatar_url || Guest} className="user-avator" alt="avator" style={{ borderRadius: 6 }} />
               </span>
             </Dropdown>
           ) : (

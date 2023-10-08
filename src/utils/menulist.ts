@@ -8,7 +8,7 @@ export const menuListHandle: MenuList = [
     path: '/dashboard',
   },
   {
-    code: 'dashboard',
+    code: 'sanpham',
     icon: 'documentation',
     label: {
       en_US: 'Quản lý sản phẩm',
@@ -32,11 +32,10 @@ export const menuListHandle: MenuList = [
         },
         path: '/product-managament/service-pack',
       },
-      
     ],
   },
   {
-    code: 'dashboard',
+    code: 'Khuyennghi',
     icon: 'documentation',
     label: {
       en_US: 'Quản lý khuyến nghị',
