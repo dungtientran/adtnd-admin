@@ -3,7 +3,7 @@ import type { FilterValue } from 'antd/es/table/interface';
 
 import './index.less';
 
-import { MenuOutlined, SearchOutlined } from '@ant-design/icons';
+import { MenuOutlined, SearchOutlined,StarOutlined,StarFilled } from '@ant-design/icons';
 import {
   Button,
   Col,
@@ -47,7 +47,7 @@ interface TableParams {
   filters?: Record<string, FilterValue>;
 }
 
-export const getColumnSearchProps = ({ setCodeFilter }: any) => {
+export const getColumnSearchProps = ({ setFilter }: any) => {
   const [value, setValue] = useState('');
 
   return {
@@ -61,7 +61,7 @@ export const getColumnSearchProps = ({ setCodeFilter }: any) => {
           }}
           onPressEnter={() => {
             console.log(value);
-            setCodeFilter(value);
+            setFilter(value);
           }}
           style={{ marginBottom: 8, display: 'block' }}
         />
@@ -69,7 +69,7 @@ export const getColumnSearchProps = ({ setCodeFilter }: any) => {
           <Button
             type="primary"
             onClick={() => {
-              setCodeFilter(value);
+              setFilter(value);
             }}
             icon={<SearchOutlined />}
             size="small"
@@ -79,7 +79,7 @@ export const getColumnSearchProps = ({ setCodeFilter }: any) => {
           </Button>
           <Button
             onClick={() => {
-              setCodeFilter('');
+              setFilter('');
               setValue('');
             }}
             size="small"
@@ -277,7 +277,7 @@ const Recommendations: React.FC = () => {
       dataIndex: 'code',
       width: '5%',
       ...getColumnSearchProps({
-        setCodeFilter,
+        setFilter: setCodeFilter,
       }),
       // sorter: (a: any, b: any) => a.code.localeCompare(b.code),
       // sortDirections: ['ascend', 'descend', 'ascend'],
@@ -329,8 +329,18 @@ const Recommendations: React.FC = () => {
       title: 'Ngày đóng',
       dataIndex: 'closed_date',
       width: '12%',
-      sorter: (a: any, b: any) => a.closed_date.localeCompare(b.closed_date),
       sortDirections: ['ascend', 'descend', 'ascend'],
+    },
+    {
+      title: 'Ưu tiên',
+      dataIndex: 'priority',
+      width: '5%',
+      sortDirections: ['ascend', 'descend', 'ascend'],
+      render: (data) => (
+        <div>
+            <StarFilled style={data ? {color: '#eb8f19'}: {}} size={20}/>
+        </div>
+      )
     },
     {
       title: 'Tình trạng',
@@ -660,6 +670,25 @@ const Recommendations: React.FC = () => {
         loading={loading}
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
+        expandable={{
+          expandedRowRender: (record) => {
+            console.log(record)
+            return (
+              <div className='text-left'>
+                <div>
+                  <Typography style={{ margin: 0 }}>
+                    Mô tả : {record?.description}
+                  </Typography>
+                </div>
+                <div>
+                  <Typography style={{ margin: 0 }}>
+                    Ghi chú : {record?.note}
+                  </Typography>
+                </div>
+              </div>
+            )
+          },
+        }}
         rowSelection={{
           type: 'checkbox',
           onChange: (value: any) => {
