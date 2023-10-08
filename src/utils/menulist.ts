@@ -35,6 +35,41 @@ export const menuListHandle: MenuList = [
     ],
   },
   {
+    code: 'khachhang',
+    icon: 'documentation',
+    label: {
+      en_US: 'Quản lý khách hàng',
+      zh_CN: '文档',
+    },
+    path: '/documentation',
+    children: [
+      {
+        code: 'service-pack',
+        label: {
+          en_US: 'Nhóm khách hàng',
+          zh_CN: '基本',
+        },
+        path: '/customer-management/customer-group',
+      },
+      {
+        code: 'recommendations',
+        label: {
+          en_US: 'Danh sách khách hàng',
+          zh_CN: '基本',
+        },
+        path: '/customer-management/list-customer',
+      },
+      {
+        code: 'recommendations',
+        label: {
+          en_US: 'Danh sách yêu cầu',
+          zh_CN: '基本',
+        },
+        path: '/customer-management/list-request',
+      },
+    ],
+  },
+  {
     code: 'Khuyennghi',
     icon: 'documentation',
     label: {

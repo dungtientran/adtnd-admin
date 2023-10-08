@@ -21,6 +21,10 @@ const ApproveAndCreateSignal = lazy(() => import('@/pages/Signal/ApproveAndCreat
 const ServicePack = lazy(() => import('@/pages/ProductManagement/ServicePack/ServicePack'));
 const Recommendations = lazy(() => import('@/pages/ProductManagement/Recommendations/Recommendations'));
 
+const CustomerGroup = lazy(() => import('@/pages/CustomerManagement/CustomerGroup/CustomerGroup'));
+const ListCustomers = lazy(() => import('@/pages/CustomerManagement/ListCustomers/ListCustomers'));
+const ListRequests = lazy(() => import('@/pages/CustomerManagement/ListRequests/ListRequests'));
+
 const routeList: RouteObject[] = [
   {
     path: '/login',
@@ -59,6 +63,20 @@ const routeList: RouteObject[] = [
         path: 'signal/create-and-approve',
         element: <WrapperRouteComponent element={<ApproveAndCreateSignal />} titleId="Duyệt/ Tạo Khuyến nghị" />,
       },
+      // 
+      {
+        path: 'customer-management/customer-group',
+        element: <WrapperRouteComponent element={<CustomerGroup />} titleId="Nhóm khách hàng" />,
+      },
+      {
+        path: 'customer-management/list-customer',
+        element: <WrapperRouteComponent element={<ListCustomers />} titleId="Danh sách khách hàng" />,
+      },
+      {
+        path: 'customer-management/list-request',
+        element: <WrapperRouteComponent element={<ListRequests />} titleId="Danh sách yêu cầu" />,
+      },
+
       {
         path: '*',
         element: <WrapperRouteComponent element={<NotFound />} titleId="title.notFount" />,

@@ -121,6 +121,7 @@ const LayoutPage: FC = () => {
             collapsedWidth={isMobile ? 0 : 80}
             collapsed={collapsed}
             breakpoint="md"
+            width={234}
           >
             <MenuComponent
               menuList={menuListHandle}
