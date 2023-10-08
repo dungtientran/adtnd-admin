@@ -1,7 +1,7 @@
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { MenuOutlined } from '@ant-design/icons'
-import { BorderOuterOutlined, UploadOutlined } from '@ant-design/icons';
+import { BorderOuterOutlined, UploadOutlined ,StarFilled} from '@ant-design/icons';
 import { Avatar, Button, Col, DatePicker, Dropdown, InputNumber, Popconfirm, Radio, Row, Select, Slider, Space, Table, Tag, Typography, Upload, notification, } from 'antd';
 import axios from 'axios';
 import qs from 'qs';
@@ -214,7 +214,7 @@ const Recommendations: React.FC = () => {
             dataIndex: 'code',
             width: '5%',
             ...getColumnSearchProps({
-                setCodeFilter
+                setFilter: setCodeFilter,
             })
             // sorter: (a: any, b: any) => a.code.localeCompare(b.code),
             // sortDirections: ['ascend', 'descend', 'ascend'],
@@ -269,6 +269,17 @@ const Recommendations: React.FC = () => {
             sorter: (a: any, b: any) => a.closed_date.localeCompare(b.closed_date),
             sortDirections: ['ascend', 'descend', 'ascend'],
 
+        },
+        {
+            title: 'Ưu tiên',
+            dataIndex: 'priority',
+            width: '5%',
+            sortDirections: ['ascend', 'descend', 'ascend'],
+            render: (data) => (
+                <div>
+                    <StarFilled style={data ? { color: '#eb8f19' } : {}} size={20} />
+                </div>
+            )
         },
         {
             title: 'Tình trạng',
