@@ -50,7 +50,7 @@ function CreateSingalDrawer({
                 <Space>
                     <Button onClick={onClose}>Hủy</Button>
                     <Button onClick={() => form.submit()} type="primary">
-                        Tạo
+                        <Typography>Tạo</Typography>
                     </Button>
                 </Space>
             }

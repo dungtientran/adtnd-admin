@@ -6,8 +6,9 @@ import React, { useEffect, useState } from 'react'
 import './index.less'
 import { Link } from 'react-router-dom';
 import { MenuOutlined } from '@ant-design/icons'
-import { getColumnSearchProps } from '../Signal/SearchInTable';
+import { getColumnSearchProps } from '../components/Table/SearchInTable';
 import CreateGroupModal from '@/components/modal/Group/CreateGroupModal';
+import { useSelector } from 'react-redux';
 interface TableParams {
     pagination?: TablePaginationConfig;
     sortField?: string;
@@ -15,6 +16,8 @@ interface TableParams {
     filters?: Record<string, FilterValue>;
 }
 function GroupTablePage() {
+    const subscriptions = useSelector(state => state.subsciptions.subscriptions)
+
     const [data, setData] = useState<any>()
     const [tableParams, setTableParams] = useState<TableParams>({
         pagination: {
@@ -31,12 +34,12 @@ function GroupTablePage() {
 
     //modal state -------------------------->
     const [groupModal, setGroupModal] = useState<boolean>(false);
-    const [update,setUpdate] = useState<any>()
+    const [update, setUpdate] = useState<any>()
 
 
     // --------------
     const getData = async () => {
-        await getGroupList(tableParams.pagination,'',filterQuery).then((data: any) => {
+        await getGroupList(tableParams.pagination, '', filterQuery).then((data: any) => {
             console.log(data)
             if (data) {
                 setTableParams({
@@ -104,21 +107,32 @@ function GroupTablePage() {
             render: (text: string, record: any) => <Link to={`/user-group/${record.id}`} className='text-left'>{text}</Link>,
             ...getColumnSearchProps({
                 setFilter: setNameSearch,
-              }),
+            }),
         },
         {
             title: 'Gói dịch vụ',
             dataIndex: ['subscription_product', 'name'],
             dataType: 'text',
             width: '20%',
-            render : (text: string, record: any) => <Typography className='text-center'>{text}</Typography>
+            render: (text: string, record: any) => <Typography className='text-center'>{text}</Typography>,
+            filters: subscriptions?.map((item: any) =>{
+                return {
+                    value: item.id,
+                    text: item.name,
+                }
+            }),
+            onFilter: (value: any, record: any) =>{
+                console.log('value',value);
+                console.log('record',record);
+                return true
+            }
         },
         {
             title: 'Nhân viên chăm sóc',
             dataIndex: ['sale', 'email'],
             dataType: 'text',
             width: '20%',
-            render : (text: string, record: any) => <Typography className='text-center'>{text}</Typography>
+            render: (text: string, record: any) => <Typography className='text-center'>{text}</Typography>
         },
         {
             title: 'Mô tả',
@@ -129,25 +143,25 @@ function GroupTablePage() {
     ];
 
 
-    useEffect(()=>{
-        if(nameSearch != null){
+    useEffect(() => {
+        if (nameSearch != null) {
             let query = ''
-            if(nameSearch){
+            if (nameSearch) {
                 query += `&searchText=${nameSearch}`
             }
             setFilterQuery(query)
         }
-    },[nameSearch])
+    }, [nameSearch])
     useEffect(() => {
         getData()
-    }, [JSON.stringify(tableParams),filterQuery])
+    }, [JSON.stringify(tableParams), filterQuery])
 
     const handleCreateGroup = async (form: any) => {
         console.log(form)
-        if(update){
+        if (update) {
             return await updateGroup(update.id, form).then((res: any) => {
                 const new_data = [...data].map((item) => {
-                    if(item.id == update.id) {
+                    if (item.id == update.id) {
                         return {
                             ...item,
                             ...form
@@ -168,10 +182,10 @@ function GroupTablePage() {
                 }))
                 return true
             });
-        }else {
+        } else {
             return await createGroup(form).then((res: any) => {
-                if(res.code == 200){
-                    const new_data = [res.data,...data]
+                if (res.code == 200) {
+                    const new_data = [res.data, ...data]
                     setData(new_data)
                 }
                 notification.success(({
@@ -193,7 +207,7 @@ function GroupTablePage() {
                 <Typography.Title level={2}>Danh sách nhóm khách hàng</Typography.Title>
             </div>
             <div>
-                <Button onClick={()=> {
+                <Button onClick={() => {
                     setUpdate(null)
                     setGroupModal(true)
                 }}>
@@ -223,7 +237,7 @@ function GroupTablePage() {
                 setData={setGroupModal}
                 open={groupModal}
                 handleOk={handleCreateGroup}
-                handleCancel={()=>{
+                handleCancel={() => {
                     setGroupModal(false)
                 }}
             />

@@ -3,7 +3,7 @@ import type { FilterValue } from 'antd/es/table/interface';
 
 import './index.less';
 
-import { MenuOutlined, SearchOutlined,StarOutlined,StarFilled } from '@ant-design/icons';
+import { MenuOutlined, SearchOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
 import {
   Button,
   Col,
@@ -39,7 +39,7 @@ import CreateSingalDrawer from '@/components/drawer/CreateSingalDrawer';
 import UpdateSingalDrawer from '@/components/drawer/UpdateSignalDrawer';
 import ConfirmDeleteModal from '@/components/modal/Signal/ConfirmDeleteModal';
 import SendSignalNotificationModal from '@/components/modal/Signal/SendNotificationModal';
-
+import _debounce from 'lodash/debounce';
 interface TableParams {
   pagination?: TablePaginationConfig;
   sortField?: string;
@@ -50,22 +50,24 @@ interface TableParams {
 export const getColumnSearchProps = ({ setFilter }: any) => {
   const [value, setValue] = useState('');
 
+  const handleInputChange = _debounce((e) => {
+    setFilter(e.target.value);
+    setValue(e.target.value);
+  }, 500);
   return {
     filterDropdown: () => (
       <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
         <Input
           placeholder={`Search name`}
-          value={value}
-          onChange={e => {
-            setValue(e.target.value);
-          }}
+          // value={value}
+          onChange={handleInputChange}
           onPressEnter={() => {
             console.log(value);
             setFilter(value);
           }}
           style={{ marginBottom: 8, display: 'block' }}
         />
-        <Space>
+        {/* <Space>
           <Button
             type="primary"
             onClick={() => {
@@ -87,7 +89,7 @@ export const getColumnSearchProps = ({ setFilter }: any) => {
           >
             Reset
           </Button>
-        </Space>
+        </Space> */}
       </div>
     ),
     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,
@@ -331,17 +333,17 @@ const Recommendations: React.FC = () => {
       width: '12%',
       sortDirections: ['ascend', 'descend', 'ascend'],
     },
-    {
-      title: 'Ưu tiên',
-      dataIndex: 'priority',
-      width: '5%',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      render: (data) => (
-        <div>
-            <StarFilled style={data ? {color: '#eb8f19'}: {}} size={20}/>
-        </div>
-      )
-    },
+    // {
+    //   title: 'Ưu tiên',
+    //   dataIndex: 'priority',
+    //   width: '5%',
+    //   sortDirections: ['ascend', 'descend', 'ascend'],
+    //   render: (data) => (
+    //     <div>
+    //       <StarFilled style={data ? { color: '#eb8f19' } : {}} size={20} />
+    //     </div>
+    //   )
+    // },
     {
       title: 'Tình trạng',
       dataIndex: 'is_closed',
@@ -505,7 +507,6 @@ const Recommendations: React.FC = () => {
       .then(res => {
         console.log('res: ', res);
         const new_data = [...data];
-
         if (approve) {
           new_data.map((item: any) => {
             if (signal_ids.includes(item.id)) {
@@ -526,6 +527,13 @@ const Recommendations: React.FC = () => {
 
           setData(filter);
         }
+        notification.success(({
+          message: `${approve ? 'Duyệt': 'Từ chối'} thành công`
+        }))
+      }).catch((err) =>{
+        notification.error(({
+          message: err.message
+        }))
       })
       .finally(() => {
         setSelectedRow([]);
@@ -549,12 +557,14 @@ const Recommendations: React.FC = () => {
               </Radio.Group>
             </div>
           </Col>
+
           <Col xs={12} lg={12}>
-            <div className="flex items-center">
-              <Typography className="me-[10px]">Tình trạng</Typography>
+            <div className='flex items-center'>
+              <Typography className='me-[10px]' >Tình trạng</Typography>
               <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
-                <Radio.Button value={'open'}>Đang mở</Radio.Button>
+                <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
+                <Radio.Button value={'open'}>Đã duyệt</Radio.Button>
                 <Radio.Button value={'closed'}>Đã đóng</Radio.Button>
               </Radio.Group>
             </div>
@@ -563,31 +573,13 @@ const Recommendations: React.FC = () => {
             <Button onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
           </Col>
         </Row>
-        <div>
-          <div className="flex items-center mt-[15px]">
-            <Typography>Giá mua : Từ</Typography>
-            <InputNumber
-              className="mx-[7px]"
-              onChange={(value: any) => {
-                setPriceRangeFilter({
-                  ...priceRangeFilter,
-                  from: value,
-                });
-              }}
-            />
-            <Typography> Đến </Typography>
-            <InputNumber
-              className="mx-[7px]"
-              onChange={(value: any) => {
-                setPriceRangeFilter({
-                  ...priceRangeFilter,
-                  to: value,
-                });
-              }}
-            />
-          </div>
-          <div className="flex items-center mt-[15px]">
-            <Typography className="me-[10px]">Ngày tạo</Typography>
+        <div
+          className='items-center mt-[15px] 
+                        gap-5 border-[1px] w-fit 
+                        px-[10px] py-[10px] rounded-[6px] border-[#ccc] relative'
+        >
+          <div className='flex items-center  mt-[10px]'>
+            <Typography className='me-[10px]'>Ngày tạo</Typography>
             <RangePicker
               style={{
                 width: '300px',
@@ -595,7 +587,6 @@ const Recommendations: React.FC = () => {
               }}
               onChange={(value: any) => {
                 console.log(value);
-
                 if (value?.length > 0) {
                   setCreateDateFilter({
                     start_date: moment(value[0].$d).format('MM/DD/YYYY'),
@@ -610,24 +601,32 @@ const Recommendations: React.FC = () => {
               }}
             />
           </div>
-          <div className="flex">
-            {/* <Button className='mt-[10px]' onClick={()=>{
-                            setPriceRangeFilter({
-                                from: null,
-                                to: null
-                            })
-                            setCreateDateFilter({
-                                start_date: '',
-                                end_date: ''
-                            })
-                            setTimeout(()=>{
-                                onFilter()
-                            },0)
-                        }}>
-                            <Typography>Reset</Typography>
-                        </Button> */}
-            <Button className="mt-[10px]" onClick={onFilter}>
-              <Typography>Lọc</Typography>
+          <div className='flex items-center mt-[10px]'>
+            <Typography>Giá mua : Từ</Typography>
+            <InputNumber className='mx-[7px]'
+              onChange={(value: any) => {
+                setPriceRangeFilter({
+                  ...priceRangeFilter,
+                  from: value
+                })
+              }}
+            />
+            <Typography> Đến </Typography>
+            <InputNumber
+              className='mx-[7px]'
+              onChange={(value: any) => {
+                setPriceRangeFilter({
+                  ...priceRangeFilter,
+                  to: value
+                })
+              }}
+            />
+
+          </div>
+
+          <div className="flex mt-[10px]">
+            <Button className='' onClick={onFilter}>
+              <Typography >Lọc</Typography>
             </Button>
           </div>
         </div>

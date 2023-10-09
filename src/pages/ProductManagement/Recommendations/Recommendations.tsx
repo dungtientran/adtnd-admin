@@ -1,7 +1,7 @@
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { MenuOutlined } from '@ant-design/icons'
-import { BorderOuterOutlined, UploadOutlined ,StarFilled} from '@ant-design/icons';
+import { BorderOuterOutlined, UploadOutlined, StarFilled } from '@ant-design/icons';
 import { Avatar, Button, Col, DatePicker, Dropdown, InputNumber, Popconfirm, Radio, Row, Select, Slider, Space, Table, Tag, Typography, Upload, notification, } from 'antd';
 import axios from 'axios';
 import qs from 'qs';
@@ -101,6 +101,7 @@ const Recommendations: React.FC = () => {
     const [typeFilter, setTypeFilter] = useState(null);
     //enum ['closed', 'new', 'open']
     const [statusFilter, setStatusFilter] = useState(null);
+    const [priorityFilter, setPriorityFilter] = useState(null);
     const [codeFilter, setCodeFilter] = useState<string>('');
     const [dateSort, setDateSort] = useState('DESC')
 
@@ -167,17 +168,17 @@ const Recommendations: React.FC = () => {
                 })
             }}>{'Gửi thông báo'}</Typography>,
         });
-        actionList.push({
-            key: '54',
-            label: <Typography onClick={() => {
-                console.log(record.id)
-                setNotificationModalOpen(true)
-                setNotificationForm({
-                    ...notificationForm,
-                    signal_id: record.id
-                })
-            }}>{'Cập nhật ghi chú'}</Typography>,
-        });
+        // actionList.push({
+        //     key: '54',
+        //     label: <Typography onClick={() => {
+        //         console.log(record.id)
+        //         setNotificationModalOpen(true)
+        //         setNotificationForm({
+        //             ...notificationForm,
+        //             signal_id: record.id
+        //         })
+        //     }}>{'Cập nhật ghi chú'}</Typography>,
+        // });
         return actionList;
     };
 
@@ -320,7 +321,31 @@ const Recommendations: React.FC = () => {
 
         setLoading(false);
     };
+    useEffect(() => {
+        if (statusFilter != null || typeFilter != null) {
+            let query = '';
 
+            if (typeFilter == 1) {
+                query += '&is_long_term=false';
+            } else if (typeFilter == 2) {
+                query += '&is_long_term=true';
+            }
+            //////////////////
+
+            if (statusFilter == 'closed') {
+                query += '&is_closed=true';
+                if (priorityFilter == true || priorityFilter == false) {
+                    query += `&priority=${priorityFilter}`;
+                }
+            } else if (statusFilter == 'new') {
+                query += '&is_approve=false';
+            } else if (statusFilter == 'open') {
+                query += '&is_approve=true';
+            }
+
+            setFilterQuery(query);
+        }
+    }, [statusFilter, typeFilter, priorityFilter]);
     useEffect(() => {
         getSignal();
     }, [JSON.stringify(tableParams), filterQuery, codeFilter, dateSort]);
@@ -457,8 +482,8 @@ const Recommendations: React.FC = () => {
             </div>
             <div>
                 <div className='mb-[20px]'>
-                    <Row>
-                        <Col xs={12} lg={6}>
+                    <Row gutter={10}>
+                        <Col xs={24} md={12} lg={12} xl={6}>
                             <div className='flex items-center'>
                                 <Typography className='me-[10px]'>Loại</Typography>
                                 <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
@@ -468,42 +493,35 @@ const Recommendations: React.FC = () => {
                                 </Radio.Group>
                             </div>
                         </Col>
-                        <Col xs={12} lg={12}>
-                            <div className='flex items-center'>
-                                <Typography className='me-[10px]' >Tình trạng</Typography>
+                        <Col xs={24} md={12} lg={12} xl={6}>
+                            <div className="flex items-center">
+                                <Typography className="me-[10px]">Tình trạng</Typography>
                                 <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                                     <Radio.Button value={''}>Tất cả</Radio.Button>
-                                    <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
-                                    <Radio.Button value={'open'}>Đã duyệt</Radio.Button>
+                                    <Radio.Button value={'open'}>Đang mở</Radio.Button>
                                     <Radio.Button value={'closed'}>Đã đóng</Radio.Button>
                                 </Radio.Group>
                             </div>
                         </Col>
+                        {statusFilter == 'closed' && (
+                            <Col xs={24} md={12} lg={12} xl={6}>
+                                <div className="flex items-center">
+                                    <Typography className="me-[10px]">Độ ưu tiên</Typography>
+                                    <Radio.Group defaultValue={''} onChange={e => setPriorityFilter(e.target.value)}>
+                                        <Radio.Button value={''}>Tất cả</Radio.Button>
+                                        <Radio.Button value={true}>Ưu tiên</Radio.Button>
+                                        <Radio.Button value={false}>Không ưu tiên</Radio.Button>
+                                    </Radio.Group>
+                                </div>
+                            </Col>
+                        )}
                     </Row>
-                    <div className='flex items-center mt-[15px] gap-5'>
-                        <div className='flex items-center mt-[15px]'>
-                            <Typography>Giá mua : Từ</Typography>
-                            <InputNumber className='mx-[7px]'
-                                onChange={(value: any) => {
-                                    setPriceRangeFilter({
-                                        ...priceRangeFilter,
-                                        from: value
-                                    })
-                                }}
-                            />
-                            <Typography> Đến </Typography>
-                            <InputNumber
-                                className='mx-[7px]'
-                                onChange={(value: any) => {
-                                    setPriceRangeFilter({
-                                        ...priceRangeFilter,
-                                        to: value
-                                    })
-                                }}
-                            />
-
-                        </div>
-                        <div className='flex items-center mt-[15px]'>
+                    <div
+                        className='items-center mt-[15px] 
+                        gap-5 border-[1px] w-fit 
+                        px-[10px] py-[10px] rounded-[6px] border-[#ccc] relative'
+                    >
+                        <div className='flex items-center  mt-[10px]'>
                             <Typography className='me-[10px]'>Ngày tạo</Typography>
                             <RangePicker
                                 style={{
@@ -526,8 +544,31 @@ const Recommendations: React.FC = () => {
                                 }}
                             />
                         </div>
-                        <div className="flex">
-                            <Button className='mt-[10px]' onClick={onFilter}>
+                        <div className='flex items-center mt-[10px]'>
+                            <Typography>Giá mua : Từ</Typography>
+                            <InputNumber className='mx-[7px]'
+                                onChange={(value: any) => {
+                                    setPriceRangeFilter({
+                                        ...priceRangeFilter,
+                                        from: value
+                                    })
+                                }}
+                            />
+                            <Typography> Đến </Typography>
+                            <InputNumber
+                                className='mx-[7px]'
+                                onChange={(value: any) => {
+                                    setPriceRangeFilter({
+                                        ...priceRangeFilter,
+                                        to: value
+                                    })
+                                }}
+                            />
+
+                        </div>
+
+                        <div className="flex mt-[10px]">
+                            <Button className='' onClick={onFilter}>
                                 <Typography >Lọc</Typography>
                             </Button>
                         </div>
@@ -596,6 +637,25 @@ const Recommendations: React.FC = () => {
                         console.log(value)
                         setSelectedRow(value);
                     }
+                }}
+                expandable={{
+                    expandedRowRender: (record) => {
+                        console.log(record)
+                        return (
+                            <div className='text-left'>
+                                <div>
+                                    <Typography style={{ margin: 0 }}>
+                                        Mô tả : {record?.description}
+                                    </Typography>
+                                </div>
+                                <div>
+                                    <Typography style={{ margin: 0 }}>
+                                        Ghi chú : {record?.note}
+                                    </Typography>
+                                </div>
+                            </div>
+                        )
+                    },
                 }}
             />
             <ConfirmDeleteModal
