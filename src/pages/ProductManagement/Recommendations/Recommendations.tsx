@@ -2,31 +2,6 @@ import type { SignalModel } from '@/interface/signal';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 
-import { BorderOuterOutlined, MenuOutlined, UploadOutlined } from '@ant-design/icons';
-import {
-  Avatar,
-  Button,
-  Col,
-  DatePicker,
-  Dropdown,
-  InputNumber,
-  notification,
-  Popconfirm,
-  Radio,
-  Row,
-  Select,
-  Slider,
-  Space,
-  Table,
-  Tag,
-  Typography,
-  Upload,
-} from 'antd';
-import axios from 'axios';
-import moment from 'moment';
-import qs from 'qs';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import {
   approveManySignal,
