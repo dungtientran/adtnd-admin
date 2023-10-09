@@ -1,4 +1,4 @@
-import { Modal } from 'antd'
+import { Modal, Typography } from 'antd'
 import React from 'react'
 
 interface ConfirmDeleteModalProps {
@@ -21,8 +21,9 @@ function ConfirmDeleteModal({
             onOk={handleOk}
             confirmLoading={confirmLoading ? true : false}
             onCancel={handleCancel}
+            okText={<Typography>Ok</Typography>}
         >
-            <p>Bạn chắc chắn xóa chứ</p>
+            <Typography>Bạn chắc chắn xóa chứ</Typography>
         </Modal>
     )
 }

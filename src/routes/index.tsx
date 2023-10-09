@@ -21,6 +21,7 @@ const ApproveAndCreateSignal = lazy(() => import('@/pages/Signal/ApproveAndCreat
 const ServicePack = lazy(() => import('@/pages/ProductManagement/ServicePack/ServicePack'));
 const Recommendations = lazy(() => import('@/pages/ProductManagement/Recommendations/Recommendations'));
 const GroupList = lazy(() => import('@/pages/Group/GroupTablePage'));
+const GroupDetail = lazy(() => import('@/pages/Group/GroupDetailPage'));
 
 const CustomerGroup = lazy(() => import('@/pages/CustomerManagement/CustomerGroup/CustomerGroup'));
 const ListCustomers = lazy(() => import('@/pages/CustomerManagement/ListCustomers/ListCustomers'));
@@ -68,6 +69,10 @@ const routeList: RouteObject[] = [
       {
         path: 'customer-management/customer-group',
         element: <WrapperRouteComponent element={<GroupList />} titleId="Nhóm khách hàng" />,
+      },
+      {
+        path: 'customer-management/customer-group/detail/:id',
+        element: <WrapperRouteComponent element={<GroupDetail />} titleId="Nhóm khách hàng" />,
       },
       {
         path: 'customer-management/list-customer',

@@ -1,5 +1,5 @@
 import { createGroup, getGroupList, updateGroup } from '@/api/group';
-import { Button, Dropdown, Table, TablePaginationConfig, Typography, notification } from 'antd'
+import { Button, Checkbox, Dropdown, Table, TablePaginationConfig, Typography, notification } from 'antd'
 import { PaginationConfig } from 'antd/es/pagination';
 import { FilterValue } from 'antd/es/table/interface';
 import React, { useEffect, useState } from 'react'
@@ -27,10 +27,10 @@ function GroupTablePage() {
     });
     const [selectedRow, setSelectedRow] = useState<any>([]);
 
-
     // live search state
     const [nameSearch, setNameSearch] = useState(null)
     const [filterQuery, setFilterQuery] = useState('');
+    const [subsciptionFilter, setSubsciptionFilter] = useState<any>([]);
 
     //modal state -------------------------->
     const [groupModal, setGroupModal] = useState<boolean>(false);
@@ -68,6 +68,20 @@ function GroupTablePage() {
         }
     };
 
+
+
+    const subscriptionFilterChange = (isAdd: boolean, value: string) => {
+        const new_data = [...subsciptionFilter]
+        if (isAdd) {
+            new_data.push(value);
+        } else {
+            const index = new_data.indexOf(value);
+            if (index !== -1) {
+                new_data.splice(index, 1);
+            }
+        }
+        setSubsciptionFilter(new_data.length > 0 ? new_data : [''])
+    }
     const actions = (record: any) => {
         const actionList = [];
         actionList.push({
@@ -85,7 +99,6 @@ function GroupTablePage() {
         });
         return actionList;
     };
-
     const actionsColumn = {
         title: 'ACTION',
         width: '20%',
@@ -104,7 +117,7 @@ function GroupTablePage() {
             dataIndex: 'name',
             dataType: 'text',
             width: '30%',
-            render: (text: string, record: any) => <Link to={`/user-group/${record.id}`} className='text-left'>{text}</Link>,
+            render: (text: string, record: any) => <Link to={`/customer-management/customer-group/detail/${record.id}`} className='text-left'>{text}</Link>,
             ...getColumnSearchProps({
                 setFilter: setNameSearch,
             }),
@@ -115,16 +128,26 @@ function GroupTablePage() {
             dataType: 'text',
             width: '20%',
             render: (text: string, record: any) => <Typography className='text-center'>{text}</Typography>,
-            filters: subscriptions?.map((item: any) =>{
-                return {
-                    value: item.id,
-                    text: item.name,
-                }
-            }),
-            onFilter: (value: any, record: any) =>{
-                console.log('value',value);
-                console.log('record',record);
-                return true
+            filterDropdown: () => {
+                return <div>
+                    <Checkbox.Group
+                        className='flex-col ps-[5px]'
+                    >
+                        {subscriptions?.map((item: any, index: number) => {
+                            return (
+                                <Checkbox
+                                    value={item.id}
+                                    className={`${index == 0 ? 'ml-[8px]' : ''}`}
+                                    onChange={(e) => {
+                                        subscriptionFilterChange(e.target.checked, item.id);
+                                    }}
+                                >
+                                    {item.name}
+                                </Checkbox>
+                            )
+                        })}
+                    </Checkbox.Group>
+                </div>
             }
         },
         {
@@ -144,14 +167,17 @@ function GroupTablePage() {
 
 
     useEffect(() => {
-        if (nameSearch != null) {
+        if (nameSearch != null || subsciptionFilter.length > 0) {
             let query = ''
             if (nameSearch) {
                 query += `&searchText=${nameSearch}`
             }
+            if (subsciptionFilter.length > 0) {
+                query += `&subscriptionFilter=${subsciptionFilter.join(',')}`
+            }
             setFilterQuery(query)
         }
-    }, [nameSearch])
+    }, [nameSearch, subsciptionFilter])
     useEffect(() => {
         getData()
     }, [JSON.stringify(tableParams), filterQuery])
@@ -206,7 +232,7 @@ function GroupTablePage() {
             <div style={{ textAlign: 'center' }}>
                 <Typography.Title level={2}>Danh sách nhóm khách hàng</Typography.Title>
             </div>
-            <div>
+            <div className='flex justify-end'>
                 <Button onClick={() => {
                     setUpdate(null)
                     setGroupModal(true)
