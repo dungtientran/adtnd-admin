@@ -1,6 +1,6 @@
 export const enUS_tagsViewDropMenu = {
   'tagsView.operation.closeCurrent': 'Close Current',
   'tagsView.operation.closeOther': 'Close Other',
-  'tagsView.operation.closeAll': 'Close All',
+  'tagsView.operation.closeAll': 'Đóng hết',
   'tagsView.operation.dashboard': 'Dashboard',
 };

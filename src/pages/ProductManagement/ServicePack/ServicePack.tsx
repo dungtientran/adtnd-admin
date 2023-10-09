@@ -1,4 +1,4 @@
-import { Button, Form, Input, InputNumber, Popconfirm, Select, Space, Table, Tag, Typography } from 'antd';
+import { Button, Form, Input, InputNumber, Popconfirm, Radio, Select, Space, Table, Tag, Typography } from 'antd';
 import React, { Fragment, useState } from 'react';
 
 interface Item {
@@ -60,6 +60,8 @@ const ServicePack: React.FC = () => {
   const [count, setCount] = useState(4);
   const [editingKey, setEditingKey] = useState<any>('');
   const [add1CaiThoi, setAdd1CaiThoi] = useState<boolean>(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('');
   const [dataSource, setDataSource] = useState<Item[]>([
     {
       id: '1',
@@ -83,6 +85,10 @@ const ServicePack: React.FC = () => {
       key: '3',
     },
   ]);
+
+  const handleToggle = () => {
+    setIsChecked(!isChecked);
+  };
 
   const handleAdd = () => {
     const newData: Item = {
@@ -225,17 +231,16 @@ const ServicePack: React.FC = () => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px' }}>
         <Space>
           <Typography.Text>Trạng thái: </Typography.Text>
-          <Select
-            defaultValue="all"
-            style={{ width: 150 }}
-            disabled={add1CaiThoi}
-            // onChange={handleChange}
-            options={[
-              { value: 'all', label: 'Tất cả' },
-              { value: 'active', label: 'Đang hoạt động' },
-              { value: 'block', label: 'Vô hiệu hóa' },
-            ]}
-          />
+          <Radio.Group
+            defaultValue={''}
+            // onChange={e => setStatusFilter(e.target.value)}
+            // onChange={e => console.log('radio____________', e.target.value)}
+            onChange={handleToggle}
+          >
+            <Radio.Button value="">Tất cả</Radio.Button>
+            <Radio.Button value="open">Đang hoạt động</Radio.Button>
+            <Radio.Button value="closed">Ngừng hoạt động</Radio.Button>
+          </Radio.Group>
         </Space>
         {/* <Button disabled={add1CaiThoi} onClick={handleAdd} type="primary">
           Thêm dịch vụ

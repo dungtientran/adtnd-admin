@@ -3,7 +3,7 @@ import type { FilterValue } from 'antd/es/table/interface';
 
 import './index.less';
 
-import { MenuOutlined, SearchOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
+import { MenuOutlined, SearchOutlined,StarOutlined,StarFilled } from '@ant-design/icons';
 import {
   Button,
   Col,
@@ -333,17 +333,17 @@ const Recommendations: React.FC = () => {
       width: '12%',
       sortDirections: ['ascend', 'descend', 'ascend'],
     },
-    // {
-    //   title: 'Ưu tiên',
-    //   dataIndex: 'priority',
-    //   width: '5%',
-    //   sortDirections: ['ascend', 'descend', 'ascend'],
-    //   render: (data) => (
-    //     <div>
-    //       <StarFilled style={data ? { color: '#eb8f19' } : {}} size={20} />
-    //     </div>
-    //   )
-    // },
+    {
+      title: 'Ưu tiên',
+      dataIndex: 'priority',
+      width: '5%',
+      sortDirections: ['ascend', 'descend', 'ascend'],
+      render: (data) => (
+        <div>
+            <StarFilled style={data ? {color: '#eb8f19'}: {}} size={20}/>
+        </div>
+      )
+    },
     {
       title: 'Tình trạng',
       dataIndex: 'is_closed',
@@ -570,7 +570,7 @@ const Recommendations: React.FC = () => {
             </div>
           </Col>
           <Col lg={6} xs={12} className="flex justify-end">
-            <Button onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
+            <Button  onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
           </Col>
         </Row>
         <div
@@ -670,22 +670,19 @@ const Recommendations: React.FC = () => {
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
         expandable={{
-          expandedRowRender: (record) => {
-            console.log(record)
+          expandedRowRender: record => {
+            console.log(record);
+
             return (
-              <div className='text-left'>
+              <div className="text-left">
                 <div>
-                  <Typography style={{ margin: 0 }}>
-                    Mô tả : {record?.description}
-                  </Typography>
+                  <Typography style={{ margin: 0 }}>Mô tả : {record?.description}</Typography>
                 </div>
                 <div>
-                  <Typography style={{ margin: 0 }}>
-                    Ghi chú : {record?.note}
-                  </Typography>
+                  <Typography style={{ margin: 0 }}>Ghi chú : {record?.note}</Typography>
                 </div>
               </div>
-            )
+            );
           },
         }}
         rowSelection={{

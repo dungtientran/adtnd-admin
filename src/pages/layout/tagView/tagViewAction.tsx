@@ -11,6 +11,7 @@ const TagsViewAction: FC = () => {
   const { activeTagId } = useSelector(state => state.tagsView);
   const dispatch = useDispatch();
 
+
   return (
     <Dropdown
       menu={{
@@ -18,17 +19,20 @@ const TagsViewAction: FC = () => {
           {
             key: '0',
             onClick: () => dispatch(removeTag(activeTagId)),
-            label: <LocaleFormatter id="tagsView.operation.closeCurrent" />,
+            // label: <LocaleFormatter id="tagsView.operation.closeCurrent" />,
+            label: 'Đóng tab hiện tại',
           },
           {
             key: '1',
             onClick: () => dispatch(removeOtherTag()),
-            label: <LocaleFormatter id="tagsView.operation.closeOther" />,
+            // label: <LocaleFormatter id="tagsView.operation.closeOther" />,
+            label: 'Đóng tab bên cạnh',
           },
           {
             key: '2',
             onClick: () => dispatch(removeAllTag()),
-            label: <LocaleFormatter id="tagsView.operation.closeAll" />,
+            // label: <LocaleFormatter id="tagsView.operation.closeAll" />,
+            label: 'Đóng hết',
           },
           {
             key: '3',
