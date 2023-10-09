@@ -12,7 +12,6 @@ import { useEffect, useRef, useState } from 'react';
 import { apiListStock, apiUpdateLogoStock } from '@/api/stock.api';
 import MyModal from '@/components/basic/modal';
 import MyUpLoad from '@/components/core/upload';
-import SearchSuggest from '@/pages/components/search-suggest';
 
 const { getStockList } = apiListStock;
 
