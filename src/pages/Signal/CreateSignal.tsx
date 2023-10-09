@@ -1,6 +1,6 @@
 import type { IlistStock } from '@/interface/stock/stock.interface';
 
-import '@/styles-tailwind/index.less';
+import './index.less';
 
 import {
   Alert,
