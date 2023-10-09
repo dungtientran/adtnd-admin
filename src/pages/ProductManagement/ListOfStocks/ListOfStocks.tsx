@@ -55,7 +55,7 @@ const Recommendations: React.FC = () => {
     size: params.pagination?.pageSize,
     page: params.pagination?.current,
     market: params.filters?.market,
-    // code: searchText || undefined,
+    code: searchText || undefined,
   });
   const updateLogo = useMutation({
     mutationFn: _ => apiUpdateLogoStock(recordSelected?.id, urlLogo),
@@ -234,6 +234,7 @@ const Recommendations: React.FC = () => {
       setSort(sorte);
     }
   };
+
   const handleUpdateLogo = async () => {
     updateLogo.mutate();
     setUrlLogo('');
@@ -252,7 +253,7 @@ const Recommendations: React.FC = () => {
     }
   }, [data]);
   // console.log(tableParams);
-  console.log('sort______________', sort);
+  // console.log('sort______________', sort);
 
   return (
     <div className="aaa">

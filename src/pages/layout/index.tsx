@@ -8,7 +8,6 @@ import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router';
 
-import { getMenuList } from '@/api/layout.api';
 import { setUserItem } from '@/stores/user.store';
 import { getFirstPathCode } from '@/utils/getFirstPathCode';
 import { getGlobalState } from '@/utils/getGloabal';
@@ -36,6 +35,7 @@ const LayoutPage: FC = () => {
   useEffect(() => {
     const code = getFirstPathCode(location.pathname);
 
+    console.log('code__________________', code);
     setOpenkey(code);
     setSelectedKey(location.pathname);
   }, [location.pathname]);
@@ -107,11 +107,12 @@ const LayoutPage: FC = () => {
   }, [newUser]);
   // console.log('menuListHandle', menuListHandle);
   // console.log('initMenuListAll', initMenuListAll(menuListHandle));
+  console.log('ocation.pathname', location.pathname);
 
   return (
     <Layout className="layout-page">
       <HeaderComponent collapsed={collapsed} toggle={toggle} />
-      <Layout>
+      <Layout >
         {!isMobile ? (
           <Sider
             className="layout-page-sider"
