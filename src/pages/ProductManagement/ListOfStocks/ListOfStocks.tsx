@@ -3,15 +3,18 @@ import type { InputRef } from 'antd';
 import type { ColumnsType, ColumnType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterConfirmProps, FilterValue } from 'antd/es/table/interface';
 
-import { SearchOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Avatar, Button, Input, message, Popover, Skeleton, Space, Spin, Table, Tooltip, Typography } from 'antd';
+import { Avatar, Button, Input, message, Select, Skeleton, Space, Spin, Table, Tooltip, Typography } from 'antd';
 import qs from 'qs';
 import { useEffect, useRef, useState } from 'react';
 
-import { apiUpdateLogoStock, getStockList } from '@/api/stock.api';
+import { apiListStock, apiUpdateLogoStock } from '@/api/stock.api';
 import MyModal from '@/components/basic/modal';
 import MyUpLoad from '@/components/core/upload';
+import SearchSuggest from '@/pages/components/search-suggest';
+
+const { getStockList } = apiListStock;
 
 interface DataType {
   id: string;
@@ -43,14 +46,15 @@ const Recommendations: React.FC = () => {
   });
   const [sort, setSort] = useState<string>('');
   const [searchText, setSearchText] = useState('');
-  const [searchedColumn, setSearchedColumn] = useState('');
+  // const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
   const [listStock, setListStock] = useState([]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListStock', tableParams, sort],
-    queryFn: () => getStockList(qs.stringify(getRandomuserParams(tableParams)), sort),
+    queryKey: ['getListStock', tableParams, sort, searchText],
+    queryFn: () => getStockList(qs.stringify(getRandomuserParams(tableParams)), sort, searchText),
   });
+
   const getRandomuserParams = (params: TableParams) => ({
     size: params.pagination?.pageSize,
     page: params.pagination?.current,
@@ -70,14 +74,23 @@ const Recommendations: React.FC = () => {
     },
   });
 
-  const handleSearch = (
-    selectedKeys: string[],
-    confirm: (param?: FilterConfirmProps) => void,
-    dataIndex: DataIndex,
-  ) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
+  const handleSearch = (selectedKeys: string, confirm: (param?: FilterConfirmProps) => void, dataIndex: DataIndex) => {
+    // confirm();
+    setSearchText(selectedKeys);
+
+    switch (dataIndex) {
+      case 'code':
+        setSearchText(`code=${selectedKeys}`);
+        break;
+      case 'name':
+        setSearchText(`name=${selectedKeys}`);
+        break;
+      case 'en_name':
+        setSearchText(`en_name=${selectedKeys}`);
+        break;
+      default:
+        break;
+    }
   };
 
   const handleReset = (clearFilters: () => void) => {
@@ -92,33 +105,15 @@ const Recommendations: React.FC = () => {
           ref={searchInput}
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+          onChange={e => {
+            setSelectedKeys(e.target.value ? [e.target.value] : []);
+            handleSearch(e.target.value, confirm, dataIndex);
+          }}
           style={{ marginBottom: 8, display: 'block' }}
         />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
+        <Space size="large">
           <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
             Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({ closeDropdown: false });
-              setSearchText((selectedKeys as string[])[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
           </Button>
           <Button
             type="link"
@@ -127,7 +122,7 @@ const Recommendations: React.FC = () => {
               close();
             }}
           >
-            close
+            Đóng
           </Button>
         </Space>
       </div>
@@ -145,6 +140,39 @@ const Recommendations: React.FC = () => {
     },
     render: text => text,
   });
+  // const getColumnSearchSuggestProps = (dataIndex: DataIndex): ColumnType<DataType> => ({
+  //   filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+  //     <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
+  //       <SearchSuggest />
+  //       <Space size="large">
+  //         <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+  //           Reset
+  //         </Button>
+  //         <Button
+  //           type="link"
+  //           size="small"
+  //           onClick={() => {
+  //             close();
+  //           }}
+  //         >
+  //           Đóng
+  //         </Button>
+  //       </Space>
+  //     </div>
+  //   ),
+  //   filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,
+  //   onFilter: (value, record) =>
+  //     record[dataIndex]
+  //       .toString()
+  //       .toLowerCase()
+  //       .includes((value as string).toLowerCase()),
+  //   onFilterDropdownOpenChange: visible => {
+  //     if (visible) {
+  //       setTimeout(() => searchInput.current?.select(), 100);
+  //     }
+  //   },
+  //   render: text => text,
+  // });
 
   const columns: ColumnsType<DataType> = [
     {
@@ -170,12 +198,14 @@ const Recommendations: React.FC = () => {
       sorter: true,
       dataIndex: 'name',
       width: '20%',
+      ...getColumnSearchProps('name'),
     },
     {
       title: 'Tên công ty (tiếng Anh)',
       sorter: true,
       dataIndex: 'en_name',
       width: '20%',
+      ...getColumnSearchProps('en_name'),
     },
     {
       title: 'Logo',
@@ -204,7 +234,7 @@ const Recommendations: React.FC = () => {
                   setModalOpen(true), setRecordSelected(record);
                 }}
               >
-                +
+                <PlusOutlined />
               </Button>
             </Tooltip>
           )}
@@ -234,6 +264,7 @@ const Recommendations: React.FC = () => {
       setSort(sorte);
     }
   };
+
   const handleUpdateLogo = async () => {
     updateLogo.mutate();
     setUrlLogo('');
@@ -245,31 +276,33 @@ const Recommendations: React.FC = () => {
         ...tableParams,
         pagination: {
           ...tableParams.pagination,
-          total: data?.count,
+          total: data?.data?.count,
         },
       });
-      setListStock(data?.rows);
+      setListStock(data?.data?.rows);
     }
   }, [data]);
-  // console.log(tableParams);
-  console.log('sort______________', sort);
 
+  // console.log(tableParams);
+  // console.log('sort______________', sort);
+  // console.log('search_____', searchText);
+  // console.log('listStock_', listStock);
+  // console.log('searchedColumn__________', searchedColumn);
   return (
     <div className="aaa">
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Danh mục cổ phiếu</Typography.Title>
       </div>
       <div style={{ marginBottom: '10px' }}>
-        {data?.count && !searchText ? (
+        {data?.data?.count && (
           <Typography.Text>
-            Có tất cả <Typography.Text strong>{data?.count || 0}</Typography.Text> kết quả
-          </Typography.Text>
-        ) : (
-          ''
-        )}
-        {searchText && (
-          <Typography.Text>
-            Kết quả tìm kiếm cho <Typography.Text strong>{searchText}</Typography.Text>
+            Có tất cả <Typography.Text strong>{data?.data?.count?.toLocaleString()}</Typography.Text> kết quả
+            {searchText && (
+              <Typography.Text>
+                {' '}
+                tìm kiếm cho <Typography.Text strong>{searchText}</Typography.Text>
+              </Typography.Text>
+            )}
           </Typography.Text>
         )}
       </div>

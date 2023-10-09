@@ -5,27 +5,15 @@ import type { FilterConfirmProps, FilterValue } from 'antd/es/table/interface';
 
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  Avatar,
-  Button,
-  Drawer,
-  Input,
-  message,
-  Popover,
-  Skeleton,
-  Space,
-  Spin,
-  Table,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Avatar, Button, Drawer, Input, InputNumber, message, Radio, Space, Spin, Table, Typography } from 'antd';
 import qs from 'qs';
 import { useEffect, useRef, useState } from 'react';
 
-import { apiUpdateLogoStock, getStockList } from '@/api/stock.api';
+import { apiUpdateLogoStock } from '@/api/stock.api';
 import { listCustomerApi } from '@/api/ttd_list_customer';
-import MyModal from '@/components/basic/modal';
-import MyUpLoad from '@/components/core/upload';
+import CreateUser from '@/pages/components/form-add-user';
+
+const { getListCustomer, createCustomer } = listCustomerApi;
 
 const { Text, Title, Link } = Typography;
 
@@ -74,7 +62,6 @@ type DataIndex = keyof DataType;
 const ListCustomers: React.FC = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [urlLogo, setUrlLogo] = useState<string>('');
   const [recordSelected, setRecordSelected] = useState<any>({});
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
@@ -87,8 +74,7 @@ const ListCustomers: React.FC = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
   const [listCustomer, setListCustomer] = useState([]);
-
-  const { getListCustomer } = listCustomerApi;
+  const [newCustomer, setNewCustomer] = useState();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['getListCustomer', tableParams],
@@ -100,15 +86,17 @@ const ListCustomers: React.FC = () => {
     market: params.filters?.market,
     // code: searchText || undefined,
   });
-  const updateLogo = useMutation({
-    mutationFn: _ => apiUpdateLogoStock(recordSelected?.id, urlLogo),
+  const createNewCustomer = useMutation({
+    mutationFn: _ => createCustomer(newCustomer),
     onSuccess: _ => {
-      queryClient.invalidateQueries(['getListStock']);
-      message.success('Update logo thành công');
-      setUrlLogo('');
+      queryClient.invalidateQueries(['getListCustomer']);
+      message.success('Tạo người dùng mới thành công');
+      setNewCustomer(undefined);
+      setOpen(false);
     },
     onError: _ => {
-      message.error('Update logo thất bại');
+      message.error('Tạo người dùng mới thất bại');
+      console.log(createNewCustomer.error);
     },
   });
 
@@ -142,20 +130,14 @@ const ListCustomers: React.FC = () => {
           ref={searchInput}
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+          onChange={e => {
+            setSelectedKeys(e.target.value ? [e.target.value] : []);
+            handleSearch(selectedKeys as string[], confirm, dataIndex);
+          }}
           style={{ marginBottom: 8, display: 'block' }}
         />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
+        {/* <SearchLive dataIndex={dataIndex} /> */}
+        <Space size="large">
           <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
             Reset
           </Button>
@@ -225,20 +207,22 @@ const ListCustomers: React.FC = () => {
       sorter: true,
       dataIndex: 'phone_number',
       // width: '20%',
+      ...getColumnSearchProps('phone_number'),
     },
     {
       title: 'Email',
       dataIndex: 'email',
       width: '8%',
+      ...getColumnSearchProps('email'),
     },
     {
       title: 'Gói dịch vụ',
       dataIndex: 'subscription_product',
       width: '8%',
       filters: [
-        { text: 'Hose', value: 'HOSE' },
-        { text: 'Hnx', value: 'HNX' },
-        { text: 'Upcom', value: 'UPCOM' },
+        { text: 'Trial', value: 'Trial' },
+        { text: 'Vip', value: 'Vip' },
+        { text: 'Premium', value: 'Premium' },
       ],
       render: (_, record) => <Text>{record.subscription.subscription_product.name}</Text>,
     },
@@ -262,22 +246,18 @@ const ListCustomers: React.FC = () => {
           {record.careby ? (
             <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
               <Text strong>{record.careby.sale.fullname}</Text>
-              <Tooltip title="Click để thay đổi" placement="right">
-                <Link>Thay đổi</Link>
-              </Tooltip>
+              <Link>Thay đổi</Link>
             </div>
           ) : (
-            <Tooltip title="Click để thêm nhân viên" placement="right">
-              <Button
-                type="primary"
-                size="small"
-                onClick={() => {
-                  setRecordSelected(record);
-                }}
-              >
-                Assign
-              </Button>
-            </Tooltip>
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => {
+                setRecordSelected(record);
+              }}
+            >
+              Assign
+            </Button>
           )}
         </Space>
       ),
@@ -306,11 +286,6 @@ const ListCustomers: React.FC = () => {
     }
   };
 
-  const handleUpdateLogo = async () => {
-    updateLogo.mutate();
-    setUrlLogo('');
-  };
-
   useEffect(() => {
     if (data) {
       setTableParams({
@@ -326,6 +301,12 @@ const ListCustomers: React.FC = () => {
 
   // console.log(tableParams);
   // console.log('sort______________', sort);
+  useEffect(() => {
+    if (newCustomer) {
+      createNewCustomer.mutate();
+    }
+  }, [newCustomer]);
+
   return (
     <div className="aaa">
       <div style={{ textAlign: 'center' }}>
@@ -350,6 +331,44 @@ const ListCustomers: React.FC = () => {
           </Typography.Text>
         )}
       </div>
+      <Space>
+        <Text>Lọc theo NAV: Từ</Text>
+        <InputNumber
+          className="mx-[7px]"
+          // onChange={(value: any) => {
+          //   setPriceRangeFilter({
+          //     ...priceRangeFilter,
+          //     from: value,
+          //   });
+          // }}
+        />
+        <Text> Đến </Text>
+        <InputNumber
+          // onChange={(value: any) => {
+          //   setPriceRangeFilter({
+          //     ...priceRangeFilter,
+          //     to: value,
+          //   });
+          // }}
+        />
+      </Space>
+      <div>
+        <Space style={{ margin: '20px 0', display: 'flex', alignItems: 'center' }}>
+          <Text>Thời gian còn lại:</Text>
+          <Radio.Group
+            defaultValue={''}
+            // onChange={e => setStatusFilter(e.target.value)}
+            // onChange={e => console.log('radio____________', e.target.value)}
+            // onChange={handleToggle}
+          >
+            {/* <Radio.Button value="">Tất cả</Radio.Button> */}
+            <Radio.Button value="open">Ít hơn</Radio.Button>
+            <Radio.Button value="closed">Nhỏ hơn</Radio.Button>
+            <InputNumber />
+            <Text>Ngày</Text>
+          </Radio.Group>
+        </Space>
+      </div>
       <Table
         columns={columns}
         rowSelection={{
@@ -362,21 +381,9 @@ const ListCustomers: React.FC = () => {
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
       />
-      <Drawer
-        title="Tạo mới người dùng"
-        width={400}
-        onClose={onClose}
-        open={open}
-        bodyStyle={{ paddingBottom: 80 }}
-        extra={
-          <Space>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={onClose} type="primary">
-              Submit
-            </Button>
-          </Space>
-        }
-      ></Drawer>
+      <Drawer title="Tạo mới người dùng" width={500} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
+        <CreateUser setCustomerForm={setNewCustomer} />
+      </Drawer>
     </div>
   );
 };

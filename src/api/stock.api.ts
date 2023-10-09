@@ -2,17 +2,22 @@ import axios from 'axios';
 
 import { axiosInstance } from './request';
 
-export const getStockList = async (params: string, sort: string) => {
-  try {
-    const res = await axios.get(
-      `https://yys2edw6d6.execute-api.ap-southeast-1.amazonaws.com/dev/stock/get-list-stock?${sort}&${params}`,
-    );
+export const apiListStock = {
+  getStockList(params: string, sort: string, searchText:string): Promise<any> {
+    return axiosInstance.get(`/stock/get-list-stock?${sort}&${params}&${searchText}`);
+  },
 
-    return res.data?.data;
-  } catch (error) {
-    console.log(error);
-  }
 };
+
+// export const getStockList = async (params: string, sort: string) => {
+//   try {
+//     const res = await axiosInstance.get(`/stock/get-list-stock?${sort}&${params}`);
+
+//     return res.data;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 export const searchStock = (text: string | null): Promise<any> =>
   axiosInstance
