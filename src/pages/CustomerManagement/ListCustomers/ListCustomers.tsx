@@ -313,8 +313,8 @@ const ListCustomers: React.FC = () => {
         <Typography.Title level={2}>Danh sách khách hàng</Typography.Title>
       </div>
       <div style={{ display: 'flex', textAlign: 'center', justifyContent: 'center' }}>
-        <Button type="primary" onClick={showDrawer} icon={<PlusOutlined />}>
-          Tạo mới người dùng
+        <Button onClick={showDrawer} className='hover:bg-[#FF6E00] hover:text-white'>
+          <Typography><PlusOutlined /> Tạo mới người dùng</Typography>
         </Button>
       </div>
       <div style={{ marginBottom: '10px' }}>

@@ -1,27 +1,9 @@
 import type { SignalModel } from '@/interface/signal';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
-
-import { BorderOuterOutlined, MenuOutlined, StarFilled, UploadOutlined } from '@ant-design/icons';
-import {
-  Avatar,
-  Button,
-  Col,
-  DatePicker,
-  Dropdown,
-  InputNumber,
-  notification,
-  Popconfirm,
-  Radio,
-  Row,
-  Select,
-  Slider,
-  Space,
-  Table,
-  Tag,
-  Typography,
-  Upload,
-} from 'antd';
+import { MenuOutlined } from '@ant-design/icons'
+import { BorderOuterOutlined, UploadOutlined ,StarFilled} from '@ant-design/icons';
+import { Avatar, Button, Col, DatePicker, Dropdown, InputNumber, Popconfirm, Radio, Row, Select, Slider, Space, Table, Tag, Typography, Upload, notification, } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
 import qs from 'qs';
@@ -123,12 +105,12 @@ const Recommendations: React.FC = () => {
     to: null,
   });
 
-  //enum true: dài hạn,false: ngắn hạn
-  const [typeFilter, setTypeFilter] = useState(null);
-  //enum ['closed', 'new', 'open']
-  const [statusFilter, setStatusFilter] = useState(null);
-  const [codeFilter, setCodeFilter] = useState<string>('');
-  const [dateSort, setDateSort] = useState('DESC');
+    //enum true: dài hạn,false: ngắn hạn
+    const [typeFilter, setTypeFilter] = useState(null);
+    //enum ['closed', 'new', 'open']
+    const [statusFilter, setStatusFilter] = useState(null);
+    const [codeFilter, setCodeFilter] = useState<string>('');
+    const [dateSort, setDateSort] = useState('DESC')
 
   const [filterQuery, setFilterQuery] = useState('');
 
@@ -170,69 +152,47 @@ const Recommendations: React.FC = () => {
     setFilterQuery(query);
   };
 
-  const actions = (record: any) => {
-    const actionList = [];
-
-    if (record.is_approved && !record.is_closed) {
-      actionList.push({
-        key: '5',
-        label: (
-          <Typography
-            onClick={() => {
-              console.log(record);
-              setCloseSignalModal({
-                open: true,
-                data: {
-                  ...closeSignalModal.data,
-                  id: record.id,
-                },
-              });
-            }}
-          >
-            {'Đóng'}
-          </Typography>
-        ),
-        danger: true,
-      });
-    }
-
-    actionList.push({
-      key: '4',
-      label: (
-        <Typography
-          onClick={() => {
-            console.log(record.id);
-            setNotificationModalOpen(true);
-            setNotificationForm({
-              ...notificationForm,
-              signal_id: record.id,
+    const actions = (record: any) => {
+        const actionList = [];
+        if (record.is_approved && !record.is_closed) {
+            actionList.push({
+                key: '5',
+                label: <Typography onClick={() => {
+                    console.log(record)
+                    setCloseSignalModal({
+                        open: true, data: {
+                            ...closeSignalModal.data,
+                            id: record.id
+                        }
+                    })
+                }}>{'Đóng'}</Typography>,
+                danger: true,
             });
-          }}
-        >
-          {'Gửi thông báo'}
-        </Typography>
-      ),
-    });
-    actionList.push({
-      key: '54',
-      label: (
-        <Typography
-          onClick={() => {
-            console.log(record.id);
-            setNotificationModalOpen(true);
-            setNotificationForm({
-              ...notificationForm,
-              signal_id: record.id,
-            });
-          }}
-        >
-          {'Cập nhật ghi chú'}
-        </Typography>
-      ),
-    });
-
-    return actionList;
-  };
+        }
+        actionList.push({
+            key: '4',
+            label: <Typography onClick={() => {
+                console.log(record.id)
+                setNotificationModalOpen(true)
+                setNotificationForm({
+                    ...notificationForm,
+                    signal_id: record.id
+                })
+            }}>{'Gửi thông báo'}</Typography>,
+        });
+        actionList.push({
+            key: '54',
+            label: <Typography onClick={() => {
+                console.log(record.id)
+                setNotificationModalOpen(true)
+                setNotificationForm({
+                    ...notificationForm,
+                    signal_id: record.id
+                })
+            }}>{'Cập nhật ghi chú'}</Typography>,
+        });
+        return actionList;
+    };
 
   const actionsColumn = {
     title: 'ACTION',
@@ -373,12 +333,12 @@ const Recommendations: React.FC = () => {
         console.log(error);
       });
 
-    setLoading(false);
-  };
+        setLoading(false);
+    };
 
-  useEffect(() => {
-    getSignal();
-  }, [JSON.stringify(tableParams), filterQuery, codeFilter, dateSort]);
+    useEffect(() => {
+        getSignal();
+    }, [JSON.stringify(tableParams), filterQuery, codeFilter, dateSort]);
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     console.log(pagination);
@@ -515,131 +475,124 @@ const Recommendations: React.FC = () => {
           });
         });
     }
-  };
+    return (
+        <div className="aaa">
+            <div style={{ textAlign: 'center' }}>
+                <Typography.Title level={2}>Khuyến nghị</Typography.Title>
+            </div>
+            <div>
+                <div className='mb-[20px]'>
+                    <Row>
+                        <Col xs={12} lg={6}>
+                            <div className='flex items-center'>
+                                <Typography className='me-[10px]'>Loại</Typography>
+                                <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
+                                    <Radio.Button value={''}>Tất cả</Radio.Button>
+                                    <Radio.Button value={1}>Ngắn hạn</Radio.Button>
+                                    <Radio.Button value={2}>Dài hạn</Radio.Button>
+                                </Radio.Group>
+                            </div>
+                        </Col>
+                        <Col xs={12} lg={12}>
+                            <div className='flex items-center'>
+                                <Typography className='me-[10px]' >Tình trạng</Typography>
+                                <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
+                                    <Radio.Button value={''}>Tất cả</Radio.Button>
+                                    <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
+                                    <Radio.Button value={'open'}>Đã duyệt</Radio.Button>
+                                    <Radio.Button value={'closed'}>Đã đóng</Radio.Button>
+                                </Radio.Group>
+                            </div>
+                        </Col>
+                    </Row>
+                    <div className='flex items-center mt-[15px] gap-5'>
+                        <div className='flex items-center mt-[15px]'>
+                            <Typography>Giá mua : Từ</Typography>
+                            <InputNumber className='mx-[7px]'
+                                onChange={(value: any) => {
+                                    setPriceRangeFilter({
+                                        ...priceRangeFilter,
+                                        from: value
+                                    })
+                                }}
+                            />
+                            <Typography> Đến </Typography>
+                            <InputNumber
+                                className='mx-[7px]'
+                                onChange={(value: any) => {
+                                    setPriceRangeFilter({
+                                        ...priceRangeFilter,
+                                        to: value
+                                    })
+                                }}
+                            />
 
-  return (
-    <div className="aaa">
-      <div style={{ textAlign: 'center' }}>
-        <Typography.Title level={2}>Khuyến nghị</Typography.Title>
-      </div>
-      <div>
-        <div className="mb-[20px]">
-          <Row>
-            <Col xs={12} lg={6}>
-              <div className="flex items-center">
-                <Typography className="me-[10px]">Loại</Typography>
-                <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
-                  <Radio.Button value={''}>Tất cả</Radio.Button>
-                  <Radio.Button value={1}>Ngắn hạn</Radio.Button>
-                  <Radio.Button value={2}>Dài hạn</Radio.Button>
-                </Radio.Group>
-              </div>
-            </Col>
-            <Col xs={12} lg={12}>
-              <div className="flex items-center">
-                <Typography className="me-[10px]">Tình trạng</Typography>
-                <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
-                  <Radio.Button value={''}>Tất cả</Radio.Button>
-                  <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
-                  <Radio.Button value={'open'}>Đã duyệt</Radio.Button>
-                  <Radio.Button value={'closed'}>Đã đóng</Radio.Button>
-                </Radio.Group>
-              </div>
-            </Col>
-          </Row>
-          <div className="flex items-center mt-[15px] gap-5">
-            <div className="flex items-center mt-[15px]">
-              <Typography>Giá mua : Từ</Typography>
-              <InputNumber
-                className="mx-[7px]"
-                onChange={(value: any) => {
-                  setPriceRangeFilter({
-                    ...priceRangeFilter,
-                    from: value,
-                  });
-                }}
-              />
-              <Typography> Đến </Typography>
-              <InputNumber
-                className="mx-[7px]"
-                onChange={(value: any) => {
-                  setPriceRangeFilter({
-                    ...priceRangeFilter,
-                    to: value,
-                  });
-                }}
-              />
-            </div>
-            <div className="flex items-center mt-[15px]">
-              <Typography className="me-[10px]">Ngày tạo</Typography>
-              <RangePicker
-                style={{
-                  width: '300px',
-                  marginBottom: 3,
-                }}
-                onChange={(value: any) => {
-                  console.log(value);
-
-                  if (value?.length > 0) {
-                    setCreateDateFilter({
-                      start_date: moment(value[0].$d).format('MM/DD/YYYY'),
-                      end_date: moment(value[1].$d).format('MM/DD/YYYY'),
-                    });
-                  } else {
-                    setCreateDateFilter({
-                      start_date: '',
-                      end_date: '',
-                    });
-                  }
-                }}
-              />
-            </div>
-            <div className="flex">
-              <Button className="mt-[10px]" onClick={onFilter}>
-                <Typography>Lọc</Typography>
-              </Button>
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-between mb-4">
-          <div>
-            {selectedRow.length > 0 && (
-              <>
-                <Button
-                  type="primary"
-                  danger
-                  onClick={() => {
-                    setConfirmDeleteModalOpen(true);
-                  }}
-                >
-                  Xóa
-                </Button>
-                <Button
-                  onClick={() => {
-                    setNotificationModalOpen(true);
-                    setNotificationForm({
-                      ...notificationForm,
-                      signal_ids: selectedRow,
-                    });
-                  }}
-                >
-                  <Typography>Gửi thông báo</Typography>
-                </Button>
-                <Button
-                  onClick={() => {
-                    setSendSignalModal({
-                      open: true,
-                      data: {
-                        signal_ids: selectedRow,
-                      },
-                    });
-                  }}
-                >
-                  <Typography>Gửi Khuyến nghị</Typography>
-                </Button>
-              </>
-            )}
-            {/* <Button
+                        </div>
+                        <div className='flex items-center mt-[15px]'>
+                            <Typography className='me-[10px]'>Ngày tạo</Typography>
+                            <RangePicker
+                                style={{
+                                    width: '300px',
+                                    marginBottom: 3,
+                                }}
+                                onChange={(value: any) => {
+                                    console.log(value);
+                                    if (value?.length > 0) {
+                                        setCreateDateFilter({
+                                            start_date: moment(value[0].$d).format('MM/DD/YYYY'),
+                                            end_date: moment(value[1].$d).format('MM/DD/YYYY'),
+                                        });
+                                    } else {
+                                        setCreateDateFilter({
+                                            start_date: '',
+                                            end_date: '',
+                                        });
+                                    }
+                                }}
+                            />
+                        </div>
+                        <div className="flex">
+                            <Button className='mt-[10px]' onClick={onFilter}>
+                                <Typography >Lọc</Typography>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+                <div className='flex justify-between mb-4'>
+                    <div>
+                        {selectedRow.length > 0 && (
+                            <>
+                                <Button type="primary" danger onClick={() => {
+                                    setConfirmDeleteModalOpen(true)
+                                }}>
+                                    Xóa
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        setNotificationModalOpen(true)
+                                        setNotificationForm({
+                                            ...notificationForm,
+                                            signal_ids: selectedRow
+                                        })
+                                    }}
+                                >
+                                    <Typography>Gửi thông báo</Typography>
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        setSendSignalModal({
+                                            open: true,
+                                            data: {
+                                                signal_ids: selectedRow
+                                            }
+                                        })
+                                    }}
+                                >
+                                    <Typography>Gửi Khuyến nghị</Typography>
+                                </Button>
+                            </>
+                        )}
+                        {/* <Button
                             type="primary"
                             onClick={() => {
                                 setNotificationModalOpen(true)
@@ -651,65 +604,64 @@ const Recommendations: React.FC = () => {
                         >
                             Thêm khuyến nghị mới
                         </Button> */}
-          </div>
+                    </div>
+                </div>
+            </div>
+            <Table
+                columns={columns}
+                rowKey={record => record.id}
+                dataSource={data}
+                pagination={tableParams.pagination}
+                loading={loading}
+                onChange={handleTableChange}
+                scroll={{ x: 'max-content', y: '100%' }}
+                rowSelection={{
+                    type: 'checkbox',
+                    onChange: (value: any) => {
+                        console.log(value)
+                        setSelectedRow(value);
+                    }
+                }}
+            />
+            <ConfirmDeleteModal
+                open={confirmDeleteModalOpen}
+                handleOk={handleDeleteMany}
+                handleCancel={() => setConfirmDeleteModalOpen(false)}
+            />
+            <SendSignalNotificationModal
+                open={notificationModalOpen}
+                handleOk={() => {
+                    handlesendSinalNotification()
+                }}
+                form={notificationForm}
+                setForm={setNotificationForm}
+                handleCancel={() => setNotificationModalOpen(false)}
+            />
+            <ClosedSignalModal
+                open={closeSignalModal.open}
+                handleOk={() => {
+                    handleClosedSignal()
+                }}
+                data={closeSignalModal}
+                setData={setCloseSignalModal}
+                handleCancel={() => setCloseSignalModal({
+                    ...closeSignalModal,
+                    open: false
+                })}
+            />
+            <SendSignalModal
+                open={sendSignalModal.open}
+                handleOk={handleSendManySignal}
+                handleCancel={() => {
+                    setSendSignalModal({
+                        ...sendSignalModal,
+                        open: false
+                    })
+                }}
+            />
         </div>
-      </div>
-      <Table
-        columns={columns}
-        rowKey={record => record.id}
-        dataSource={data}
-        pagination={tableParams.pagination}
-        loading={loading}
-        onChange={handleTableChange}
-        scroll={{ x: 'max-content', y: '100%' }}
-        rowSelection={{
-          type: 'checkbox',
-          onChange: (value: any) => {
-            console.log(value);
-            setSelectedRow(value);
-          },
-        }}
-      />
-      <ConfirmDeleteModal
-        open={confirmDeleteModalOpen}
-        handleOk={handleDeleteMany}
-        handleCancel={() => setConfirmDeleteModalOpen(false)}
-      />
-      <SendSignalNotificationModal
-        open={notificationModalOpen}
-        handleOk={() => {
-          handlesendSinalNotification();
-        }}
-        form={notificationForm}
-        setForm={setNotificationForm}
-        handleCancel={() => setNotificationModalOpen(false)}
-      />
-      <ClosedSignalModal
-        open={closeSignalModal.open}
-        handleOk={() => {
-          handleClosedSignal();
-        }}
-        data={closeSignalModal}
-        setData={setCloseSignalModal}
-        handleCancel={() =>
-          setCloseSignalModal({
-            ...closeSignalModal,
-            open: false,
-          })
-        }
-      />
-      <SendSignalModal
-        open={sendSignalModal.open}
-        handleOk={handleSendManySignal}
-        handleCancel={() => {
-          setSendSignalModal({
-            ...sendSignalModal,
-            open: false,
-          });
-        }}
-      />
-    </div>
-  );
+
+    );
 };
 
 export default Recommendations;
