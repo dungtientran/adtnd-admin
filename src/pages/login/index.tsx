@@ -14,8 +14,8 @@ import logo from '../../assets/header/logo.png';
 import { loginAsync } from '../../stores/user.action';
 
 const initialValues: LoginParams = {
-  email: 'guest',
-  password: 'guest',
+  email: '',
+  password: '',
   // remember: true
 };
 
@@ -42,10 +42,11 @@ const LoginForm: FC = () => {
       });
     }
   };
+
   return (
     <div className="login-page">
       <Form<LoginParams> onFinish={onFinished} className="login-page-form" initialValues={initialValues}>
-        <Space size='large' style={{ marginBottom: '20px', width: '100%' }}>
+        <Space size="large" style={{ marginBottom: '20px', width: '100%' }}>
           <Avatar src={logo} size="large" />
           <Typography.Title level={2} style={{ margin: '0' }}>
             FILA ADMIN
@@ -63,6 +64,7 @@ const LoginForm: FC = () => {
           ]}
         >
           <Input
+          type='email'
             placeholder={formatMessage({
               id: 'gloabal.tips.username',
             })}
@@ -79,18 +81,17 @@ const LoginForm: FC = () => {
             },
           ]}
         >
-          <Input
-            type="password"
+          <Input.Password
             placeholder={formatMessage({
               id: 'gloabal.tips.password',
             })}
           />
         </Form.Item>
-        <Form.Item name="remember" valuePropName="checked">
+        {/* <Form.Item name="remember" valuePropName="checked">
           <Checkbox>
             <LocaleFormatter id="gloabal.tips.rememberUser" />
           </Checkbox>
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item>
           <Button htmlType="submit" type="primary" className="login-page-form_button">
             <LocaleFormatter id="gloabal.tips.login" />
