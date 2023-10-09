@@ -34,5 +34,5 @@ export const updateGroup = async (group_id: string, data: UpdateGroup)  =>{
     return axiosInstance.put(`admin/group/update/${group_id}`, data).then((data) => data).catch(error => {throw error});
 }
 
-export const deleteGroup = (group_id: string) =>
+export const deleteGroup = (group_id?: any) =>
     axiosInstance.delete(`/admin/group/remove_group/${group_id}`).then((data) => data).catch(error => {throw error});
