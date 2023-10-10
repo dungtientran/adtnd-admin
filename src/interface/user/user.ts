@@ -61,3 +61,10 @@ export interface UserState {
 
   newUser: boolean;
 }
+export interface User {
+  id: string;
+  fullname: string;
+  avatar_url: string | null;
+  email: string;
+  phone_number: string;
+}

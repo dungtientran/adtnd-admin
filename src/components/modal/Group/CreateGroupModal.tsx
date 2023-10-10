@@ -23,12 +23,14 @@ function CreateGroupModal({
     const subscriptions = useSelector(state => state.subsciptions.subscriptions)
     const [filter, setFilter] = useState(0)
     const [loading, setLoading] = useState(false)
-    const [form, setForm] = useState({
+    const [form, setForm] = useState<any>({
         name: '',
         description: '',
         sale_id: '',
         subscription_product_id: '',
-        sale: {} as any
+        sale: {} as any,
+        nav_low: null,
+        nav_high: null,
     })
     const [customerOptions, setCustomerOptions] = useState<any[]>([]);
     const handleSearchCustomer = async (text: string) => {
@@ -59,22 +61,28 @@ function CreateGroupModal({
                 description: data.description,
                 sale_id: data.sale_id,
                 subscription_product_id: data.subscription_product_id,
-                sale:data?.sale || {}
+                sale:data?.sale || {},
+                nav_low: parseInt(data.nav_low),
+                nav_high: parseInt(data.nav_high)
             })
             if(data.subscription_product_id){
                 setFilter(1)
+            }
+            if(data.nav_high && data.nav_high){
+                setFilter(2)
             }
         }
     },[data])
     return (
         <Modal
-            title="Tạo nhóm mới"
+            title={data ? 'Cập nhật nhóm ': "Tạo nhóm mới"}
             open={open}
             onOk={() => {
                 handleSubmit()
             }}
             confirmLoading={loading}
             onCancel={handleCancel}
+            okText={<Typography>Ok</Typography>}
         >
             <div>
                 <div>
@@ -114,7 +122,6 @@ function CreateGroupModal({
                 </div>
                 {filter == 1 && (
                     <>
-
                         <div className='mt-[10px]'>
                             <Typography> Chọn gói dịch vụ</Typography>
                             <Select
@@ -143,6 +150,21 @@ function CreateGroupModal({
                             />
                         </div>
                     </>
+                )}
+                {filter == 2 && (
+                    <div>
+                        <div>
+                            <Typography> Từ</Typography>
+                            <InputNumber className='w-[200px]' value={form.nav_low} onChange={(value) => {setForm({...form,nav_low:value})}}/>
+                        </div>
+                        <div>
+                            <Typography> Đến</Typography>
+                            <InputNumber 
+                                className='w-[200px]' 
+                                value={form.nav_high} status={form.nav_low > form.nav_high ? 'error': ''} 
+                                onChange={(value) => {setForm({...form,nav_high:value})}}/>
+                        </div>
+                    </div>
                 )}
             </div>
         </Modal>
