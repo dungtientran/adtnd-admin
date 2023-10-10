@@ -1,68 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { InputRef } from 'antd';
-import type { ColumnsType, ColumnType, TablePaginationConfig } from 'antd/es/table';
-import type { FilterConfirmProps, FilterValue } from 'antd/es/table/interface';
+import type { TableParams } from './index.interface';
 
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Avatar, Button, Drawer, Input, InputNumber, message, Radio, Space, Spin, Table, Typography } from 'antd';
+import { Button, Drawer, message, Table } from 'antd';
 import qs from 'qs';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { apiUpdateLogoStock } from '@/api/stock.api';
 import { listCustomerApi } from '@/api/ttd_list_customer';
+import BoxFilterListCustomer from '@/pages/components/box-filter/BoxFilterListCustomer';
 import CreateUser from '@/pages/components/form-add-user';
+import HeadTitle from '@/pages/components/head-title/HeadTitle';
+import Result from '@/pages/components/result/Result';
 
-const { getListCustomer, createCustomer } = listCustomerApi;
+import { Column } from './columns';
 
-const { Text, Title, Link } = Typography;
-
-interface DataType {
-  id: string;
-  avatar_url: string;
-  fullname: string;
-  email: string;
-  phone_number: string;
-  careby: {
-    id: string;
-    sale_id: string;
-    sale: {
-      id: string;
-      fullname: string;
-      email: string;
-      phone_number: string;
-      created_date: string;
-      updated_date: string;
-      avatar_url: string;
-      active: boolean;
-      role_id: 'string';
-    };
-  } | null;
-  subscription: {
-    start_date: string;
-    end_date: string;
-    id: string;
-    subscription_plan: string | null;
-    subscription_product: {
-      name: string;
-      id: string;
-    };
-  };
-  remaining_subscription_day: number;
-}
-
-interface TableParams {
-  pagination?: TablePaginationConfig;
-  sortField?: string;
-  sortOrder?: string;
-  filters?: Record<string, FilterValue>;
-}
-type DataIndex = keyof DataType;
+const { getListCustomer, createCustomer, addSaleCustomer, removeSaleCustomer } = listCustomerApi;
 
 const ListCustomers: React.FC = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [recordSelected, setRecordSelected] = useState<any>({});
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
@@ -72,19 +29,19 @@ const ListCustomers: React.FC = () => {
   const [sort, setSort] = useState<string>('');
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
-  const searchInput = useRef<InputRef>(null);
   const [listCustomer, setListCustomer] = useState([]);
-  const [newCustomer, setNewCustomer] = useState();
-
+  const [newCustomer, setNewCustomer] = useState<any>();
+  const [sale, setSale] = useState<any>();
+  const [customerSelect, setCustomerSelect] = useState<any>();
+  const [customer_id, setCustomer_id] = useState<string>('');
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListCustomer', tableParams],
-    queryFn: () => getListCustomer(qs.stringify(getRandomuserParams(tableParams))),
+    queryKey: ['getListCustomer', tableParams, searchText],
+    queryFn: () => getListCustomer(qs.stringify(getRandomuserParams(tableParams)), searchText),
   });
   const getRandomuserParams = (params: TableParams) => ({
     size: params.pagination?.pageSize,
     page: params.pagination?.current,
-    market: params.filters?.market,
-    // code: searchText || undefined,
+    subscriptions: params.filters?.subscription_product?.join(','),
   });
   const createNewCustomer = useMutation({
     mutationFn: _ => createCustomer(newCustomer),
@@ -99,170 +56,41 @@ const ListCustomers: React.FC = () => {
       console.log(createNewCustomer.error);
     },
   });
+  const addSaleUser = useMutation({
+    mutationFn: _ => addSaleCustomer(sale),
+    onSuccess: _ => {
+      queryClient.invalidateQueries(['getListCustomer']);
+      message.success('Thêm nhân viên hỗ trợ thành công');
+      setSale(undefined);
+      setOpen(false);
+    },
+    onError: data => {
+      message.error('Thêm nhân viên hỗ trợ thất bại');
+      console.log('eror________', data);
+    },
+  });
+  const remoteSaleUser = useMutation({
+    mutationFn: _ => removeSaleCustomer(customer_id),
+    onSuccess: _ => {
+      queryClient.invalidateQueries(['getListCustomer']);
+      message.success('Xóa nhân viên hỗ trợ thành công');
+      setSale(undefined);
+      setOpen(false);
+    },
+    onError: data => {
+      message.error('Xóa nhân viên hỗ trợ thất bại');
+      console.log('eror________', data);
+    },
+  });
 
   const showDrawer = () => {
+    setCustomerSelect(undefined);
     setOpen(true);
   };
 
   const onClose = () => {
     setOpen(false);
   };
-
-  const handleSearch = (
-    selectedKeys: string[],
-    confirm: (param?: FilterConfirmProps) => void,
-    dataIndex: DataIndex,
-  ) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters: () => void) => {
-    clearFilters();
-    setSearchText('');
-  };
-
-  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<DataType> => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-      <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={e => {
-            setSelectedKeys(e.target.value ? [e.target.value] : []);
-            handleSearch(selectedKeys as string[], confirm, dataIndex);
-          }}
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        {/* <SearchLive dataIndex={dataIndex} /> */}
-        <Space size="large">
-          <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,
-    // onFilter: (value, record) =>
-    //   record[dataIndex]
-    //     .toString()
-    //     .toLowerCase()
-    //     .includes((value as string).toLowerCase()),
-    onFilterDropdownOpenChange: visible => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: text => text,
-  });
-  const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-    },
-  };
-  const columns: ColumnsType<DataType> = [
-    {
-      title: 'Mã',
-      dataIndex: 'id',
-      // sorter: true,
-      width: '14%',
-      ...getColumnSearchProps('id'),
-    },
-    {
-      title: 'Ảnh đại diện',
-      dataIndex: 'avatar_url',
-      width: '8%',
-      render: (_, record) => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Avatar
-            src={record.avatar_url}
-            size="large"
-            onClick={() => {
-              // setModalOpen(true), setRecordSelected(record);
-            }}
-          />
-        </div>
-      ),
-    },
-    {
-      title: 'Tên khách hàng',
-      sorter: true,
-      dataIndex: 'fullname',
-      // width: '20%',
-      ...getColumnSearchProps('fullname'),
-    },
-    {
-      title: 'Số điện thoại',
-      sorter: true,
-      dataIndex: 'phone_number',
-      // width: '20%',
-      ...getColumnSearchProps('phone_number'),
-    },
-    {
-      title: 'Email',
-      dataIndex: 'email',
-      width: '8%',
-      ...getColumnSearchProps('email'),
-    },
-    {
-      title: 'Gói dịch vụ',
-      dataIndex: 'subscription_product',
-      width: '8%',
-      filters: [
-        { text: 'Trial', value: 'Trial' },
-        { text: 'Vip', value: 'Vip' },
-        { text: 'Premium', value: 'Premium' },
-      ],
-      render: (_, record) => <Text>{record.subscription.subscription_product.name}</Text>,
-    },
-    {
-      title: 'NAV',
-      dataIndex: '',
-      width: '8%',
-      render: (_, record) => <Text>0</Text>,
-    },
-    {
-      title: 'Số ngày còn lại',
-      dataIndex: 'remaining_subscription_day',
-      width: '8%',
-    },
-    {
-      title: 'Nhân viên chăm, sóc',
-      dataIndex: 'careby',
-      width: '15%',
-      render: (_, record) => (
-        <Space size="middle">
-          {record.careby ? (
-            <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-              <Text strong>{record.careby.sale.fullname}</Text>
-              <Link>Thay đổi</Link>
-            </div>
-          ) : (
-            <Button
-              type="primary"
-              size="small"
-              onClick={() => {
-                setRecordSelected(record);
-              }}
-            >
-              Assign
-            </Button>
-          )}
-        </Space>
-      ),
-    },
-  ];
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     setTableParams({
@@ -275,15 +103,15 @@ const ListCustomers: React.FC = () => {
       // setData([]);
     }
 
-    if (sorter.order === 'ascend') {
-      const sorte = `${sorter.field}_order=ASC`;
+    // if (sorter.order === 'ascend') {
+    //   const sorte = `${sorter.field}_order=ASC`;
 
-      setSort(sorte);
-    } else if (sorter.order === 'descend') {
-      const sorte = `${sorter.field}_order=DESC`;
+    //   setSort(sorte);
+    // } else if (sorter.order === 'descend') {
+    //   const sorte = `${sorter.field}_order=DESC`;
 
-      setSort(sorte);
-    }
+    //   setSort(sorte);
+    // }
   };
 
   useEffect(() => {
@@ -299,90 +127,50 @@ const ListCustomers: React.FC = () => {
     }
   }, [data]);
 
-  // console.log(tableParams);
-  // console.log('sort______________', sort);
   useEffect(() => {
     if (newCustomer) {
       createNewCustomer.mutate();
     }
   }, [newCustomer]);
+  useEffect(() => {
+    if (sale) {
+      addSaleUser.mutate();
+    }
+  }, [sale]);
+  useEffect(() => {
+    if (customer_id) {
+      remoteSaleUser.mutate();
+    }
+  }, [customer_id]);
+  console.log('customer_id_______', customer_id);
 
   return (
     <div className="aaa">
-      <div style={{ textAlign: 'center' }}>
-        <Typography.Title level={2}>Danh sách khách hàng</Typography.Title>
-      </div>
+      <HeadTitle title="Danh sách khách hàng" />
       <div style={{ display: 'flex', textAlign: 'center', justifyContent: 'center' }}>
-        <Button onClick={showDrawer} className='hover:bg-[#FF6E00] hover:text-white'>
-          <Typography><PlusOutlined /> Tạo mới người dùng</Typography>
+        <Button onClick={showDrawer} type="primary">
+          <PlusOutlined /> Tạo mới người dùng
         </Button>
       </div>
-      <div style={{ marginBottom: '10px' }}>
-        {data?.count && !searchText ? (
-          <Typography.Text>
-            Có tất cả <Typography.Text strong>{data?.count || 0}</Typography.Text> kết quả
-          </Typography.Text>
-        ) : (
-          ''
-        )}
-        {searchText && (
-          <Typography.Text>
-            Kết quả tìm kiếm cho <Typography.Text strong>{searchText}</Typography.Text>
-          </Typography.Text>
-        )}
-      </div>
-      <Space>
-        <Text>Lọc theo NAV: Từ</Text>
-        <InputNumber
-          className="mx-[7px]"
-          // onChange={(value: any) => {
-          //   setPriceRangeFilter({
-          //     ...priceRangeFilter,
-          //     from: value,
-          //   });
-          // }}
-        />
-        <Text> Đến </Text>
-        <InputNumber
-          // onChange={(value: any) => {
-          //   setPriceRangeFilter({
-          //     ...priceRangeFilter,
-          //     to: value,
-          //   });
-          // }}
-        />
-      </Space>
-      <div>
-        <Space style={{ margin: '20px 0', display: 'flex', alignItems: 'center' }}>
-          <Text>Thời gian còn lại:</Text>
-          <Radio.Group
-            defaultValue={''}
-            // onChange={e => setStatusFilter(e.target.value)}
-            // onChange={e => console.log('radio____________', e.target.value)}
-            // onChange={handleToggle}
-          >
-            {/* <Radio.Button value="">Tất cả</Radio.Button> */}
-            <Radio.Button value="open">Ít hơn</Radio.Button>
-            <Radio.Button value="closed">Nhỏ hơn</Radio.Button>
-            <InputNumber />
-            <Text>Ngày</Text>
-          </Radio.Group>
-        </Space>
-      </div>
+      <BoxFilterListCustomer />
+      <Result total={data?.data?.count} searchText={searchedColumn} />
       <Table
-        columns={columns}
-        rowSelection={{
-          ...rowSelection,
-        }}
+        columns={Column(setSearchText, setSearchedColumn, setOpen, setCustomerSelect, setCustomer_id)}
         rowKey={record => record.id}
         dataSource={listCustomer}
         pagination={tableParams.pagination}
-        loading={isLoading}
+        // loading={isLoading}
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
       />
-      <Drawer title="Tạo mới người dùng" width={500} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
-        <CreateUser setCustomerForm={setNewCustomer} />
+      <Drawer
+        title={!customerSelect ? 'Tạo mới người dùng' : 'Thêm nhân viên hỗ trợ'}
+        width={360}
+        onClose={onClose}
+        open={open}
+        bodyStyle={{ paddingBottom: 80 }}
+      >
+        <CreateUser setCustomerForm={setNewCustomer} initForm={customerSelect} setSaleCustomer={setSale} />
       </Drawer>
     </div>
   );

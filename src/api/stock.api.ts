@@ -3,21 +3,10 @@ import axios from 'axios';
 import { axiosInstance } from './request';
 
 export const apiListStock = {
-  getStockList(params: string, sort: string, searchText:string): Promise<any> {
+  getStockList(params: string, sort: string, searchText: string): Promise<any> {
     return axiosInstance.get(`/stock/get-list-stock?${sort}&${params}&${searchText}`);
   },
-
 };
-
-// export const getStockList = async (params: string, sort: string) => {
-//   try {
-//     const res = await axiosInstance.get(`/stock/get-list-stock?${sort}&${params}`);
-
-//     return res.data;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
 
 export const searchStock = (text: string | null): Promise<any> =>
   axiosInstance

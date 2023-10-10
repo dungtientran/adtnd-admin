@@ -3,6 +3,8 @@ import type { InputRef } from 'antd';
 import type { ColumnsType, ColumnType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterConfirmProps, FilterValue } from 'antd/es/table/interface';
 
+import './index.less';
+
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Avatar, Button, Input, message, Select, Skeleton, Space, Spin, Table, Tooltip, Typography } from 'antd';
@@ -12,6 +14,8 @@ import { useEffect, useRef, useState } from 'react';
 import { apiListStock, apiUpdateLogoStock } from '@/api/stock.api';
 import MyModal from '@/components/basic/modal';
 import MyUpLoad from '@/components/core/upload';
+import HeadTitle from '@/pages/components/head-title/HeadTitle';
+import Result from '@/pages/components/result/Result';
 
 const { getStockList } = apiListStock;
 
@@ -45,7 +49,7 @@ const Recommendations: React.FC = () => {
   });
   const [sort, setSort] = useState<string>('');
   const [searchText, setSearchText] = useState('');
-  // const [searchedColumn, setSearchedColumn] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
   const [listStock, setListStock] = useState([]);
 
@@ -75,7 +79,8 @@ const Recommendations: React.FC = () => {
 
   const handleSearch = (selectedKeys: string, confirm: (param?: FilterConfirmProps) => void, dataIndex: DataIndex) => {
     // confirm();
-    setSearchText(selectedKeys);
+    // setSearchText(selectedKeys);
+    setSearchedColumn(selectedKeys);
 
     switch (dataIndex) {
       case 'code':
@@ -97,18 +102,18 @@ const Recommendations: React.FC = () => {
     setSearchText('');
   };
 
-  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<DataType> => ({
+  const getColumnSearchProps = (dataIndex: DataIndex, title: string): ColumnType<DataType> => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
       <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Tìm kiếm ${title}`}
           value={selectedKeys[0]}
           onChange={e => {
             setSelectedKeys(e.target.value ? [e.target.value] : []);
             handleSearch(e.target.value, confirm, dataIndex);
           }}
-          style={{ marginBottom: 8, display: 'block' }}
+          style={{ marginBottom: 8, display: 'block', width: '240px' }}
         />
         <Space size="large">
           <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
@@ -190,21 +195,21 @@ const Recommendations: React.FC = () => {
       dataIndex: 'code',
       sorter: true,
       width: '20%',
-      ...getColumnSearchProps('code'),
+      ...getColumnSearchProps('code', 'mã cổ phiếu'),
     },
     {
       title: 'Tên công ty (tiếng Việt)',
       sorter: true,
       dataIndex: 'name',
       width: '20%',
-      ...getColumnSearchProps('name'),
+      ...getColumnSearchProps('name', 'tên công ty (tiếng Việt)'),
     },
     {
       title: 'Tên công ty (tiếng Anh)',
       sorter: true,
       dataIndex: 'en_name',
       width: '20%',
-      ...getColumnSearchProps('en_name'),
+      ...getColumnSearchProps('en_name', 'Tên công ty (tiếng Anh)'),
     },
     {
       title: 'Logo',
@@ -289,31 +294,19 @@ const Recommendations: React.FC = () => {
   // console.log('searchedColumn__________', searchedColumn);
   return (
     <div className="aaa">
-      <div style={{ textAlign: 'center' }}>
-        <Typography.Title level={2}>Danh mục cổ phiếu</Typography.Title>
+      <HeadTitle title="Danh mục cổ phiếu" />
+      <Result searchText={searchedColumn} total={data?.data?.count} />
+      <div className="table_stock">
+        <Table
+          columns={columns}
+          rowKey={record => record.id}
+          dataSource={listStock}
+          pagination={tableParams.pagination}
+          // loading={isLoading}
+          onChange={handleTableChange}
+          scroll={{ x: 'max-content', y: '100%' }}
+        />
       </div>
-      <div style={{ marginBottom: '10px' }}>
-        {data?.data?.count && (
-          <Typography.Text>
-            Có tất cả <Typography.Text strong>{data?.data?.count?.toLocaleString()}</Typography.Text> kết quả
-            {searchText && (
-              <Typography.Text>
-                {' '}
-                tìm kiếm cho <Typography.Text strong>{searchText}</Typography.Text>
-              </Typography.Text>
-            )}
-          </Typography.Text>
-        )}
-      </div>
-      <Table
-        columns={columns}
-        rowKey={record => record.id}
-        dataSource={listStock}
-        pagination={tableParams.pagination}
-        loading={isLoading}
-        onChange={handleTableChange}
-        scroll={{ x: 'max-content', y: '100%' }}
-      />
       <MyModal
         title="Cập nhật logo"
         centered
