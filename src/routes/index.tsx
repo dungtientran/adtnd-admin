@@ -27,6 +27,10 @@ const CustomerGroup = lazy(() => import('@/pages/CustomerManagement/CustomerGrou
 const ListCustomers = lazy(() => import('@/pages/CustomerManagement/ListCustomers/ListCustomers'));
 const ListRequests = lazy(() => import('@/pages/CustomerManagement/ListRequests/ListRequests'));
 
+const InterestRate = lazy(() => import('@/pages/InterestRate/InterestRate/InterestRate'));
+const SetInterestRate = lazy(() => import('@/pages/InterestRate/SetInterestRate/SetInterestRate'));
+
+
 const routeList: RouteObject[] = [
   {
     path: '/login',
@@ -81,6 +85,15 @@ const routeList: RouteObject[] = [
       {
         path: 'customer-management/list-request',
         element: <WrapperRouteComponent element={<ListRequests />} titleId="Danh sách yêu cầu" />,
+      },
+      // 
+      {
+        path: '/interest-rate/set-interest-rate',
+        element: <WrapperRouteComponent element={<SetInterestRate />} titleId="Thiết lập hoa hồng" />,
+      },
+      {
+        path: '/interest-rate/interest-rate',
+        element: <WrapperRouteComponent element={<InterestRate />} titleId="Thiết lập hoa hồng" />,
       },
       {
         path: '*',

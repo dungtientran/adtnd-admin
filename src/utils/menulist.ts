@@ -70,6 +70,33 @@ export const menuListHandle: MenuList = [
     ],
   },
   {
+    code: 'hoahong',
+    icon: 'documentation',
+    label: {
+      en_US: 'Quản lý hoa hồng',
+      zh_CN: '文档',
+    },
+    path: '/documentation',
+    children: [
+      {
+        code: 'service-pack',
+        label: {
+          en_US: 'Thiết lập hoa hồng',
+          zh_CN: '基本',
+        },
+        path: '/interest-rate/set-interest-rate',
+      },
+      {
+        code: 'recommendations',
+        label: {
+          en_US: 'Nhập hoa hồng',
+          zh_CN: '基本',
+        },
+        path: '/interest-rate/interest-rate',
+      },
+    ],
+  },
+  {
     code: 'Khuyennghi',
     icon: 'documentation',
     label: {
