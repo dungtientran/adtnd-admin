@@ -1,6 +1,6 @@
 import { Dispatch } from "@reduxjs/toolkit"
 import { axiosInstance } from "@/api/request"
-import { setGroupMember, setgroup } from "./groups.store"
+import { newMember, setGroupMember, setgroup } from "./groups.store"
 import { TablePaginationConfig, notification } from "antd"
 
 
@@ -49,6 +49,12 @@ export const updateGroupDetail = (id: any, form?: any) => {
             notification.success({ message: 'Cập nhật thất bại !' })
             return false
         }
+    }
+}
+
+export const addmember = (record: any) => {
+    return async (dispatch: Dispatch) => {
+        dispatch(newMember(record))
     }
 }
 export const deleteGroupMember = (form: DeleteMemberForm) => {
