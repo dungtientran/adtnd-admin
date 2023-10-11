@@ -32,8 +32,8 @@ const TransactionHistory = () => {
   const [idDelete, setIdDelete] = useState<string>('');
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListTransactionHistory', tableParams, queryFilter],
-    queryFn: () => getListTransactionHistory(qs.stringify(getRandomuserParams(tableParams)), queryFilter),
+    queryKey: ['getListTransactionHistory', tableParams, queryFilter, searchText],
+    queryFn: () => getListTransactionHistory(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText)),
   });
 
   const getRandomuserParams = (params: TableParams) => ({

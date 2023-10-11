@@ -18,10 +18,22 @@ export const ColumnSearchProps = (
   const searchInput = useRef<InputRef>(null);
 
   const handleSearch = (selectedKeys: string, confirm: (param?: FilterConfirmProps) => void, dataIndex: DataIndex) => {
-    setSearchQuery((prev: any) => ({
-      ...prev,
-      [dataIndex]: selectedKeys,
-    }));
+    if (dataIndex === 'fullname') {
+      setSearchQuery((prev: any) => ({
+        ...prev,
+        name: selectedKeys,
+      }));
+    } else if (dataIndex === 'SaleLevel') {
+      setSearchQuery((prev: any) => ({
+        ...prev,
+        level: selectedKeys,
+      }));
+    } else {
+      setSearchQuery((prev: any) => ({
+        ...prev,
+        [dataIndex]: selectedKeys,
+      }));
+    }
   };
 
   const handleReset = (clearFilters: () => void) => {
@@ -78,8 +90,7 @@ export const Column = (
       title: 'Mã nhân viên',
       dataIndex: 'id',
       width: '14%',
-      ...ColumnSearchProps('id', 'mã nhân viên', setSearchQuery),
-
+      // ...ColumnSearchProps('id', 'mã nhân viên', setSearchQuery),
     },
     {
       title: 'Họ tên',
@@ -106,8 +117,13 @@ export const Column = (
       dataIndex: 'role',
       width: '14%',
       ...ColumnSearchProps('role', 'chức vụ', setSearchQuery),
-      render: (_, record) => <Text>{record?.role?.name}</Text>
-
+      render: (_, record) => <Text>{record?.role?.name}</Text>,
+      // filters: [
+      //   { text: 'Quản Trị', value: 'admin' },
+      //   { text: 'Sale', value: 'sale' },
+      //   { text: 'analytics', value: 'Nhân viên Phân tích' },
+      //   { text: 'business', value: 'Nhân viên nghiệp vụ' },
+      // ],
     },
     {
       title: 'Level',
@@ -115,7 +131,6 @@ export const Column = (
       width: '8%',
       ...ColumnSearchProps('SaleLevel', 'level', setSearchQuery),
       render: (_, record) => <Text>{record?.SaleLevel?.level}</Text>,
-
     },
     {
       title: 'Action',

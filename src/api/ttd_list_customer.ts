@@ -7,6 +7,9 @@ export const listCustomerApi = {
   createCustomer(newUser: any): Promise<any> {
     return axiosInstance.post('/admin/customer/create', newUser);
   },
+  getListUser(searchText: string): Promise<any> {
+    return axiosInstance.get(`/admin/customer/search?searchText=${searchText}`);
+  },
   getSaleList(): Promise<any> {
     return axiosInstance.get('/admin/sale/list');
   },

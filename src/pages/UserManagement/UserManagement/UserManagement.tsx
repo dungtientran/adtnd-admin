@@ -34,8 +34,8 @@ const UserManagement: React.FC = () => {
   const [customerSelect, setCustomerSelect] = useState<any>();
   const [idDelete, setIdDelete] = useState<string>('');
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListUser', tableParams, queryFilter, searchText],
-    queryFn: () => getListUser(qs.stringify(getRandomuserParams(tableParams)), queryFilter),
+    queryKey: ['getListUser', queryFilter, searchText, tableParams],
+    queryFn: () => getListUser(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText)),
   });
   const update = useMutation({
     mutationFn: _ => updateCustomerSupport(customerSelect?.id as string, updateDataSp),
@@ -65,7 +65,7 @@ const UserManagement: React.FC = () => {
   const getRandomuserParams = (params: TableParams) => ({
     size: params.pagination?.pageSize,
     page: params.pagination?.current,
-    subscriptions: params.filters?.subscription_product?.join(','),
+    role: params.filters?.role?.join(','),
   });
 
   const onClose = () => {
@@ -119,6 +119,7 @@ const UserManagement: React.FC = () => {
     }
   }, [idDelete]);
   // console.log('data_______________________', data);
+  console.log('tableParams_______________________', tableParams);
 
   return (
     <div className="aaa">

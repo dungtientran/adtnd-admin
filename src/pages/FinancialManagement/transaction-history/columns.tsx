@@ -18,10 +18,17 @@ export const ColumnSearchProps = (
   const searchInput = useRef<InputRef>(null);
 
   const handleSearch = (selectedKeys: string, confirm: (param?: FilterConfirmProps) => void, dataIndex: DataIndex) => {
-    setSearchQuery((prev: any) => ({
-      ...prev,
-      [dataIndex]: selectedKeys,
-    }));
+    // if (dataIndex === 'id') {
+    //   setSearchQuery((prev: any) => ({
+    //     ...prev,
+    //     transaction_id: selectedKeys,
+    //   }));
+    // } else {
+      setSearchQuery((prev: any) => ({
+        ...prev,
+        [dataIndex]: selectedKeys,
+      }));
+    // }
   };
 
   const handleReset = (clearFilters: () => void) => {
@@ -41,20 +48,6 @@ export const ColumnSearchProps = (
           }}
           style={{ marginBottom: 8, display: 'block' }}
         />
-        <Space size="large">
-          <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
       </div>
     ),
     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,
@@ -131,11 +124,11 @@ export const Column = (
       // ),
 
       // width: '8%',
-      filters: [
-        { text: 'Trial', value: 'trial' },
-        { text: 'Vip', value: 'vip' },
-        { text: 'Premium', value: 'premium' },
-      ],
+      // filters: [
+      //   { text: 'Trial', value: 'trial' },
+      //   { text: 'Vip', value: 'vip' },
+      //   { text: 'Premium', value: 'premium' },
+      // ],
     },
     {
       title: 'Số tiền',

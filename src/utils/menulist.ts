@@ -116,7 +116,7 @@ export const menuListHandle: MenuList = [
       {
         code: 'recommendations',
         label: {
-          en_US: 'Nhập hoa hồng',
+          en_US: 'Quản lý hợp đồng Vip',
           zh_CN: '基本',
         },
         path: '/interest-rate/interest-rate',

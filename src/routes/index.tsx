@@ -97,7 +97,7 @@ const routeList: RouteObject[] = [
       },
       {
         path: '/interest-rate/interest-rate',
-        element: <WrapperRouteComponent element={<InterestRate />} titleId="Thiết lập hoa hồng" />,
+        element: <WrapperRouteComponent element={<InterestRate />} titleId="Quản lý hợp đồng Vip" />,
       },
       // 
       {
