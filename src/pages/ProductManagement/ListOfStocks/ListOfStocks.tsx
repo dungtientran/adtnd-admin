@@ -295,7 +295,7 @@ const Recommendations: React.FC = () => {
   return (
     <div className="aaa">
       <HeadTitle title="Danh mục cổ phiếu" />
-      <Result searchText={searchedColumn} total={data?.data?.count} />
+      <Result total={data?.data?.count} />
       <div className="table_stock">
         <Table
           columns={columns}

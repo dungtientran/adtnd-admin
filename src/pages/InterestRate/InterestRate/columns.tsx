@@ -6,7 +6,7 @@ import type { ColumnsType, FilterConfirmProps } from 'antd/es/table/interface';
 import { DeleteOutlined, EditOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Popconfirm, Space, Tag, Typography } from 'antd';
 import moment from 'moment';
-import { useRef } from 'react';
+import { Fragment, useRef } from 'react';
 
 const { Text } = Typography;
 
@@ -83,10 +83,10 @@ export const Column = (
     {
       title: 'Mã KH',
       dataIndex: 'customer',
-      // width: '8%',
+      width: '6%',
       render: (_, record) => <Text>{record?.customer?.customer_code}</Text>,
 
-      ...ColumnSearchProps('customer', 'tên khách hàng', setSearchQuery),
+      // ...ColumnSearchProps('customer', 'tên khách hàng', setSearchQuery),
     },
     {
       title: 'Tên KH',
@@ -117,7 +117,7 @@ export const Column = (
     {
       title: 'Mã nhân viên QL',
       dataIndex: 'sale',
-      // width: '14%',
+      width: '8%',
       render: (_, record) => <Text>{record?.sale?.staff_code}</Text>,
 
       // ...ColumnSearchProps('address', 'địa chỉ', setSearchQuery),
@@ -133,40 +133,43 @@ export const Column = (
     {
       title: 'Ngày bắt đầu',
       dataIndex: 'start_date',
-      // width: '8%',
+      width: '8%',
       render: (_, record) => <Text>{moment(record?.start_date).format('DD/MM/YYYY')}</Text>,
     },
     {
       title: 'Ngày kết thúc',
       dataIndex: 'end_date',
-      // width: '8%',
+      width: '8%',
       render: (_, record) => <Text>{moment(record?.end_date).format('DD/MM/YYYY')}</Text>,
     },
     {
       title: 'Giá trị ban đầu',
       dataIndex: 'initial_value',
-      // width: '8%',
+      width: '8%',
       render: (_, record) => <Text>{record?.initial_value?.toLocaleString()}</Text>,
     },
     {
       title: 'Lợi nhuận % (dự kiến)',
       dataIndex: 'expected_end_value',
-      // width: '8%',
+      width: '8%',
       render: (_, record) => <Text>{record?.expected_end_value?.toLocaleString()}</Text>,
     },
     {
       title: 'Hoa hồng tạm tính',
       dataIndex: 'commission',
-      // width: '15%',
+      width: '8%',
       render: (_, record) => <Text>{record?.commission?.toLocaleString()}</Text>,
     },
     {
       title: 'Tình trạng',
       dataIndex: 'status',
-      // width: '8%',
+      width: '8%',
+      render: (_, record) => (
+        <Fragment>{record?.status === 'active' ? <Text>Đang có hiệu lực</Text> : <Text>Đã thanh lý</Text>}</Fragment>
+      ),
     },
     {
-      title: 'Action',
+      title: '',
       dataIndex: 'action',
       // width: '8%',
       render: (_, record) => (
@@ -181,7 +184,7 @@ export const Column = (
           >
             <EditOutlined />
           </Button>
-          <Button
+          {/* <Button
             type="primary"
             size="small"
             // onClick={() => {
@@ -189,7 +192,7 @@ export const Column = (
             // }}
           >
             <EyeOutlined />
-          </Button>
+          </Button> */}
         </Space>
       ),
     },

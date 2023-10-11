@@ -18,17 +18,17 @@ export const ColumnSearchProps = (
   const searchInput = useRef<InputRef>(null);
 
   const handleSearch = (selectedKeys: string, confirm: (param?: FilterConfirmProps) => void, dataIndex: DataIndex) => {
-    // if (dataIndex === 'id') {
-    //   setSearchQuery((prev: any) => ({
-    //     ...prev,
-    //     transaction_id: selectedKeys,
-    //   }));
-    // } else {
+    if (dataIndex === 'id') {
+      setSearchQuery((prev: any) => ({
+        ...prev,
+        transaction_id: selectedKeys,
+      }));
+    } else {
       setSearchQuery((prev: any) => ({
         ...prev,
         [dataIndex]: selectedKeys,
       }));
-    // }
+    }
   };
 
   const handleReset = (clearFilters: () => void) => {
@@ -111,7 +111,7 @@ export const Column = (
     {
       title: 'Mô tả',
       dataIndex: 'description',
-      // width: '8%',
+      width: '112px',
     },
     {
       title: 'Gói dịch vụ',

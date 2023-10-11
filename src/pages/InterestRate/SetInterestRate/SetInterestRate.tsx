@@ -106,13 +106,8 @@ const SetInterestRate = () => {
   const [interestSelect, setInterestSelect] = useState<any>();
   const [open, setOpen] = useState(false);
   const [newInteres, setNewInterst] = useState<any>();
-
-  const [tableParams, setTableParams] = useState<TableParams>({
-    pagination: {
-      current: 1,
-      pageSize: 10,
-    },
-  });
+  const [total, setTotal] = useState<number>(0);
+  const [page, setPage] = useState<number>(1)
 
   const isEditing = (record: Item) => record.id === editingKey;
 
@@ -122,9 +117,9 @@ const SetInterestRate = () => {
     queryFn: () => getListSubscription(),
   });
   const getdataProfit = useQuery({
-    queryKey: ['getListProfit'],
+    queryKey: ['getListProfit', page],
     // queryFn: () => getListSubscription(qs.stringify(getRandomuserParams(tableParams)), sort, searchText),
-    queryFn: () => getListProfit(),
+    queryFn: () => getListProfit(page),
   });
   const update = useMutation({
     mutationFn: _ => updateInterest(interestSelect?.id, interestSelect),
@@ -211,7 +206,7 @@ const SetInterestRate = () => {
       editable: true,
     },
     {
-      title: 'Action',
+      title: '',
       dataIndex: 'action',
       width: '10%',
       render: (_: any, record: Item) => {
@@ -273,7 +268,7 @@ const SetInterestRate = () => {
       editable: true,
     },
     {
-      title: 'Action',
+      title: '',
       dataIndex: 'action',
       width: '10%',
       render: (_: any, record: Item) => {
@@ -315,6 +310,7 @@ const SetInterestRate = () => {
       }),
     };
   });
+
   const mergedColumnsProfit = columnsProfit.map(col => {
     if (!col.editable) {
       return col;
@@ -332,26 +328,27 @@ const SetInterestRate = () => {
     };
   });
 
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    setTableParams({
-      pagination,
-      filters,
-      ...sorter,
-    });
-    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      // setData([]);
-    }
+  // const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+  //   setTableParams({
+  //     pagination,
+  //     filters,
+  //     ...sorter,
+  //   });
 
-    // if (sorter.order === 'ascend') {
-    //   const sorte = `${sorter.field}_order=ASC`;
+  //   if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+  //     // setData([]);
+  //   }
 
-    //   setSort(sorte);
-    // } else if (sorter.order === 'descend') {
-    //   const sorte = `${sorter.field}_order=DESC`;
+  //   // if (sorter.order === 'ascend') {
+  //   //   const sorte = `${sorter.field}_order=ASC`;
 
-    //   setSort(sorte);
-    // }
-  };
+  //   //   setSort(sorte);
+  //   // } else if (sorter.order === 'descend') {
+  //   //   const sorte = `${sorter.field}_order=DESC`;
+
+  //   //   setSort(sorte);
+  //   // }
+  // };
 
   useEffect(() => {
     if (getdataSubscription.data) {
@@ -360,12 +357,12 @@ const SetInterestRate = () => {
 
     if (getdataProfit.data) {
       // setTableParams({
-      //   ...tableParams,
       //   pagination: {
       //     ...tableParams.pagination,
       //     total: getdataProfit.data?.data?.count,
       //   },
       // });
+      setTotal(getdataProfit.data?.data?.count)
       setListProfit(getdataProfit.data?.data?.rows);
     }
   }, [getdataSubscription, getdataProfit]);
@@ -386,11 +383,7 @@ const SetInterestRate = () => {
     <div>
       <Form form={form} component={false}>
         <HeadTitle title="Biểu hoa hồng kinh doanh theo gói dịch vụ" />
-        <div style={{ display: 'flex', textAlign: 'center', justifyContent: 'center' }}>
-          <Button onClick={() => setOpen(true)} type="primary">
-            <PlusOutlined /> Tạo mới
-          </Button>
-        </div>
+
         <Result total={getdataSubscription.data?.data?.count} />
         <Table
           components={{
@@ -412,6 +405,11 @@ const SetInterestRate = () => {
       </Form>
       <Form form={form} component={false}>
         <HeadTitle title="Biểu hoa hồng kinh doanh cho gói VIP" />
+        <div style={{ display: 'flex', textAlign: 'center', justifyContent: 'center' }}>
+          <Button onClick={() => setOpen(true)} type="primary">
+            <PlusOutlined /> Tạo mới
+          </Button>
+        </div>
         <Result total={getdataProfit.data?.data?.count} />
         <Table
           components={{
@@ -423,9 +421,12 @@ const SetInterestRate = () => {
           dataSource={listProfit}
           columns={mergedColumnsProfit}
           rowClassName="editable-row"
-          pagination={tableParams.pagination}
-          onChange={handleTableChange}
+          pagination={{
+            total: total
+          }}
+          //  onChange={handleTableChange}
           style={{ height: 'auto' }}
+          onChange={pagination => setPage(pagination.current as number)}
         />
       </Form>
       <Drawer title="Tạo mới" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
