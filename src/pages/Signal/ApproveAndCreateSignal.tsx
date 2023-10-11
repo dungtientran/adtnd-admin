@@ -3,7 +3,7 @@ import type { FilterValue } from 'antd/es/table/interface';
 
 import './index.less';
 
-import { MenuOutlined, SearchOutlined,StarOutlined,StarFilled } from '@ant-design/icons';
+import { MenuOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import {
   Button,
   Col,
@@ -25,6 +25,7 @@ const { RangePicker } = DatePicker;
 
 import type { SignalModel } from '@/interface/signal';
 
+import _debounce from 'lodash/debounce';
 import moment from 'moment';
 
 import {
@@ -39,7 +40,7 @@ import CreateSingalDrawer from '@/components/drawer/CreateSingalDrawer';
 import UpdateSingalDrawer from '@/components/drawer/UpdateSignalDrawer';
 import ConfirmDeleteModal from '@/components/modal/Signal/ConfirmDeleteModal';
 import SendSignalNotificationModal from '@/components/modal/Signal/SendNotificationModal';
-import _debounce from 'lodash/debounce';
+
 interface TableParams {
   pagination?: TablePaginationConfig;
   sortField?: string;
@@ -50,10 +51,11 @@ interface TableParams {
 export const getColumnSearchProps = ({ setFilter }: any) => {
   const [value, setValue] = useState('');
 
-  const handleInputChange = _debounce((e) => {
+  const handleInputChange = _debounce(e => {
     setFilter(e.target.value);
     setValue(e.target.value);
   }, 500);
+
   return {
     filterDropdown: () => (
       <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
@@ -338,11 +340,11 @@ const Recommendations: React.FC = () => {
       dataIndex: 'priority',
       width: '5%',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      render: (data) => (
+      render: data => (
         <div>
-            <StarFilled style={data ? {color: '#eb8f19'}: {}} size={20}/>
+          <StarFilled style={data ? { color: '#eb8f19' } : {}} size={20} />
         </div>
-      )
+      ),
     },
     {
       title: 'Tình trạng',
@@ -507,6 +509,7 @@ const Recommendations: React.FC = () => {
       .then(res => {
         console.log('res: ', res);
         const new_data = [...data];
+
         if (approve) {
           new_data.map((item: any) => {
             if (signal_ids.includes(item.id)) {
@@ -527,13 +530,15 @@ const Recommendations: React.FC = () => {
 
           setData(filter);
         }
-        notification.success(({
-          message: `${approve ? 'Duyệt': 'Từ chối'} thành công`
-        }))
-      }).catch((err) =>{
-        notification.error(({
-          message: err.message
-        }))
+
+        notification.success({
+          message: `${approve ? 'Duyệt' : 'Từ chối'} thành công`,
+        });
+      })
+      .catch(err => {
+        notification.error({
+          message: err.message,
+        });
       })
       .finally(() => {
         setSelectedRow([]);
@@ -545,11 +550,13 @@ const Recommendations: React.FC = () => {
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Duyệt/ Tạo Khuyến nghị</Typography.Title>
       </div>
-      <div className="mb-[20px]">
+      <div className="mb-[20px]" style={{ marginBottom: '20px' }}>
         <Row>
           <Col xs={12} lg={6}>
-            <div className="flex items-center">
-              <Typography className="me-[10px]">Loại</Typography>
+            <div className="flex items-center" style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
+                Loại
+              </Typography>
               <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
                 <Radio.Button value={1}>Ngắn hạn</Radio.Button>
@@ -559,8 +566,10 @@ const Recommendations: React.FC = () => {
           </Col>
 
           <Col xs={12} lg={12}>
-            <div className='flex items-center'>
-              <Typography className='me-[10px]' >Tình trạng</Typography>
+            <div className="flex items-center" style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
+                Tình trạng
+              </Typography>
               <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
                 <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
@@ -569,17 +578,37 @@ const Recommendations: React.FC = () => {
               </Radio.Group>
             </div>
           </Col>
-          <Col lg={6} xs={12} className="flex justify-end">
-            <Button  onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
+          <Col lg={6} xs={12} className="flex justify-end" style={{ display: 'flex', justifyContent: 'end' }}>
+            <Button onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
           </Col>
         </Row>
         <div
-          className='items-center mt-[15px] 
-                        gap-5 border-[1px] w-fit 
-                        px-[10px] py-[10px] rounded-[6px] border-[#ccc] relative'
+          // className="items-center mt-[15px]
+          //               gap-5 border-[1px] w-fit
+          //               px-[10px] py-[10px] rounded-[6px] border-[#ccc] relative"
+          style={{
+            margin: '15px 0 0',
+            border: '1px solid #ccc',
+            position: 'relative',
+            borderRadius: '6px',
+            padding: '10px',
+            width: 'fit-content',
+          }}
         >
-          <div className='flex items-center  mt-[10px]'>
-            <Typography className='me-[10px]'>Ngày tạo</Typography>
+          <div
+            // className="flex items-center  mt-[10px]"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginTop: '10px',
+            }}
+          >
+            <Typography
+              // className="me-[10px]"
+              style={{ marginInlineEnd: '10px' }}
+            >
+              Ngày tạo
+            </Typography>
             <RangePicker
               style={{
                 width: '300px',
@@ -587,6 +616,7 @@ const Recommendations: React.FC = () => {
               }}
               onChange={(value: any) => {
                 console.log(value);
+
                 if (value?.length > 0) {
                   setCreateDateFilter({
                     start_date: moment(value[0].$d).format('MM/DD/YYYY'),
@@ -601,32 +631,41 @@ const Recommendations: React.FC = () => {
               }}
             />
           </div>
-          <div className='flex items-center mt-[10px]'>
+          <div
+            //  className="flex items-center mt-[10px]"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginTop: '10px',
+            }}
+          >
             <Typography>Giá mua : Từ</Typography>
-            <InputNumber className='mx-[7px]'
+            <InputNumber
+              className="mx-[7px]"
               onChange={(value: any) => {
                 setPriceRangeFilter({
                   ...priceRangeFilter,
-                  from: value
-                })
+                  from: value,
+                });
               }}
+              style={{ margin: '0 7px' }}
             />
             <Typography> Đến </Typography>
             <InputNumber
-              className='mx-[7px]'
+              className="mx-[7px]"
               onChange={(value: any) => {
                 setPriceRangeFilter({
                   ...priceRangeFilter,
-                  to: value
-                })
+                  to: value,
+                });
               }}
+              style={{ margin: '0 7px' }}
             />
-
           </div>
 
-          <div className="flex mt-[10px]">
-            <Button className='' onClick={onFilter}>
-              <Typography >Lọc</Typography>
+          <div className="flex mt-[10px]" style={{ display: 'flex', marginTop: '10px' }}>
+            <Button className="" onClick={onFilter}>
+              <Typography>Lọc</Typography>
             </Button>
           </div>
         </div>
@@ -636,6 +675,7 @@ const Recommendations: React.FC = () => {
           <>
             <Button
               className="mb-[5px]"
+              style={{ marginBottom: '5px' }}
               onClick={() => {
                 handleApproveSignal(selectedRow, true);
 
@@ -651,6 +691,7 @@ const Recommendations: React.FC = () => {
             </Button>
             <Button
               className="mb-[5px]"
+              style={{ marginBottom: '5px' }}
               onClick={() => {
                 handleApproveSignal(selectedRow, false);
               }}
@@ -674,7 +715,7 @@ const Recommendations: React.FC = () => {
             console.log(record);
 
             return (
-              <div className="text-left">
+              <div className="text-left" style={{ textAlign: 'left' }}>
                 <div>
                   <Typography style={{ margin: 0 }}>Mô tả : {record?.description}</Typography>
                 </div>

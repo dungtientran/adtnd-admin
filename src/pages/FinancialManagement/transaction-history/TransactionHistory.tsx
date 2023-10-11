@@ -109,6 +109,7 @@ const TransactionHistory = () => {
         // loading={isLoading}
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
+        style={{height: 'auto'}}
       />
     </div>
   );

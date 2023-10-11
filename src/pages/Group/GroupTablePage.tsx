@@ -127,7 +127,7 @@ function GroupTablePage() {
   };
 
   const actionsColumn = {
-    title: 'ACTION',
+    title: '',
     width: '20%',
     editable: false,
     render: (_: any, record: any) => (
@@ -145,9 +145,16 @@ function GroupTablePage() {
       dataType: 'text',
       width: '30%',
       render: (text: string, record: any) => (
-        <Link to={`/customer-management/customer-group/detail/${record.id}`} className="text-left">
+        <Link
+          to={`/customer-management/customer-group/detail/${record.id}`}
+          className="text-left"
+          style={{ textAlign: 'left', textDecoration:'none' }}
+        >
           {text}
         </Link>
+        // <Typography.Link>
+        //   <a href={`/customer-management/customer-group/detail/${record.id}`}>{text}</a>
+        // </Typography.Link>
       ),
       ...getColumnSearchProps({
         setFilter: setNameSearch,
@@ -278,7 +285,7 @@ function GroupTablePage() {
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Danh sách nhóm khách hàng</Typography.Title>
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-end" style={{ display: 'flex', justifyContent: 'end' }}>
         <Button
           onClick={() => {
             setUpdate(null);
@@ -288,7 +295,9 @@ function GroupTablePage() {
           <Typography>Tạo nhóm mới</Typography>
         </Button>
       </div>
-      <Typography className="mt-[10px]">Có tất cả {tableParams.pagination?.total} kết quả</Typography>
+      <Typography className="mt-[10px]" style={{ marginTop: '10px' }}>
+        Có tất cả {tableParams.pagination?.total} kết quả
+      </Typography>
       <div>
         <Table
           columns={columns}

@@ -51,7 +51,13 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
     <Space
       direction="vertical"
       size="middle"
-      style={{ marginBottom: '20px', padding: '1rem', border: '1px solid #ccc', borderRadius: '6px' }}
+      style={{
+        marginBottom: '20px',
+        padding: '1rem',
+        border: '1px solid #ccc',
+        borderRadius: '6px',
+        marginTop: '10px',
+      }}
     >
       <Space>
         <Text strong>Giá trị ban đầu:</Text>
@@ -61,6 +67,7 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
             // onChange={value => setNav_Low(value as number)}
             style={{ width: '120px' }}
             min={0}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
 
           <InputNumber
@@ -68,6 +75,7 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
             // onChange={value => setNav_Hight(value as number)}
             style={{ width: '120px' }}
             min={0}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
         </Space>
       </Space>
@@ -79,6 +87,7 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
             // onChange={value => setNav_Low(value as number)}
             style={{ width: '120px' }}
             min={0}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
 
           <InputNumber
@@ -86,6 +95,7 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
             // onChange={value => setNav_Hight(value as number)}
             style={{ width: '120px' }}
             min={0}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
         </Space>
       </Space>

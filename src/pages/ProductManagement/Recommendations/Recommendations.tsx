@@ -43,6 +43,7 @@ import ConfirmDeleteModal from '@/components/modal/Signal/ConfirmDeleteModal';
 import SendSignalNotificationModal from '@/components/modal/Signal/SendNotificationModal';
 import CreateSignalModal from '@/components/modal/Signal/SendSignalModal';
 import SendSignalModal from '@/components/modal/Signal/SendSignalModal';
+import Result from '@/pages/components/result/Result';
 
 import { getColumnSearchProps } from '../../Signal/ApproveAndCreateSignal';
 
@@ -230,7 +231,7 @@ const Recommendations: React.FC = () => {
   };
 
   const actionsColumn = {
-    title: 'ACTION',
+    title: '',
     width: '10%',
     editable: false,
     render: (_: any, record: any) => (
@@ -261,7 +262,7 @@ const Recommendations: React.FC = () => {
     {
       title: 'Mã CK',
       dataIndex: 'code',
-      width: '5%',
+      width: '8%',
       ...getColumnSearchProps({
         setFilter: setCodeFilter,
       }),
@@ -288,12 +289,12 @@ const Recommendations: React.FC = () => {
     {
       title: 'Giá chốt lời 1',
       dataIndex: 'target_sell_price_1',
-      width: '8%',
+      width: '10%',
     },
     {
       title: 'Giá chốt lời 2',
       dataIndex: 'target_sell_price_2',
-      width: '8%',
+      width: '10%',
     },
     {
       title: 'Giá chốt lời 3',
@@ -321,7 +322,7 @@ const Recommendations: React.FC = () => {
     {
       title: 'Ưu tiên',
       dataIndex: 'priority',
-      width: '5%',
+      width: '8%',
       sortDirections: ['ascend', 'descend', 'ascend'],
       render: data => (
         <div>
@@ -332,7 +333,7 @@ const Recommendations: React.FC = () => {
     {
       title: 'Tình trạng',
       dataIndex: 'is_closed',
-      width: '1%',
+      width: '5%',
       render: (is_closed: boolean, record: any) => (
         <>
           {is_closed ? (
@@ -544,11 +545,22 @@ const Recommendations: React.FC = () => {
         <Typography.Title level={2}>Khuyến nghị</Typography.Title>
       </div>
       <div>
-        <div className="mb-[20px]">
+        <div
+          // className="mb-[20px]"
+          style={{ marginBottom: '20px' }}
+        >
           <Row gutter={10}>
             <Col xs={24} md={12} lg={12} xl={6}>
-              <div className="flex items-center">
-                <Typography className="me-[10px]">Loại</Typography>
+              <div
+                // className="flex items-center"
+                style={{ display: 'flex', alignItems: 'center' }}
+              >
+                <Typography
+                  // className="me-[10px]"
+                  style={{ marginInlineEnd: '10px' }}
+                >
+                  Loại
+                </Typography>
                 <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
                   <Radio.Button value={''}>Tất cả</Radio.Button>
                   <Radio.Button value={1}>Ngắn hạn</Radio.Button>
@@ -557,8 +569,16 @@ const Recommendations: React.FC = () => {
               </div>
             </Col>
             <Col xs={24} md={12} lg={12} xl={6}>
-              <div className="flex items-center">
-                <Typography className="me-[10px]">Tình trạng</Typography>
+              <div
+                // className="flex items-center"
+                style={{ display: 'flex', alignItems: 'center' }}
+              >
+                <Typography
+                  // className="me-[10px]"
+                  style={{ marginInlineEnd: '10px' }}
+                >
+                  Tình trạng
+                </Typography>
                 <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                   <Radio.Button value={''}>Tất cả</Radio.Button>
                   <Radio.Button value={'open'}>Đang mở</Radio.Button>
@@ -568,8 +588,16 @@ const Recommendations: React.FC = () => {
             </Col>
             {statusFilter == 'closed' && (
               <Col xs={24} md={12} lg={12} xl={6}>
-                <div className="flex items-center">
-                  <Typography className="me-[10px]">Độ ưu tiên</Typography>
+                <div
+                  // className="flex items-center"
+                  style={{ display: 'flex', alignItems: 'center' }}
+                >
+                  <Typography
+                    //  className="me-[10px]"
+                    style={{ marginInlineEnd: '10px' }}
+                  >
+                    Độ ưu tiên
+                  </Typography>
                   <Radio.Group defaultValue={''} onChange={e => setPriorityFilter(e.target.value)}>
                     <Radio.Button value={''}>Tất cả</Radio.Button>
                     <Radio.Button value={true}>Ưu tiên</Radio.Button>
@@ -580,12 +608,32 @@ const Recommendations: React.FC = () => {
             )}
           </Row>
           <div
-            className="items-center mt-[15px] 
-                        gap-5 border-[1px] w-fit 
-                        px-[10px] py-[10px] rounded-[6px] border-[#ccc] relative"
+            // className="items-center mt-[15px]
+            //             gap-5 border-[1px] w-fit
+            //             px-[10px] py-[10px] rounded-[6px] border-[#ccc] relative"
+            style={{
+              margin: '15px 0 0',
+              border: '1px solid #ccc',
+              position: 'relative',
+              borderRadius: '6px',
+              padding: '10px',
+              width: 'fit-content',
+            }}
           >
-            <div className="flex items-center  mt-[10px]">
-              <Typography className="me-[10px]">Ngày tạo</Typography>
+            <div
+              // className="flex items-center  mt-[10px]"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginTop: '10px',
+              }}
+            >
+              <Typography
+                // className="me-[10px]"
+                style={{ marginInlineEnd: '10px' }}
+              >
+                Ngày tạo
+              </Typography>
               <RangePicker
                 style={{
                   width: '300px',
@@ -608,7 +656,14 @@ const Recommendations: React.FC = () => {
                 }}
               />
             </div>
-            <div className="flex items-center mt-[10px]">
+            <div
+              // className="flex items-center mt-[10px]"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginTop: '10px',
+              }}
+            >
               <Typography>Giá mua : Từ</Typography>
               <InputNumber
                 className="mx-[7px]"
@@ -618,10 +673,12 @@ const Recommendations: React.FC = () => {
                     from: value,
                   });
                 }}
+                style={{ margin: '0 7px' }}
               />
               <Typography> Đến </Typography>
               <InputNumber
                 className="mx-[7px]"
+                style={{ margin: '0 7px' }}
                 onChange={(value: any) => {
                   setPriceRangeFilter({
                     ...priceRangeFilter,
@@ -631,14 +688,20 @@ const Recommendations: React.FC = () => {
               />
             </div>
 
-            <div className="flex mt-[10px]">
+            <div
+              // className="flex mt-[10px]"
+              style={{ display: 'flex', marginTop: '10px' }}
+            >
               <Button className="" onClick={onFilter}>
                 <Typography>Lọc</Typography>
               </Button>
             </div>
           </div>
         </div>
-        <div className="flex justify-between mb-4">
+        <div
+          // className="flex justify-between mb-4"
+          style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}
+        >
           <div>
             {selectedRow.length > 0 && (
               <>
@@ -691,12 +754,13 @@ const Recommendations: React.FC = () => {
           </div>
         </div>
       </div>
+      <Result total={tableParams.pagination?.total} />
       <Table
         columns={columns}
         rowKey={record => record.id}
         dataSource={data}
         pagination={tableParams.pagination}
-        loading={loading}
+        // loading={loading}
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
         rowSelection={{
@@ -711,7 +775,10 @@ const Recommendations: React.FC = () => {
             console.log(record);
 
             return (
-              <div className="text-left">
+              <div
+                //  className="text-left"
+                style={{ textAlign: 'left' }}
+              >
                 <div>
                   <Typography style={{ margin: 0 }}>Mô tả : {record?.description}</Typography>
                 </div>
@@ -722,6 +789,7 @@ const Recommendations: React.FC = () => {
             );
           },
         }}
+        style={{ height: 'auto' }}
       />
       <ConfirmDeleteModal
         open={confirmDeleteModalOpen}

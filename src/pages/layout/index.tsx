@@ -20,7 +20,7 @@ import MenuComponent from './menu';
 import TagsView from './tagView';
 
 const { Sider, Content } = Layout;
-const WIDTH = 992;
+const WIDTH = 1400;
 
 const LayoutPage: FC = () => {
   const location = useLocation();

@@ -20,7 +20,7 @@ interface IEditRequest {
 
 const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, setNewContract }) => {
   const [option, setOption] = useState<{ id: string; value: string }[]>([]);
-  const [option2, setOption2] = useState<{ id: string; value: string; email: string; customer_code: string }[]>([]);
+  const [option2, setOption2] = useState<{ id: string; value: string; email: string; fullname: string }[]>([]);
   const [nameSelect, setNameSelect] = useState('');
   const [saleSelect, setsaleSelect] = useState('');
   const [days, setDays] = useState({
@@ -39,17 +39,17 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
 
   useEffect(() => {
     if (data) {
-      const newOption = data?.data?.rows.map((item: any) => ({ value: item?.fullname, id: item?.id }));
+      const newOption = data?.data?.rows.map((item: any) => ({ value: item?.email, id: item?.id }));
 
       setOption(newOption);
     }
 
     if (userData.data) {
       const newOption2 = userData.data?.map((item: any) => ({
-        value: item?.fullname,
+        value: item?.customer_code,
         id: item?.id,
         email: item?.email,
-        customer_code: item?.customer_code,
+        fullname: item?.fullname,
       }));
 
       setOption2(newOption2);
@@ -58,7 +58,14 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
 
   useEffect(() => {
     if (initForm) {
-      form.setFieldsValue(initForm);
+      const setInitForm = {
+        ...initForm,
+        fullname: initForm.customer.fullname,
+        email: initForm.customer.email,
+        sale_name: initForm.sale.fullname,
+      };
+
+      form.setFieldsValue(setInitForm);
     } else {
       form.resetFields();
     }
@@ -67,11 +74,11 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
   useEffect(() => {
     if (nameSelect) {
       const emailSelect = option2.find(item => item.value === nameSelect)?.email;
-      const customer_id_select = option2.find(item => item.value === nameSelect)?.customer_code;
+      const name = option2.find(item => item.value === nameSelect)?.fullname;
 
       form.setFieldsValue({
         email: emailSelect,
-        customer_id: customer_id_select,
+        fullname: name,
       });
     }
 
@@ -87,9 +94,7 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
   const [form] = Form.useForm();
 
   const onFinish = (values: any) => {
-    // setUpdateDataSp(values);
-    // console.log('Received values of form: ', values);
-    const customer_id = option2.find(item => item.value === values?.fullname)?.id;
+    const customer_id = option2.find(item => item.value === values?.customer_id)?.id;
 
     const newValues = {
       ...values,
@@ -97,8 +102,11 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
       customer_id,
     };
 
-    // console.log('Received values of form: ', newValues);
-    setNewContract(newValues);
+    if (!initForm) {
+      setNewContract(newValues);
+    } else {
+      setUpdateDataSp(newValues);
+    }
   };
 
   const onChange = (
@@ -113,6 +121,8 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
     });
   };
 
+  console.log('init form_____________', initForm);
+
   return (
     <Fragment>
       <Form
@@ -126,23 +136,23 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
         scrollToFirstError
         // initialValues={initValue}
       >
-        <Form.Item name="customer_id" label="Mã KH" rules={[{ required: true, message: 'Không đc bỏ trống !' }]}>
-          <Input />
-        </Form.Item>
-
         <Form.Item
-          name="fullname"
-          label="Tên khách hàng"
+          name="customer_id"
+          label="Mã khách hàng"
           rules={[{ required: true, message: 'Không đc bỏ trống !', whitespace: true }]}
         >
           <AutoComplete
             style={{ width: '100%' }}
             options={option2}
-            placeholder="Nhập email nhân viên hỗ trợ"
+            placeholder="Nhập mã khách hàng"
             filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             size="large"
             onChange={value => setNameSelect(value)}
           />
+        </Form.Item>
+
+        <Form.Item name="fullname" label="Tên khách hàng">
+          <Input disabled />
         </Form.Item>
 
         {/* <Form.Item
@@ -153,31 +163,27 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
           <Input />
         </Form.Item> */}
 
-        <Form.Item name="email" label="Email" rules={[{ required: true, message: 'Không đc bỏ trống !' }]}>
-          <Input />
+        <Form.Item name="email" label="Email">
+          <Input disabled />
         </Form.Item>
 
         <Form.Item
-          name="sale_id"
-          label="Mã nhân viên quản lý"
-          rules={[{ required: true, message: 'Không đc bỏ trống !' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          name="sale"
+          name="sale_name"
           label="Nhân viên quản lý"
           rules={[{ required: true, message: 'Vui lòng nhập email nhân viên!' }]}
         >
           <AutoComplete
             style={{ width: '100%' }}
             options={option}
-            placeholder="Nhập email nhân viên hỗ trợ"
+            placeholder="Nhập email nhân viên quản lý"
             filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             size="large"
             onChange={value => setsaleSelect(value)}
           />
+        </Form.Item>
+
+        <Form.Item name="sale_id" label="Mã nhân viên quản lý">
+          <Input disabled />
         </Form.Item>
 
         <Form.Item name="contract_no" label="Số hợp đồng" rules={[{ required: true, message: 'Không đc bỏ trống !' }]}>
@@ -193,7 +199,11 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
           label="Giá trị tài khoản ban đầu"
           rules={[{ required: true, message: 'Không đc bỏ trống !' }]}
         >
-          <InputNumber min={0} />
+          <InputNumber
+            style={{ width: '100%' }}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            min={0}
+          />
         </Form.Item>
 
         <Form.Item
@@ -201,7 +211,11 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
           label="Giá trị tài khoản khi kết thúc"
           rules={[{ required: true, message: 'Không đc bỏ trống !' }]}
         >
-          <InputNumber min={0} />
+          <InputNumber
+            style={{ width: '100%' }}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            min={0}
+          />
         </Form.Item>
 
         <Form.Item
@@ -209,7 +223,12 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
           label="% lợi nhuận dự kiến"
           rules={[{ required: true, message: 'Không đc bỏ trống !' }]}
         >
-          <InputNumber min={0} />
+          <InputNumber
+            style={{ width: '100%' }}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            min={0}
+            // defaultValue={0}
+          />
         </Form.Item>
 
         <Form.Item name="note" label="Ghi chú" rules={[{ required: true, message: 'Không đc bỏ trống !' }]}>

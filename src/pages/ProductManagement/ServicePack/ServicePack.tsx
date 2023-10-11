@@ -177,33 +177,33 @@ const ServicePack: React.FC = () => {
       editable: false,
       render: (_: any, record: Item) => <Tag color="green">{record.status}</Tag>,
     },
-    {
-      title: 'Action',
-      dataIndex: 'action',
-      render: (_: any, record: Item) => {
-        const editable = isEditing(record);
+    // {
+    //   title: '',
+    //   dataIndex: 'action',
+    //   render: (_: any, record: Item) => {
+    //     const editable = isEditing(record);
 
-        return editable ? (
-          <span>
-            <Typography.Link onClick={() => save(record.key)} style={{ marginRight: 8 }}>
-              Save
-            </Typography.Link>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
-            </Popconfirm>
-          </span>
-        ) : (
-          <Space>
-            {/* <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-              Edit
-            </Typography.Link> */}
-            <Typography.Link type="danger" disabled={editingKey !== ''}>
-              Block
-            </Typography.Link>
-          </Space>
-        );
-      },
-    },
+    //     return editable ? (
+    //       <span>
+    //         <Typography.Link onClick={() => save(record.key)} style={{ marginRight: 8 }}>
+    //           Save
+    //         </Typography.Link>
+    //         <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+    //           <a>Cancel</a>
+    //         </Popconfirm>
+    //       </span>
+    //     ) : (
+    //       <Space>
+    //         {/* <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+    //           Edit
+    //         </Typography.Link> */}
+    //         <Typography.Link type="danger" disabled={editingKey !== ''}>
+    //           Block
+    //         </Typography.Link>
+    //       </Space>
+    //     );
+    //   },
+    // },
   ];
 
   const mergedColumns = columns.map(col => {
@@ -228,7 +228,7 @@ const ServicePack: React.FC = () => {
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Gói dịch vụ</Typography.Title>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px' }}>
+      {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px' }}>
         <Space>
           <Typography.Text>Trạng thái: </Typography.Text>
           <Radio.Group
@@ -242,10 +242,10 @@ const ServicePack: React.FC = () => {
             <Radio.Button value="closed">Ngừng hoạt động</Radio.Button>
           </Radio.Group>
         </Space>
-        {/* <Button disabled={add1CaiThoi} onClick={handleAdd} type="primary">
+        <Button disabled={add1CaiThoi} onClick={handleAdd} type="primary">
           Thêm dịch vụ
-        </Button> */}
-      </div>
+        </Button>
+      </div> */}
       <Form form={form} component={false}>
         <Table
           components={{

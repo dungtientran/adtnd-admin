@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react';
 import { listContractApi } from '@/api/ttd_contract';
 import { listCustomerApi } from '@/api/ttd_list_customer';
 import CreateContract from '@/pages/components/form/form-contract';
-import EditRequest from '@/pages/components/form/form-edit-request';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
 
@@ -18,7 +17,7 @@ import BoxFilter from './boxFilter';
 import { Column } from './columns';
 
 const { getCustomerSupport, updateCustomerSupport, deleteCustomerSupport } = listCustomerApi;
-const { getListContract, createContract } = listContractApi;
+const { getListContract, createContract, updateContract } = listContractApi;
 
 const InterestRate: React.FC = () => {
   const queryClient = useQueryClient();
@@ -26,7 +25,7 @@ const InterestRate: React.FC = () => {
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
-      pageSize: 10,
+      pageSize: 100,
     },
   });
   const [sort, setSort] = useState<string>('');
@@ -45,7 +44,7 @@ const InterestRate: React.FC = () => {
   });
 
   const update = useMutation({
-    mutationFn: _ => updateCustomerSupport(customerSelect?.id as string, updateDataSp),
+    mutationFn: _ => updateContract(updateDataSp?.contract_no as string, updateDataSp),
     onSuccess: _ => {
       queryClient.invalidateQueries(['getListContract']);
       message.success('Update thành công');
@@ -125,6 +124,7 @@ const InterestRate: React.FC = () => {
       create.mutate();
     }
   }, [newContract]);
+  console.log('updateDataSp', updateDataSp);
 
   return (
     <div className="aaa">
@@ -133,7 +133,8 @@ const InterestRate: React.FC = () => {
         <Button
           onClick={() => {
             setOpen(true);
-            setNewContract(undefined);
+            // setNewContract(undefined);
+            setCustomerSelect(undefined);
           }}
           type="primary"
         >
@@ -150,8 +151,15 @@ const InterestRate: React.FC = () => {
         // loading={isLoading}
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
+        style={{ height: 'auto' }}
       />
-      <Drawer title="Thêm hợp đồng" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
+      <Drawer
+        title={!customerSelect ? 'Thêm hợp đồng' : 'Sửa hợp đồng'}
+        width={360}
+        onClose={onClose}
+        open={open}
+        bodyStyle={{ paddingBottom: 80 }}
+      >
         <CreateContract setUpdateDataSp={setUpdateDataSp} initForm={customerSelect} setNewContract={setNewContract} />
       </Drawer>
     </div>

@@ -98,7 +98,7 @@ export const menuListHandle: MenuList = [
   },
   {
     code: 'hoahong',
-    icon: 'documentation',
+    icon: 'guide',
     label: {
       en_US: 'Quản lý hoa hồng',
       zh_CN: '文档',
@@ -125,7 +125,7 @@ export const menuListHandle: MenuList = [
   },
   {
     code: 'tracsaction',
-    icon: 'documentation',
+    icon: 'permission',
     label: {
       en_US: 'Quản lý tài chính',
       zh_CN: '文档',
@@ -145,7 +145,7 @@ export const menuListHandle: MenuList = [
   
   {
     code: 'user',
-    icon: 'documentation',
+    icon: 'account',
     label: {
       en_US: 'Quản trị người dùng',
       zh_CN: '文档',

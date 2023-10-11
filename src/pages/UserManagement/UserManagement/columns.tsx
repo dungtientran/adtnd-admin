@@ -116,7 +116,7 @@ export const Column = (
       title: 'Chức vụ',
       dataIndex: 'role',
       width: '14%',
-      ...ColumnSearchProps('role', 'chức vụ', setSearchQuery),
+      // ...ColumnSearchProps('role', 'chức vụ', setSearchQuery),
       render: (_, record) => <Text>{record?.role?.name}</Text>,
       // filters: [
       //   { text: 'Quản Trị', value: 'admin' },
@@ -133,7 +133,7 @@ export const Column = (
       render: (_, record) => <Text>{record?.SaleLevel?.level}</Text>,
     },
     {
-      title: 'Action',
+      title: '',
       dataIndex: 'action',
       width: '8%',
       render: (_, record) => (

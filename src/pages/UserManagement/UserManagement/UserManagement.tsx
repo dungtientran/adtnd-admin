@@ -119,7 +119,7 @@ const UserManagement: React.FC = () => {
     }
   }, [idDelete]);
   // console.log('data_______________________', data);
-  console.log('tableParams_______________________', tableParams);
+  // console.log('tableParams_______________________', tableParams);
 
   return (
     <div className="aaa">
@@ -143,6 +143,7 @@ const UserManagement: React.FC = () => {
         // loading={isLoading}
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
+        style={{ height: 'auto' }}
       />
       <Drawer title="Tạo mới quản trị viên" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
         <EditUserManagement setCustomerForm={setUpdateDataSp} initForm={customerSelect} />
