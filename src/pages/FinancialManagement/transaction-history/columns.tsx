@@ -75,84 +75,73 @@ export const Column = (
 ) => {
   const columns: ColumnsType<DataType> = [
     {
-      title: 'Ngày yêu cầu',
+      title: 'Ngày giao dịch',
       dataIndex: 'created_at',
       render: (_, record) => <Text>{moment(record.created_at).format('DD/MM/YYYY')}</Text>,
       width: '14%',
     },
     {
-      title: 'Tên khách hàng',
-      dataIndex: 'name',
+      title: 'Mã giao dịch',
+      dataIndex: 'id',
       width: '8%',
-      ...ColumnSearchProps('name', 'tên khách hàng', setSearchQuery),
+      ...ColumnSearchProps('id', 'tên khách hàng', setSearchQuery),
     },
     {
-      title: 'SĐT',
+      title: 'Mã khách hàng',
       // sorter: true,
-      dataIndex: 'phone_number',
-      width: '15%',
-      ...ColumnSearchProps('phone_number', 'tên khách hàng', setSearchQuery),
+      dataIndex: 'customer_id',
+      // width: '15%',
+      ...ColumnSearchProps('customer_id', 'tên khách hàng', setSearchQuery),
+    },
+    {
+      title: 'Tên khách hàng',
+      // sorter: true,
+      dataIndex: 'name',
+      width: '14%',
+      // render: (_, record) => <Text>{record?.customer?.fullname}</Text>,
+      ...ColumnSearchProps('name', 'Tên khách hàng', setSearchQuery),
     },
     {
       title: 'Email',
-      // sorter: true,
       dataIndex: 'email',
       width: '14%',
-      ...ColumnSearchProps('email', 'email', setSearchQuery),
+      // render: (_, record) => <Text>{record.customer?.email}</Text>,
+      ...ColumnSearchProps('email', 'địa chỉ', setSearchQuery),
     },
     {
-      title: 'Địa chỉ',
-      dataIndex: 'address',
+      title: 'SĐT',
+      dataIndex: 'phone_number',
       width: '14%',
-      ...ColumnSearchProps('address', 'địa chỉ', setSearchQuery),
+      // render: (_, record) => <Text>{record.customer?.phone_number}</Text>,
+      ...ColumnSearchProps('phone_number', 'địa chỉ', setSearchQuery),
     },
     {
-      title: 'Loại hỗ trợ',
-      dataIndex: 'type',
-      width: '8%',
+      title: 'Mô tả',
+      dataIndex: 'description',
+      // width: '8%',
+    },
+    {
+      title: 'Gói dịch vụ',
+      dataIndex: 'package',
+      width: '10%',
+      // render: (_, record) => (
+      //   <Text>
+      //     {record?.subscription_plan?.subscription_product?.name} {record?.subscription_plan?.name}
+      //   </Text>
+      // ),
+
+      // width: '8%',
       filters: [
-        { text: 'Tư vấn mở tài khoản', value: 'trial' },
-        { text: 'Tư vẫn đầu tư', value: 'vip' },
-        { text: 'Hỗ trợ', value: 'premium' },
+        { text: 'Trial', value: 'trial' },
+        { text: 'Vip', value: 'vip' },
+        { text: 'Premium', value: 'premium' },
       ],
     },
     {
-      title: 'Liên lạc',
-      dataIndex: 'is_contact',
+      title: 'Số tiền',
+      dataIndex: 'amount',
       width: '8%',
-      render: (_, record) => (
-        <>{record.is_contact ? <Tag color="processing">Đã liên lạc</Tag> : <Tag color="magenta">Chưa liên lạc</Tag>}</>
-      ),
-    },
-    {
-      title: 'Action',
-      dataIndex: 'action',
-      width: '8%',
-      render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="primary"
-            size="small"
-            onClick={() => {
-              setOpenDrawer(true);
-              setCustomerSelect(record);
-            }}
-          >
-            <EditOutlined />
-          </Button>
-          <Popconfirm title="Chắc chắn xóa" onConfirm={() => deleteRequest(record.id)}>
-            <Button
-              type="primary"
-              size="small"
-              // onClick={() => {
-              //   setCustomerSelect(record);
-              // }}
-            >
-              <DeleteOutlined />
-            </Button>
-          </Popconfirm>
-        </Space>
-      ),
+      // render: (_, record) => <Text>{record.subscription_plan?.cost?.toLocaleString()}</Text>,
     },
   ];
 

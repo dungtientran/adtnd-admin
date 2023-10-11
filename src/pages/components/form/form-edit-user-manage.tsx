@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AutoComplete, Button, Form, Input, Select, Space, Typography } from 'antd';
+import { AutoComplete, Button, Form, Input, InputNumber, Select, Space, Typography } from 'antd';
 import { Fragment, useEffect, useState } from 'react';
 
 import { listCustomerApi } from '@/api/ttd_list_customer';
@@ -12,7 +12,7 @@ const { Option } = Select;
 interface ICreateUser {
   setCustomerForm: (newCustomer: any) => void;
   initForm?: any;
-  setSaleCustomer: (sale: any) => void;
+  // setSaleCustomer: (sale: any) => void;
 }
 
 const passwordValidator = (value: string): boolean => {
@@ -33,30 +33,52 @@ const prefixSelector = (
   </Form.Item>
 );
 
-const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleCustomer }) => {
-  const [isDisable, setIsisDisable] = useState(false);
+const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }) => {
   const [option, setOption] = useState<{ id: string; value: string }[]>([]);
+  const [option2, setOption2] = useState([
+    {
+      id: 'admin',
+      value: 'Quản Trị',
+    },
+    {
+      id: 'sale',
+      value: 'Sale',
+    },
+    {
+      id: 'analytics',
+      value: 'Nhân viên Phân tích',
+    },
+    {
+      id: 'business',
+      value: 'Nhân viên nghiệp vụ',
+    },
+  ]);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['getSaleList'],
-    queryFn: () => getSaleList(),
-  });
+  // const { data, isLoading, isError } = useQuery({
+  //   queryKey: ['getSaleList'],
+  //   queryFn: () => getSaleList(),
+  // });
 
-  useEffect(() => {
-    if (data) {
-      const newOption = data?.data?.rows.map((item: any) => ({ value: item?.email, id: item?.id }));
+  // useEffect(() => {
+  //   if (data) {
+  //     const newOption = data?.data?.rows.map((item: any) => ({ value: item?.email, id: item?.id }));
 
-      console.log('newOption__________', newOption);
-      setOption(newOption);
-    }
-  }, [data]);
+  //     console.log('newOption__________', newOption);
+  //     setOption(newOption);
+  //   }
+  // }, [data]);
+
   useEffect(() => {
     if (initForm) {
-      setIsisDisable(true);
-      form.setFieldsValue(initForm);
+      const newInit = {
+        ...initForm,
+        role_id: initForm?.role?.name,
+        level: initForm?.SaleLevel?.level,
+      };
+
+      form.setFieldsValue(newInit);
     } else {
       form.resetFields();
-      setIsisDisable(false);
     }
   }, [initForm]);
   const [form] = Form.useForm();
@@ -67,20 +89,14 @@ const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleC
       phone_number: `+84${values?.phone_number}`,
     };
 
-    // console.log('Received values of form: ', newCustomer);
+    console.log('Received values of form: ', values);
+    const sale_id = option2.find(item => item.value === values.role_id)?.id;
 
-    setCustomerForm(newCustomer);
+    // console.log('sale_id_______________', sale_id);
+    // setCustomerForm(newCustomer);
   };
 
-  const handleAddSale = (values: any) => {
-    // console.log('sale__________', values);
-    const sale_id = option.find(item => item.value === values.sale)?.id;
-
-    setSaleCustomer({
-      customer_id: initForm?.id,
-      sale_id,
-    });
-  };
+  console.log('init__________', initForm);
 
   return (
     <Fragment>
@@ -94,14 +110,13 @@ const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleC
         style={{ maxWidth: 600 }}
         scrollToFirstError
         // initialValues={initValue}
-        disabled={isDisable}
       >
         <Form.Item
           name="fullname"
           label="Họ tên"
           rules={[{ required: true, message: 'Vui lòng nhập họ tên!', whitespace: true }]}
         >
-          <Input />
+          <Input placeholder="Họ tên" />
         </Form.Item>
         <Form.Item
           name="email"
@@ -117,22 +132,28 @@ const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleC
             },
           ]}
         >
-          <Input />
+          <Input placeholder="Email" />
         </Form.Item>
 
         <Form.Item
-          name="phone_number"
-          label="SĐT"
-          rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+          name="role_id"
+          label="Chức vụ"
+          rules={[{ required: true, message: 'Vui lòng nhập chức vụ !', whitespace: true }]}
         >
-          <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
+          <AutoComplete
+            style={{ width: '100%' }}
+            options={option2}
+            placeholder="Chức vụ"
+            filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
+            size="large"
+          />
+        </Form.Item>
+        <Form.Item name="level" label="Level">
+          <InputNumber defaultValue={1} min={1} />
         </Form.Item>
 
-        {!isDisable && (
+        {!initForm && (
           <Fragment>
-            <Form.Item name="code" label="Mã giới thiệu">
-              <Input />
-            </Form.Item>
             <Form.Item
               name="password"
               label="Mật khẩu"
@@ -157,7 +178,7 @@ const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleC
               ]}
               hasFeedback
             >
-              <Input.Password />
+              <Input.Password placeholder="Mật khẩu" />
             </Form.Item>
 
             <Form.Item
@@ -168,59 +189,32 @@ const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleC
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng nhập lại Mật khẩu!',
+                  message: 'Vui lòng nhập lại mật khẩu!',
                 },
-                {
+                ({ getFieldValue }) => ({
                   validator(_, value) {
-                    if (!value || passwordValidator(value)) {
+                    if (!value || getFieldValue('password') === value) {
                       return Promise.resolve();
                     }
 
-                    return Promise.reject(
-                      new Error(
-                        'Mật khẩu tối thiểu 8 ký tự và phải có ít nhất 1 chữ số, 1 chữ cái in hoa và 1 kí tự đặc biệt',
-                      ),
-                    );
+                    return Promise.reject(new Error('Mật khẩu không trùng!'));
                   },
-                },
+                }),
               ]}
             >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '' }}>
-              <Button type="primary" htmlType="submit">
-                Tạo mới
-              </Button>
+              <Input.Password placeholder="Nhập lại mật khẩu" />
             </Form.Item>
           </Fragment>
         )}
+
+        <Form.Item style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '' }}>
+          <Button type="primary" htmlType="submit">
+            {initForm ? 'Lưu' : 'Tạo mới'}
+          </Button>
+        </Form.Item>
       </Form>
-      {isDisable && (
-        <Form layout="vertical" onFinish={handleAddSale}>
-          <Form.Item
-            name="sale"
-            label="Nhân viên"
-            rules={[{ required: true, message: 'Vui lòng nhập email nhân viên!', whitespace: true }]}
-          >
-            <AutoComplete
-              style={{ width: '100%' }}
-              options={option}
-              placeholder="Nhập email nhân viên hỗ trợ"
-              filterOption={(inputValue, option) =>
-                option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-              }
-              size="large"
-            />
-          </Form.Item>
-          <Form.Item style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '' }}>
-            <Button type="primary" htmlType="submit">
-              Thêm
-            </Button>
-          </Form.Item>
-        </Form>
-      )}
     </Fragment>
   );
 };
 
-export default CreateUser;
+export default EditUserManagement;

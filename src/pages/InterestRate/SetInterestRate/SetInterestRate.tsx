@@ -1,25 +1,45 @@
-import { Form, Input, InputNumber, Popconfirm, Table, Typography } from 'antd';
-import React, { useState } from 'react';
+import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Button, Form, Input, InputNumber, message, Popconfirm, Space, Table, Typography } from 'antd';
+import { ColumnsType } from 'antd/es/table';
+import React, { useEffect, useState } from 'react';
 
+import { listInterestRateApi } from '@/api/ttd_interest_rate';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
+import Result from '@/pages/components/result/Result';
+
+const { getListProfit, getListSubscription, updateInterest } = listInterestRateApi;
+const { Text } = Typography;
 
 interface Item {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
+  id: string;
+  created_at: string;
+  director_commission_rate: number;
+  fila_commission_rate: number;
+  manager_commision_rate: number;
+  profit_from: string | null;
+  profit_to: string | null;
+  sale_commission_rate: number;
+  type: string;
+  updated_at: string;
+  subscription_product: {
+    description: string;
+    id: string;
+    name: string;
+    topic: string;
+  };
 }
 
-const originData: Item[] = [];
+// const originData: Item[] = [];
 
-for (let i = 0; i < 100; i++) {
-  originData.push({
-    key: i.toString(),
-    name: `Edward ${i}`,
-    age: 32,
-    address: `London Park no. ${i}`,
-  });
-}
+// for (let i = 0; i < 100; i++) {
+//   originData.push({
+//     id: i.toString(),
+//     name: `Edward ${i}`,
+//     age: 32,
+//     address: `London Park no. ${i}`,
+//   });
+// }
 
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editing: boolean;
@@ -41,7 +61,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
   children,
   ...restProps
 }) => {
-  const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+  const inputNode = <InputNumber />;
 
   return (
     <td {...restProps}>
@@ -52,11 +72,11 @@ const EditableCell: React.FC<EditableCellProps> = ({
           rules={[
             {
               required: true,
-              message: `Please Input ${title}!`,
+              message: `Vui lòng nhập ${title}!`,
             },
           ]}
         >
-          {inputNode}
+          <InputNumber />
         </Form.Item>
       ) : (
         children
@@ -66,97 +86,177 @@ const EditableCell: React.FC<EditableCellProps> = ({
 };
 
 const SetInterestRate = () => {
+  const queryClient = useQueryClient();
   const [form] = Form.useForm();
-  const [data, setData] = useState(originData);
+  // const [data, setData] = useState(originData);
+  const [listSubscription, setListSubscription] = useState([]);
+  const [listProfit, setListProfit] = useState([]);
   const [editingKey, setEditingKey] = useState('');
+  const [interestSelect, setInterestSelect] = useState<any>();
 
-  const isEditing = (record: Item) => record.key === editingKey;
+  const isEditing = (record: Item) => record.id === editingKey;
 
-  const edit = (record: Partial<Item> & { key: React.Key }) => {
-    form.setFieldsValue({ name: '', age: '', address: '', ...record });
-    setEditingKey(record.key);
+  const getdataSubscription = useQuery({
+    queryKey: ['getListSubscription'],
+    // queryFn: () => getListSubscription(qs.stringify(getRandomuserParams(tableParams)), sort, searchText),
+    queryFn: () => getListSubscription(),
+  });
+  const getdataProfit = useQuery({
+    queryKey: ['getListProfit'],
+    // queryFn: () => getListSubscription(qs.stringify(getRandomuserParams(tableParams)), sort, searchText),
+    queryFn: () => getListProfit(),
+  });
+  const update = useMutation({
+    mutationFn: _ => updateInterest(interestSelect?.id, interestSelect),
+    onSuccess: _ => {
+      queryClient.invalidateQueries(['getListProfit', 'getListSubscription']);
+      message.success('Update thành công');
+      setEditingKey('');
+    },
+    onError: _ => {
+      message.error('Update thất bại');
+    },
+  });
+
+  const edit = (record: any) => {
+    form.setFieldsValue({ ...record });
+    setEditingKey(record.id as string);
   };
 
   const cancel = () => {
     setEditingKey('');
   };
 
-  const save = async (key: React.Key) => {
-    try {
-      const row = (await form.validateFields()) as Item;
+  const save = async (record: Item) => {
+    const row = await form.validateFields();
+    const editSubscription = {
+      ...row,
+      id: record.id,
+    };
 
-      const newData = [...data];
-      const index = newData.findIndex(item => key === item.key);
-
-      if (index > -1) {
-        const item = newData[index];
-
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
-        setData(newData);
-        setEditingKey('');
-      } else {
-        newData.push(row);
-        setData(newData);
-        setEditingKey('');
-      }
-    } catch (errInfo) {
-      console.log('Validate Failed:', errInfo);
+    setInterestSelect(editSubscription);
+    // console.log('editSubscription___________', editSubscription);
+    if(interestSelect) {
+      update.mutate()
     }
   };
 
   const columns = [
     {
       title: 'Gói dịch vụ',
-      dataIndex: 'name',
+      dataIndex: 'subscription_product',
       width: '25%',
-      editable: true,
+      // editable: true,
+      render: (record: any) => <Text>{record.name}</Text>,
     },
     {
       title: 'Lợi nhuận Fila hưởng (%)',
-      dataIndex: 'age',
+      dataIndex: 'fila_commission_rate',
       width: '15%',
       editable: true,
     },
     {
       title: 'Giám đốc (%)',
-      dataIndex: 'address',
+      dataIndex: 'director_commission_rate',
       // width: '40%',
       editable: true,
     },
     {
       title: 'Trưởng phòng (%)',
-      dataIndex: 'address',
+      dataIndex: 'manager_commision_rate',
       // width: '40%',
       editable: true,
     },
     {
       title: 'Sale (%)',
-      dataIndex: 'address',
+      dataIndex: 'sale_commission_rate',
       // width: '40%',
       editable: true,
     },
     {
-      title: 'operation',
-      dataIndex: 'operation',
+      title: 'Action',
+      dataIndex: 'action',
+      width: '10%',
       render: (_: any, record: Item) => {
         const editable = isEditing(record);
 
         return editable ? (
-          <span>
-            <Typography.Link onClick={() => save(record.key)} style={{ marginRight: 8 }}>
-              Save
-            </Typography.Link>
+          <Space>
+            <Button size="small" type="dashed" onClick={() => save(record)} style={{ marginRight: 8 }}>
+              <CheckOutlined />
+            </Button>
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
+              <Button size="small" type="dashed">
+                <CloseOutlined />
+              </Button>
             </Popconfirm>
-          </span>
+          </Space>
         ) : (
-          <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-            Edit
-          </Typography.Link>
+          <Button type="primary" size="small" disabled={editingKey !== ''} onClick={() => edit(record)}>
+            <EditOutlined />
+          </Button>
+        );
+      },
+    },
+  ];
+  const columnsProfit = [
+    {
+      title: 'Gói dịch vụ',
+      // dataIndex: 'profit_from',
+      // width: '25%',
+      // editable: true,
+      render: (record: any) => (
+        <Text>
+          Từ <Text strong>{record.profit_from}</Text> đến <Text strong>{record.profit_to}</Text>
+        </Text>
+      ),
+    },
+    {
+      title: 'Lợi nhuận Fila hưởng (%)',
+      dataIndex: 'fila_commission_rate',
+      width: '15%',
+      editable: true,
+    },
+    {
+      title: 'Giám đốc (%)',
+      dataIndex: 'director_commission_rate',
+      // width: '40%',
+      editable: true,
+    },
+    {
+      title: 'Trưởng phòng (%)',
+      dataIndex: 'manager_commision_rate',
+      // width: '40%',
+      editable: true,
+    },
+    {
+      title: 'Sale (%)',
+      dataIndex: 'sale_commission_rate',
+      // width: '40%',
+      editable: true,
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      width: '10%',
+      render: (_: any, record: Item) => {
+        const editable = isEditing(record);
+
+        return editable ? (
+          <Space>
+            <Button size="small" type="dashed" onClick={() => save(record)} style={{ marginRight: 8 }}>
+              <CheckOutlined />
+            </Button>
+            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+              <Button size="small" type="dashed">
+                <CloseOutlined />
+              </Button>
+            </Popconfirm>
+          </Space>
+        ) : (
+          <Button type="primary" size="small" disabled={editingKey !== ''} onClick={() => edit(record)}>
+            <EditOutlined />
+          </Button>
         );
       },
     },
@@ -178,11 +278,44 @@ const SetInterestRate = () => {
       }),
     };
   });
+  const mergedColumnsProfit = columnsProfit.map(col => {
+    if (!col.editable) {
+      return col;
+    }
+
+    return {
+      ...col,
+      onCell: (record: Item) => ({
+        record,
+        inputType: col.dataIndex === 'age' ? 'number' : 'text',
+        dataIndex: col.dataIndex,
+        title: col.title,
+        editing: isEditing(record),
+      }),
+    };
+  });
+
+  useEffect(() => {
+    if (getdataSubscription.data) {
+      setListSubscription(getdataSubscription.data?.data?.rows);
+    }
+
+    if (getdataProfit.data) {
+      setListProfit(getdataProfit.data?.data?.rows);
+    }
+  }, [getdataSubscription, getdataProfit]);
+
+  useEffect(() => {
+    if(interestSelect) {
+      update.mutate();
+    }
+  }, [interestSelect])
 
   return (
     <div>
       <Form form={form} component={false}>
         <HeadTitle title="Biểu hoa hồng kinh doanh theo gói dịch vụ" />
+        <Result total={getdataSubscription.data?.data?.count} />
         <Table
           components={{
             body: {
@@ -190,16 +323,20 @@ const SetInterestRate = () => {
             },
           }}
           bordered
-          dataSource={data}
+          dataSource={listSubscription}
           columns={mergedColumns}
           rowClassName="editable-row"
           pagination={{
             onChange: cancel,
+          }}
+          style={{
+            height: 'auto',
           }}
         />
       </Form>
       <Form form={form} component={false}>
         <HeadTitle title="Biểu hoa hồng kinh doanh cho gói VIP" />
+        <Result total={getdataProfit.data?.data?.count} />
         <Table
           components={{
             body: {
@@ -207,12 +344,13 @@ const SetInterestRate = () => {
             },
           }}
           bordered
-          dataSource={data}
-          columns={mergedColumns}
+          dataSource={listProfit}
+          columns={mergedColumnsProfit}
           rowClassName="editable-row"
           pagination={{
             onChange: cancel,
           }}
+          style={{ height: 'auto' }}
         />
       </Form>
     </div>

@@ -14,33 +14,21 @@ const { Text, Link } = Typography;
 export const ColumnSearchProps = (
   dataIndex: DataIndex,
   title: string,
-  setSearchQuery: (query: string) => void,
-  setTextQuery: (text: string) => void,
+  setSearchQuery: (query: any) => void,
 ): ColumnType<DataType> => {
-  const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
 
   const handleSearch = (selectedKeys: string, confirm: (param?: FilterConfirmProps) => void, dataIndex: DataIndex) => {
-    // confirm();
-    // setSearchText(selectedKeys[0]);
-    // setSearchedColumn(dataIndex);
-    setTextQuery(selectedKeys);
-
-    switch (dataIndex) {
-      case 'id':
-        setSearchQuery(`id=${selectedKeys}`);
-        break;
-      case 'fullname':
-        setSearchQuery(`name=${selectedKeys}`);
-        break;
-      case 'phone_number':
-        setSearchQuery(`phone_number=${selectedKeys}`);
-        break;
-      case 'email':
-        setSearchQuery(`email=${selectedKeys}`);
-        break;
-      default:
-        break;
+    if (dataIndex === 'fullname') {
+      setSearchQuery((prev: any) => ({
+        ...prev,
+        name: selectedKeys,
+      }));
+    } else {
+      setSearchQuery((prev: any) => ({
+        ...prev,
+        [dataIndex]: selectedKeys,
+      }));
     }
   };
 
@@ -97,10 +85,10 @@ export const Column = (
   const columns: ColumnsType<DataType> = [
     {
       title: 'Mã',
-      dataIndex: 'id',
+      dataIndex: 'customer_code',
       // sorter: true,
       width: '14%',
-      ...ColumnSearchProps('id', 'mã', setSearchQuery, setTextQuery),
+      ...ColumnSearchProps('customer_code', 'mã', setSearchQuery),
     },
     {
       title: 'Ảnh đại diện',
@@ -117,20 +105,20 @@ export const Column = (
       sorter: true,
       dataIndex: 'fullname',
       width: '15%',
-      ...ColumnSearchProps('fullname', 'tên khách hàng', setSearchQuery, setTextQuery),
+      ...ColumnSearchProps('fullname', 'tên khách hàng', setSearchQuery),
     },
     {
       title: 'Số điện thoại',
       sorter: true,
       dataIndex: 'phone_number',
       width: '14%',
-      ...ColumnSearchProps('phone_number', 'sđt', setSearchQuery, setTextQuery),
+      ...ColumnSearchProps('phone_number', 'sđt', setSearchQuery),
     },
     {
       title: 'Email',
       dataIndex: 'email',
-      width: '14%',
-      ...ColumnSearchProps('email', 'email', setSearchQuery, setTextQuery),
+      width: '18%',
+      ...ColumnSearchProps('email', 'email', setSearchQuery),
     },
     {
       title: 'Gói dịch vụ',
@@ -141,13 +129,13 @@ export const Column = (
         { text: 'Vip', value: 'vip' },
         { text: 'Premium', value: 'premium' },
       ],
-      render: (_, record) => <Text>{record.subscription.subscription_product.name}</Text>,
+      render: (_, record) => <Text>{record.subscription?.subscription_product?.name}</Text>,
     },
     {
       title: 'NAV',
       dataIndex: '',
       width: '8%',
-      render: (_, record) => <Text>0</Text>,
+      render: (_, record) => <Text>{record?.CaculatorHistories?.expected_amount}</Text>,
     },
     {
       title: 'Số ngày còn lại',

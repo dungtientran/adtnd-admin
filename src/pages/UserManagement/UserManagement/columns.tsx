@@ -75,23 +75,24 @@ export const Column = (
 ) => {
   const columns: ColumnsType<DataType> = [
     {
-      title: 'Ngày yêu cầu',
-      dataIndex: 'created_at',
-      render: (_, record) => <Text>{moment(record.created_at).format('DD/MM/YYYY')}</Text>,
+      title: 'Mã nhân viên',
+      dataIndex: 'id',
       width: '14%',
+      ...ColumnSearchProps('id', 'mã nhân viên', setSearchQuery),
+
     },
     {
-      title: 'Tên khách hàng',
-      dataIndex: 'name',
+      title: 'Họ tên',
+      dataIndex: 'fullname',
       width: '8%',
-      ...ColumnSearchProps('name', 'tên khách hàng', setSearchQuery),
+      ...ColumnSearchProps('fullname', 'họ tên', setSearchQuery),
     },
     {
-      title: 'SĐT',
+      title: 'Số điện thoại',
       // sorter: true,
       dataIndex: 'phone_number',
       width: '15%',
-      ...ColumnSearchProps('phone_number', 'tên khách hàng', setSearchQuery),
+      ...ColumnSearchProps('phone_number', 'số điện thoại', setSearchQuery),
     },
     {
       title: 'Email',
@@ -101,28 +102,20 @@ export const Column = (
       ...ColumnSearchProps('email', 'email', setSearchQuery),
     },
     {
-      title: 'Địa chỉ',
-      dataIndex: 'address',
+      title: 'Chức vụ',
+      dataIndex: 'role',
       width: '14%',
-      ...ColumnSearchProps('address', 'địa chỉ', setSearchQuery),
+      ...ColumnSearchProps('role', 'chức vụ', setSearchQuery),
+      render: (_, record) => <Text>{record?.role?.name}</Text>
+
     },
     {
-      title: 'Loại hỗ trợ',
-      dataIndex: 'type',
+      title: 'Level',
+      dataIndex: 'SaleLevel',
       width: '8%',
-      filters: [
-        { text: 'Tư vấn mở tài khoản', value: 'trial' },
-        { text: 'Tư vẫn đầu tư', value: 'vip' },
-        { text: 'Hỗ trợ', value: 'premium' },
-      ],
-    },
-    {
-      title: 'Liên lạc',
-      dataIndex: 'is_contact',
-      width: '8%',
-      render: (_, record) => (
-        <>{record.is_contact ? <Tag color="processing">Đã liên lạc</Tag> : <Tag color="magenta">Chưa liên lạc</Tag>}</>
-      ),
+      ...ColumnSearchProps('SaleLevel', 'level', setSearchQuery),
+      render: (_, record) => <Text>{record?.SaleLevel?.level}</Text>,
+
     },
     {
       title: 'Action',

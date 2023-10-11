@@ -1,22 +1,22 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { TableParams } from './index.interface';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Drawer, message, Table } from 'antd';
+import { Button, Drawer, message, Table } from 'antd';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 
 import { listCustomerApi } from '@/api/ttd_list_customer';
-import EditRequest from '@/pages/components/form/form-edit-request';
+import { listUserApi } from '@/api/ttd_user_management';
+import EditUserManagement from '@/pages/components/form/form-edit-user-manage';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
 
-import BoxFilter from './boxFilter';
 import { Column } from './columns';
 
 const { getCustomerSupport, updateCustomerSupport, deleteCustomerSupport } = listCustomerApi;
+const { getListUser } = listUserApi;
 
-const ListRequests: React.FC = () => {
+const UserManagement: React.FC = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [tableParams, setTableParams] = useState<TableParams>({
@@ -34,9 +34,8 @@ const ListRequests: React.FC = () => {
   const [customerSelect, setCustomerSelect] = useState<any>();
   const [idDelete, setIdDelete] = useState<string>('');
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListCustomer', tableParams, queryFilter, searchText],
-    queryFn: () =>
-      getCustomerSupport(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText)),
+    queryKey: ['getListUser', tableParams, queryFilter, searchText],
+    queryFn: () => getListUser(qs.stringify(getRandomuserParams(tableParams)), queryFilter),
   });
   const update = useMutation({
     mutationFn: _ => updateCustomerSupport(customerSelect?.id as string, updateDataSp),
@@ -113,17 +112,27 @@ const ListRequests: React.FC = () => {
       update.mutate();
     }
   }, [updateDataSp]);
-  
+
   useEffect(() => {
     if (idDelete) {
       deleteRequest.mutate();
     }
   }, [idDelete]);
+  // console.log('data_______________________', data);
 
   return (
     <div className="aaa">
-      <HeadTitle title="Danh sách yêu cầu hỗ trợ" />
-      <BoxFilter setQueryFilter={setQueryFilter} />
+      <HeadTitle title="Danh sách quản trị viên" />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Button
+          type="primary"
+          onClick={() => {
+            setOpen(true), setCustomerSelect(undefined);
+          }}
+        >
+          Tạo quản trị viên mới
+        </Button>
+      </div>
       <Result total={data?.data?.count} searchText={searchedColumn} />
       <Table
         columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
@@ -134,11 +143,11 @@ const ListRequests: React.FC = () => {
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
       />
-      <Drawer title="Chỉnh sửa" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
-        <EditRequest setUpdateDataSp={setUpdateDataSp} initForm={customerSelect} />
+      <Drawer title="Tạo mới quản trị viên" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
+        <EditUserManagement setCustomerForm={setUpdateDataSp} initForm={customerSelect} />
       </Drawer>
     </div>
   );
 };
 
-export default ListRequests;
+export default UserManagement;
