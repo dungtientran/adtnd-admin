@@ -102,14 +102,14 @@ export const Column = (
     },
     {
       title: 'Tên khách hàng',
-      sorter: true,
+      // sorter: true,
       dataIndex: 'fullname',
       width: '15%',
       ...ColumnSearchProps('fullname', 'tên khách hàng', setSearchQuery),
     },
     {
       title: 'Số điện thoại',
-      sorter: true,
+      // sorter: true,
       dataIndex: 'phone_number',
       width: '14%',
       ...ColumnSearchProps('phone_number', 'sđt', setSearchQuery),

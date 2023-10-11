@@ -6,7 +6,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { listCustomerApi } from '@/api/ttd_list_customer';
 
 const { Title } = Typography;
-const { getSaleList } = listCustomerApi;
+const { getSaleList, getListUser } = listCustomerApi;
 const { Option } = Select;
 
 interface ICreateUser {
@@ -34,7 +34,7 @@ const prefixSelector = (
 );
 
 const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }) => {
-  const [option, setOption] = useState<{ id: string; value: string }[]>([]);
+  const [option, setOption] = useState<{ id: string; value: string; email: string; customer_code: string }[]>([]);
   const [option2, setOption2] = useState([
     {
       id: 'admin',
@@ -54,6 +54,23 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
     },
   ]);
 
+  const userData = useQuery({
+    queryKey: ['getListUser'],
+    queryFn: () => getListUser(''),
+  });
+
+  useEffect(() => {
+    if (userData.data) {
+      const newOption2 = userData.data?.map((item: any) => ({
+        value: item?.fullname,
+        id: item?.id,
+        email: item?.email,
+        customer_code: item?.customer_code,
+      }));
+
+      setOption(newOption2);
+    }
+  }, [userData.data]);
   // const { data, isLoading, isError } = useQuery({
   //   queryKey: ['getSaleList'],
   //   queryFn: () => getSaleList(),
@@ -111,28 +128,26 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
         scrollToFirstError
         // initialValues={initValue}
       >
-        <Form.Item
+        {/* <Form.Item
           name="fullname"
           label="Họ tên"
           rules={[{ required: true, message: 'Vui lòng nhập họ tên!', whitespace: true }]}
         >
           <Input placeholder="Họ tên" />
-        </Form.Item>
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[
-            {
-              type: 'email',
-              message: 'Không đúng định dạng Email!',
-            },
-            {
-              required: true,
-              message: 'Vui lòng nhập E-mail!',
-            },
-          ]}
+        </Form.Item> */}
+          <Form.Item
+          name="fullname"
+          label="Tên khách hàng"
+          rules={[{ required: true, message: 'Không đc bỏ trống !', whitespace: true }]}
         >
-          <Input placeholder="Email" />
+          <AutoComplete
+            style={{ width: '100%' }}
+            options={option}
+            placeholder="Nhập email nhân viên hỗ trợ"
+            filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
+            size="large"
+            // onChange={value => setNameSelect(value)}
+          />
         </Form.Item>
 
         <Form.Item

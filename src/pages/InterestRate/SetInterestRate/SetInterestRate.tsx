@@ -1,14 +1,18 @@
-import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
+import type { TablePaginationConfig } from 'antd/es/table';
+import type { FilterValue } from 'antd/es/table/interface';
+
+import { CheckOutlined, CloseOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Form, Input, InputNumber, message, Popconfirm, Space, Table, Typography } from 'antd';
+import { Button, Drawer, Form, Input, InputNumber, message, Popconfirm, Space, Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useState } from 'react';
 
 import { listInterestRateApi } from '@/api/ttd_interest_rate';
+import CreateInterest from '@/pages/components/form/form-create-interest';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
 
-const { getListProfit, getListSubscription, updateInterest } = listInterestRateApi;
+const { getListProfit, getListSubscription, updateInterest, createInterstRate } = listInterestRateApi;
 const { Text } = Typography;
 
 interface Item {
@@ -85,6 +89,13 @@ const EditableCell: React.FC<EditableCellProps> = ({
   );
 };
 
+export interface TableParams {
+  pagination?: TablePaginationConfig;
+  sortField?: string;
+  sortOrder?: string;
+  filters?: Record<string, FilterValue>;
+}
+
 const SetInterestRate = () => {
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
@@ -93,6 +104,15 @@ const SetInterestRate = () => {
   const [listProfit, setListProfit] = useState([]);
   const [editingKey, setEditingKey] = useState('');
   const [interestSelect, setInterestSelect] = useState<any>();
+  const [open, setOpen] = useState(false);
+  const [newInteres, setNewInterst] = useState<any>();
+
+  const [tableParams, setTableParams] = useState<TableParams>({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
 
   const isEditing = (record: Item) => record.id === editingKey;
 
@@ -109,7 +129,8 @@ const SetInterestRate = () => {
   const update = useMutation({
     mutationFn: _ => updateInterest(interestSelect?.id, interestSelect),
     onSuccess: _ => {
-      queryClient.invalidateQueries(['getListProfit', 'getListSubscription']);
+      queryClient.invalidateQueries(['getListSubscription']);
+      queryClient.invalidateQueries(['getListProfit']);
       message.success('Update thành công');
       setEditingKey('');
     },
@@ -117,10 +138,25 @@ const SetInterestRate = () => {
       message.error('Update thất bại');
     },
   });
+  const create = useMutation({
+    mutationFn: _ => createInterstRate(newInteres),
+    onSuccess: _ => {
+      queryClient.invalidateQueries(['getListProfit']);
+      message.success('Tạo thành công');
+      setOpen(false);
+    },
+    onError: _ => {
+      message.error('Tạo thất bại');
+    },
+  });
 
   const edit = (record: any) => {
     form.setFieldsValue({ ...record });
     setEditingKey(record.id as string);
+  };
+
+  const onClose = () => {
+    setOpen(false);
   };
 
   const cancel = () => {
@@ -135,9 +171,10 @@ const SetInterestRate = () => {
     };
 
     setInterestSelect(editSubscription);
+
     // console.log('editSubscription___________', editSubscription);
-    if(interestSelect) {
-      update.mutate()
+    if (interestSelect) {
+      update.mutate();
     }
   };
 
@@ -295,26 +332,65 @@ const SetInterestRate = () => {
     };
   });
 
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      // setData([]);
+    }
+
+    // if (sorter.order === 'ascend') {
+    //   const sorte = `${sorter.field}_order=ASC`;
+
+    //   setSort(sorte);
+    // } else if (sorter.order === 'descend') {
+    //   const sorte = `${sorter.field}_order=DESC`;
+
+    //   setSort(sorte);
+    // }
+  };
+
   useEffect(() => {
     if (getdataSubscription.data) {
       setListSubscription(getdataSubscription.data?.data?.rows);
     }
 
     if (getdataProfit.data) {
+      // setTableParams({
+      //   ...tableParams,
+      //   pagination: {
+      //     ...tableParams.pagination,
+      //     total: getdataProfit.data?.data?.count,
+      //   },
+      // });
       setListProfit(getdataProfit.data?.data?.rows);
     }
   }, [getdataSubscription, getdataProfit]);
 
   useEffect(() => {
-    if(interestSelect) {
+    if (interestSelect) {
       update.mutate();
     }
-  }, [interestSelect])
+  }, [interestSelect]);
+
+  useEffect(() => {
+    if (newInteres) {
+      create.mutate();
+    }
+  }, [newInteres]);
 
   return (
     <div>
       <Form form={form} component={false}>
         <HeadTitle title="Biểu hoa hồng kinh doanh theo gói dịch vụ" />
+        <div style={{ display: 'flex', textAlign: 'center', justifyContent: 'center' }}>
+          <Button onClick={() => setOpen(true)} type="primary">
+            <PlusOutlined /> Tạo mới
+          </Button>
+        </div>
         <Result total={getdataSubscription.data?.data?.count} />
         <Table
           components={{
@@ -347,12 +423,14 @@ const SetInterestRate = () => {
           dataSource={listProfit}
           columns={mergedColumnsProfit}
           rowClassName="editable-row"
-          pagination={{
-            onChange: cancel,
-          }}
+          pagination={tableParams.pagination}
+          onChange={handleTableChange}
           style={{ height: 'auto' }}
         />
       </Form>
+      <Drawer title="Tạo mới" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
+        <CreateInterest setNewInteres={setNewInterst} />
+      </Drawer>
     </div>
   );
 };

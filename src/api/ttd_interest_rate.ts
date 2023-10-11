@@ -10,4 +10,7 @@ export const listInterestRateApi = {
   updateInterest(id: string , data: any): Promise<any> {
     return axiosInstance.put(`/admin/commission/update_commission_rate/${id}`, data);
   },
+  createInterstRate(data: any): Promise<any> {
+    return axiosInstance.post(`/admin/commission/create_commission_rate`, data);
+  },
 };
