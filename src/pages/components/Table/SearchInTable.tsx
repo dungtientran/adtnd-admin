@@ -13,7 +13,7 @@ export const getColumnSearchProps = ({ setFilter }: any) => {
     filterDropdown: () => (
       <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
         <Input
-          placeholder={`Search name`}
+          placeholder={`Search `}
           // value={value}
           onChange={handleInputChange}
           onPressEnter={() => {

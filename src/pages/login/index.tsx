@@ -1,9 +1,9 @@
 import type { LoginParams } from '@/interface/user/login';
 import type { FC } from 'react';
-
+import {useState} from 'react'
 import './index.less';
 
-import { Avatar, Button, Checkbox, Form, Input, notification, Space, Typography } from 'antd';
+import { Avatar, Button, Checkbox, Form, Input, notification, Space, Spin, Typography } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -20,12 +20,15 @@ const initialValues: LoginParams = {
 };
 
 const LoginForm: FC = () => {
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const { formatMessage } = useLocale();
 
   const onFinished = async (form: LoginParams) => {
+    if(loading) return
+    setLoading(true)
     const res: any = await dispatch(await loginAsync(form));
 
     if (res.success) {
@@ -41,6 +44,7 @@ const LoginForm: FC = () => {
         message: res.message,
       });
     }
+    setLoading(false)
   };
 
   return (
@@ -94,7 +98,7 @@ const LoginForm: FC = () => {
         </Form.Item> */}
         <Form.Item>
           <Button htmlType="submit" type="primary" className="login-page-form_button">
-            <LocaleFormatter id="gloabal.tips.login" />
+            {loading ? <Spin size="small" />: <LocaleFormatter id="gloabal.tips.login" />}
           </Button>
         </Form.Item>
       </Form>

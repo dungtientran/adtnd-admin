@@ -36,6 +36,7 @@ function GroupTablePage() {
 
   // live search state
   const [nameSearch, setNameSearch] = useState(null);
+  const [saleSearch, setSaleSearch] = useState(null);
   const [filterQuery, setFilterQuery] = useState('');
   const [subsciptionFilter, setSubsciptionFilter] = useState<any>([]);
 
@@ -100,13 +101,17 @@ function GroupTablePage() {
     actionList.push({
       key: '1',
       label: (
-        <Typography
-          onClick={() => {
-            console.log(record.id);
-          }}
-        >
-          Xem chi tiết
-        </Typography>
+        <Link to={`/customer-management/customer-group/detail/${record.id}`} className="text-left">
+          <Typography
+            onClick={() => {
+              console.log(record.id);
+            }}
+          >
+
+            Xem chi tiết
+
+          </Typography>
+        </Link>
       ),
     });
     actionList.push({
@@ -194,6 +199,9 @@ function GroupTablePage() {
       dataType: 'text',
       width: '20%',
       render: (text: string, record: any) => <Typography className="text-center">{text}</Typography>,
+      ...getColumnSearchProps({
+        setFilter: setSaleSearch,
+      }),
     },
     {
       title: 'Mô tả',
@@ -204,11 +212,14 @@ function GroupTablePage() {
   ];
 
   useEffect(() => {
-    if (nameSearch != null || subsciptionFilter.length > 0) {
+    if (nameSearch != null || subsciptionFilter.length > 0|| saleSearch != null) {
       let query = '';
 
       if (nameSearch) {
         query += `&searchText=${nameSearch}`;
+      }
+      if (saleSearch) {
+        query += `&saleSearch=${saleSearch}`;
       }
 
       if (subsciptionFilter.length > 0) {
@@ -217,7 +228,7 @@ function GroupTablePage() {
 
       setFilterQuery(query);
     }
-  }, [nameSearch, subsciptionFilter]);
+  }, [nameSearch, subsciptionFilter, saleSearch]);
   useEffect(() => {
     getData();
   }, [JSON.stringify(tableParams), filterQuery]);
@@ -280,12 +291,23 @@ function GroupTablePage() {
     }
   };
 
+  const checkIsFilter = () => {
+    if (nameSearch != null || saleSearch != null || subsciptionFilter.length > 0) return true
+    return false
+  }
+  const resetFilter = () => {
+    setNameSearch(null)
+    setSaleSearch(null)
+    setSubsciptionFilter([])
+    setFilterQuery('')
+  }
+
   return (
     <div>
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Danh sách nhóm khách hàng</Typography.Title>
       </div>
-      <div className="flex justify-end" style={{ display: 'flex', justifyContent: 'end' }}>
+      <div className="flex justify-end">
         <Button
           onClick={() => {
             setUpdate(null);
@@ -306,13 +328,13 @@ function GroupTablePage() {
           pagination={tableParams.pagination}
           onChange={handleTableChange}
           scroll={{ x: 'max-content', y: '100%' }}
-          rowSelection={{
-            type: 'checkbox',
-            onChange: (value: any) => {
-              console.log(value);
-              setSelectedRow(value);
-            },
-          }}
+        // rowSelection={{
+        //   type: 'checkbox',
+        //   onChange: (value: any) => {
+        //     console.log(value);
+        //     setSelectedRow(value);
+        //   },
+        // }}
         />
       </div>
       <CreateGroupModal

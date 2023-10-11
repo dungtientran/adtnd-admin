@@ -3,7 +3,7 @@ import type { FilterValue } from 'antd/es/table/interface';
 
 import './index.less';
 
-import { MenuOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
+import { MenuOutlined, SearchOutlined,StarOutlined,StarFilled } from '@ant-design/icons';
 import {
   Button,
   Col,
@@ -196,6 +196,13 @@ const Recommendations: React.FC = () => {
         query += '&is_approve=true';
       }
 
+      setTableParams({
+        ...tableParams,
+        pagination:{
+          ...tableParams.pagination,
+          current: 1
+        }
+      });
       setFilterQuery(query);
     }
   }, [statusFilter, typeFilter]);
@@ -418,6 +425,8 @@ const Recommendations: React.FC = () => {
   };
 
   const handleDeleteSignal = (id: string) => {
+    if (loading) return
+    setLoading(true)
     deleteSignal(id)
       .then(res => {
         console.log(res);
@@ -432,6 +441,9 @@ const Recommendations: React.FC = () => {
         notification.error({
           message: 'Có lỗi xảy ra!',
         });
+      })
+      .finally(()=>{
+        setLoading(false)
       });
   };
 
@@ -466,7 +478,8 @@ const Recommendations: React.FC = () => {
 
   const handleUpdateSignal = async (payload: any) => {
     console.log(payload);
-
+    if (loading) return
+    setLoading(true)
     return await updateSignal({
       ...payload,
       id: updateData.id,
@@ -498,10 +511,15 @@ const Recommendations: React.FC = () => {
         });
 
         return false;
+      })
+      .finally(()=>{
+        setLoading(false)
       });
   };
 
   const handleApproveSignal = async (signal_ids: any, approve: boolean) => {
+    if (loading) return
+    setLoading(true)
     await approveManySignal({
       signal_ids: signal_ids || [],
       approve: approve,
@@ -530,18 +548,17 @@ const Recommendations: React.FC = () => {
 
           setData(filter);
         }
-
-        notification.success({
-          message: `${approve ? 'Duyệt' : 'Từ chối'} thành công`,
-        });
-      })
-      .catch(err => {
-        notification.error({
-          message: err.message,
-        });
+        notification.success(({
+          message: `${approve ? 'Duyệt': 'Từ chối'} thành công`
+        }))
+      }).catch((err) =>{
+        notification.error(({
+          message: err.message
+        }))
       })
       .finally(() => {
         setSelectedRow([]);
+        setLoading(false)
       });
   };
 
@@ -553,10 +570,8 @@ const Recommendations: React.FC = () => {
       <div className="mb-[20px]" style={{ marginBottom: '20px' }}>
         <Row>
           <Col xs={12} lg={6}>
-            <div className="flex items-center" style={{ display: 'flex', alignItems: 'center' }}>
-              <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
-                Loại
-              </Typography>
+            <div className="flex items-center">
+              <Typography className="me-[10px]">Loại</Typography>
               <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
                 <Radio.Button value={1}>Ngắn hạn</Radio.Button>
@@ -566,10 +581,8 @@ const Recommendations: React.FC = () => {
           </Col>
 
           <Col xs={12} lg={12}>
-            <div className="flex items-center" style={{ display: 'flex', alignItems: 'center' }}>
-              <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
-                Tình trạng
-              </Typography>
+            <div className='flex items-center'>
+              <Typography className='me-[10px]' >Tình trạng</Typography>
               <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
                 <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
@@ -578,8 +591,8 @@ const Recommendations: React.FC = () => {
               </Radio.Group>
             </div>
           </Col>
-          <Col lg={6} xs={12} className="flex justify-end" style={{ display: 'flex', justifyContent: 'end' }}>
-            <Button onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
+          <Col lg={6} xs={12} className="flex justify-end">
+            <Button  onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
           </Col>
         </Row>
         <div
