@@ -13,7 +13,7 @@ interface IBoxFilter {
   setQueryFilter: (query: string) => void;
 }
 
-const BoxFilter = ({setQueryFilter} : IBoxFilter) => {
+const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
   const [queryObj, setQueryObj] = useState({});
 
   const onChange = (
@@ -28,23 +28,10 @@ const BoxFilter = ({setQueryFilter} : IBoxFilter) => {
     }));
   };
 
-  const handleSelectIsContact = (e: RadioChangeEvent) => {
-    const is_contact = e.target.value;
-
-    setQueryObj(prev => ({
-      ...prev,
-      is_contact,
-    }));
-  };
-
-  // console.log('queryObj_______________', queryObj);
-
   useEffect(() => {
-    // console.log(queryObj);
     const querystring = qs.stringify(queryObj);
 
-    // console.log('querystring_______________', querystring);
-    setQueryFilter(querystring)
+    setQueryFilter(querystring);
   }, [queryObj]);
 
   return (
@@ -53,20 +40,42 @@ const BoxFilter = ({setQueryFilter} : IBoxFilter) => {
       size="middle"
       style={{ marginBottom: '20px', padding: '1rem', border: '1px solid #ccc', borderRadius: '6px' }}
     >
+      <Text strong>Lọc theo:</Text>
+
       <Space>
-        <Text strong>Lọc theo ngày yêu cầu:</Text>
+        <Text strong>Ngày giao dịch:</Text>
         <Space>
           <RangePicker format="YYYY/MM/DD" onChange={onChange} />
         </Space>
       </Space>
 
       <Space>
-        <Text strong>Tình trạng liên hệ: </Text>
-        <Radio.Group defaultValue={''} onChange={handleSelectIsContact}>
-          <Radio.Button value="">Tất cả</Radio.Button>
-          <Radio.Button value={true}>Đã liên hệ</Radio.Button>
-          <Radio.Button value={false}>Chưa liên hệ</Radio.Button>
-        </Radio.Group>
+        <Text strong>Số tiền giao dịch: </Text>
+        <Space>
+          <InputNumber
+            addonBefore={<Text>Từ</Text>}
+            onChange={value =>
+              setQueryObj(prev => ({
+                ...prev,
+                amount_min: value,
+              }))
+            }
+            style={{ width: '120px' }}
+            min={0}
+          />
+
+          <InputNumber
+            addonBefore={<Text>Đến</Text>}
+            onChange={value =>
+              setQueryObj(prev => ({
+                ...prev,
+                amount_max: value,
+              }))
+            }
+            style={{ width: '120px' }}
+            min={0}
+          />
+        </Space>
       </Space>
     </Space>
   );

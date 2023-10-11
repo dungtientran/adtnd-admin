@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 
 import { listCustomerApi } from '@/api/ttd_list_customer';
 import BoxFilterListCustomer from '@/pages/components/box-filter/BoxFilterListCustomer';
-import CreateUser from '@/pages/components/form-add-user';
+import CreateUser from '@/pages/components/form/form-add-user';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
 
@@ -27,7 +27,8 @@ const ListCustomers: React.FC = () => {
     },
   });
   const [sort, setSort] = useState<string>('');
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState({});
+  const [queryFilter, setQuerFilter] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const [listCustomer, setListCustomer] = useState([]);
   const [newCustomer, setNewCustomer] = useState<any>();
@@ -35,8 +36,9 @@ const ListCustomers: React.FC = () => {
   const [customerSelect, setCustomerSelect] = useState<any>();
   const [customer_id, setCustomer_id] = useState<string>('');
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListCustomer', tableParams, searchText],
-    queryFn: () => getListCustomer(qs.stringify(getRandomuserParams(tableParams)), searchText),
+    queryKey: ['getListCustomer', tableParams, queryFilter, searchText],
+    queryFn: () =>
+      getListCustomer(qs.stringify(getRandomuserParams(tableParams)), qs.stringify(searchText), queryFilter),
   });
   const getRandomuserParams = (params: TableParams) => ({
     size: params.pagination?.pageSize,
@@ -98,6 +100,7 @@ const ListCustomers: React.FC = () => {
       filters,
       ...sorter,
     });
+    // console.log('filters__________________', filters);
 
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
       // setData([]);
@@ -142,7 +145,9 @@ const ListCustomers: React.FC = () => {
       remoteSaleUser.mutate();
     }
   }, [customer_id]);
-  console.log('customer_id_______', customer_id);
+  // console.log('data_______', data);
+  console.log('searchText____________', searchText);
+  // console.log('tableParams____________', tableParams);
 
   return (
     <div className="aaa">
@@ -152,7 +157,7 @@ const ListCustomers: React.FC = () => {
           <PlusOutlined /> Tạo mới người dùng
         </Button>
       </div>
-      <BoxFilterListCustomer />
+      <BoxFilterListCustomer setQueryFiter={setQuerFilter} />
       <Result total={data?.data?.count} searchText={searchedColumn} />
       <Table
         columns={Column(setSearchText, setSearchedColumn, setOpen, setCustomerSelect, setCustomer_id)}

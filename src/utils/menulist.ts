@@ -35,6 +35,33 @@ export const menuListHandle: MenuList = [
     ],
   },
   {
+    code: 'Khuyennghi',
+    icon: 'documentation',
+    label: {
+      en_US: 'Quản lý khuyến nghị',
+      zh_CN: '文档',
+    },
+    path: '/documentation',
+    children: [
+      {
+        code: 'service-pack',
+        label: {
+          en_US: 'Duyệt khuyến nghị',
+          zh_CN: '基本',
+        },
+        path: '/signal/create-and-approve',
+      },
+      {
+        code: 'recommendations',
+        label: {
+          en_US: 'Danh sách khuyến nghị',
+          zh_CN: '基本',
+        },
+        path: '/product-managament/recommendations',
+      },
+    ],
+  },
+  {
     code: 'khachhang',
     icon: 'documentation',
     label: {
@@ -97,29 +124,41 @@ export const menuListHandle: MenuList = [
     ],
   },
   {
-    code: 'Khuyennghi',
+    code: 'tracsaction',
     icon: 'documentation',
     label: {
-      en_US: 'Quản lý khuyến nghị',
+      en_US: 'Quản lý tài chính',
       zh_CN: '文档',
     },
     path: '/documentation',
     children: [
       {
-        code: 'service-pack',
+        code: 'transaction-history',
         label: {
-          en_US: 'Duyệt khuyến nghị',
+          en_US: 'Lịch sử giao dịch',
           zh_CN: '基本',
         },
-        path: '/signal/create-and-approve',
+        path: '/transaction/transaction-history',
       },
+    ],
+  },
+  
+  {
+    code: 'user',
+    icon: 'documentation',
+    label: {
+      en_US: 'Quản trị người dùng',
+      zh_CN: '文档',
+    },
+    path: '/documentation',
+    children: [
       {
-        code: 'recommendations',
+        code: 'user-management',
         label: {
-          en_US: 'Danh sách khuyến nghị',
+          en_US: 'Danh sách quản trị viên',
           zh_CN: '基本',
         },
-        path: '/product-managament/recommendations',
+        path: '/user-management/list',
       },
     ],
   },

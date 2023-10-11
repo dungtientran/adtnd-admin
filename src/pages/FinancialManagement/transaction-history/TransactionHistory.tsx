@@ -1,22 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import type { TableParams } from './index.interface';
+import type { DataType, InitDataType, TableParams } from './index.interface';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Drawer, message, Table } from 'antd';
+import { Table } from 'antd';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 
-import { listCustomerApi } from '@/api/ttd_list_customer';
-import EditRequest from '@/pages/components/form/form-edit-request';
+import { listTransactionApi } from '@/api/ttd.transaction';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
 
 import BoxFilter from './boxFilter';
 import { Column } from './columns';
 
-const { getCustomerSupport, updateCustomerSupport, deleteCustomerSupport } = listCustomerApi;
+const { getListTransactionHistory } = listTransactionApi;
 
-const ListRequests: React.FC = () => {
+const TransactionHistory = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [tableParams, setTableParams] = useState<TableParams>({
@@ -30,37 +28,12 @@ const ListRequests: React.FC = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const [listCustomerSp, setListCustomerSp] = useState([]);
   const [queryFilter, setQueryFilter] = useState<string>('');
-  const [updateDataSp, setUpdateDataSp] = useState<any>();
   const [customerSelect, setCustomerSelect] = useState<any>();
   const [idDelete, setIdDelete] = useState<string>('');
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListCustomer', tableParams, queryFilter, searchText],
-    queryFn: () =>
-      getCustomerSupport(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText)),
-  });
-  const update = useMutation({
-    mutationFn: _ => updateCustomerSupport(customerSelect?.id as string, updateDataSp),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListCustomer']);
-      message.success('Update thành công');
-      setUpdateDataSp(undefined);
-      setOpen(false);
-    },
-    onError: _ => {
-      message.error('Update thất bại');
-    },
-  });
-  const deleteRequest = useMutation({
-    mutationFn: _ => deleteCustomerSupport(idDelete),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListCustomer']);
-      message.success('Xóa thành công');
-      setUpdateDataSp(undefined);
-      setOpen(false);
-    },
-    onError: _ => {
-      message.error('Xóa thất bại');
-    },
+    queryKey: ['getListTransactionHistory', tableParams, queryFilter],
+    queryFn: () => getListTransactionHistory(qs.stringify(getRandomuserParams(tableParams)), queryFilter),
   });
 
   const getRandomuserParams = (params: TableParams) => ({
@@ -68,10 +41,6 @@ const ListRequests: React.FC = () => {
     page: params.pagination?.current,
     subscriptions: params.filters?.subscription_product?.join(','),
   });
-
-  const onClose = () => {
-    setOpen(false);
-  };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     setTableParams({
@@ -104,25 +73,32 @@ const ListRequests: React.FC = () => {
           total: data?.data?.count,
         },
       });
-      setListCustomerSp(data?.data?.rows);
+      const newArr = data?.data?.rows?.map((item: InitDataType) => {
+        const b = {
+          id: item.id,
+          amount: item.amount,
+          customer_id: item.customer_id,
+          created_at: item.created_at,
+          description: item.description,
+          name: item.customer.fullname,
+          email: item.customer.email,
+          phone_number: item.customer.phone_number,
+          package: `${item.subscription_plan.subscription_product.name} ${item.subscription_plan.name}`,
+        };
+
+        return b;
+      });
+
+      setListCustomerSp(newArr);
+
+      console.log('newArr____________', newArr);
     }
   }, [data]);
-
-  useEffect(() => {
-    if (updateDataSp) {
-      update.mutate();
-    }
-  }, [updateDataSp]);
-  
-  useEffect(() => {
-    if (idDelete) {
-      deleteRequest.mutate();
-    }
-  }, [idDelete]);
+  console.log('data________________', data);
 
   return (
     <div className="aaa">
-      <HeadTitle title="Danh sách yêu cầu hỗ trợ" />
+      <HeadTitle title="Lịch sử giao dịch" />
       <BoxFilter setQueryFilter={setQueryFilter} />
       <Result total={data?.data?.count} searchText={searchedColumn} />
       <Table
@@ -134,11 +110,8 @@ const ListRequests: React.FC = () => {
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
       />
-      <Drawer title="Chỉnh sửa" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
-        <EditRequest setUpdateDataSp={setUpdateDataSp} initForm={customerSelect} />
-      </Drawer>
     </div>
   );
 };
 
-export default ListRequests;
+export default TransactionHistory;

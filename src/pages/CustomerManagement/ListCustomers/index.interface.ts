@@ -6,6 +6,7 @@ export interface DataType {
   avatar_url: string;
   fullname: string;
   email: string;
+  customer_code: string;
   phone_number: string;
   careby: {
     id: string;
@@ -33,6 +34,9 @@ export interface DataType {
     };
   };
   remaining_subscription_day: number;
+  CaculatorHistories: {
+    expected_amount: number | null;
+  }
 }
 
 export interface TableParams {
