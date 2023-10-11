@@ -82,7 +82,7 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
 
 
     useEffect(() => {
-        if (nameSearch != null || emailSearch != null || phoneSearch != null) {
+        if (nameSearch != null || emailSearch != null || phoneSearch != null ||subsciptionFilter.length > 0) {
             let query = ''
             if (nameSearch) {
                 query += '&name=' + nameSearch
@@ -256,6 +256,7 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
                 open={openAddMember}
                 onClose={()=> setOpenAddMember(false)}
                 onSubmit={()=>{}}
+                group_id={group_id}
             />
         </div>
     )

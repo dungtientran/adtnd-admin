@@ -56,6 +56,12 @@ export const groupSlice = createSlice({
                 count: action.payload.count,
                 members: data
             };
+        },
+        newMember: (state, action) => {
+            state.groupMembers = {
+                count: action.payload.count,
+                members: [action.payload, ...state.groupMembers.members]
+            };
         }
     },
     extraReducers: () => {
@@ -63,6 +69,6 @@ export const groupSlice = createSlice({
     },
 });
 
-export const { setgroup,setGroupMember } = groupSlice.actions;
+export const { setgroup,setGroupMember,newMember } = groupSlice.actions;
 
 export default groupSlice.reducer;

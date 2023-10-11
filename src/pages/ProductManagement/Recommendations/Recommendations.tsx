@@ -393,7 +393,13 @@ const Recommendations: React.FC = () => {
       } else if (statusFilter == 'open') {
         query += '&is_approve=true';
       }
-
+      setTableParams({
+        ...tableParams,
+        pagination:{
+          ...tableParams.pagination,
+          current: 1
+        }
+      });
       setFilterQuery(query);
     }
   }, [statusFilter, typeFilter, priorityFilter]);
@@ -546,7 +552,7 @@ const Recommendations: React.FC = () => {
       <div>
         <div className="mb-[20px]">
           <Row gutter={10}>
-            <Col xs={24} md={12} lg={12} xl={6}>
+            <Col xs={24} md={12} lg={12} xl={8}>
               <div className="flex items-center">
                 <Typography className="me-[10px]">Loại</Typography>
                 <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
@@ -556,7 +562,7 @@ const Recommendations: React.FC = () => {
                 </Radio.Group>
               </div>
             </Col>
-            <Col xs={24} md={12} lg={12} xl={6}>
+            <Col xs={24} md={12} lg={12} xl={8}>
               <div className="flex items-center">
                 <Typography className="me-[10px]">Tình trạng</Typography>
                 <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
@@ -567,7 +573,7 @@ const Recommendations: React.FC = () => {
               </div>
             </Col>
             {statusFilter == 'closed' && (
-              <Col xs={24} md={12} lg={12} xl={6}>
+              <Col xs={24} md={12} lg={12} xl={8}>
                 <div className="flex items-center">
                   <Typography className="me-[10px]">Độ ưu tiên</Typography>
                   <Radio.Group defaultValue={''} onChange={e => setPriorityFilter(e.target.value)}>

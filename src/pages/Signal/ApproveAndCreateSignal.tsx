@@ -3,7 +3,7 @@ import type { FilterValue } from 'antd/es/table/interface';
 
 import './index.less';
 
-import { MenuOutlined, SearchOutlined,StarOutlined,StarFilled } from '@ant-design/icons';
+import { MenuOutlined, SearchOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
 import {
   Button,
   Col,
@@ -194,6 +194,13 @@ const Recommendations: React.FC = () => {
         query += '&is_approve=true';
       }
 
+      setTableParams({
+        ...tableParams,
+        pagination:{
+          ...tableParams.pagination,
+          current: 1
+        }
+      });
       setFilterQuery(query);
     }
   }, [statusFilter, typeFilter]);
@@ -340,7 +347,7 @@ const Recommendations: React.FC = () => {
       sortDirections: ['ascend', 'descend', 'ascend'],
       render: (data) => (
         <div>
-            <StarFilled style={data ? {color: '#eb8f19'}: {}} size={20}/>
+          <StarFilled style={data ? { color: '#eb8f19' } : {}} size={20} />
         </div>
       )
     },
@@ -416,6 +423,8 @@ const Recommendations: React.FC = () => {
   };
 
   const handleDeleteSignal = (id: string) => {
+    if (loading) return
+    setLoading(true)
     deleteSignal(id)
       .then(res => {
         console.log(res);
@@ -430,6 +439,9 @@ const Recommendations: React.FC = () => {
         notification.error({
           message: 'Có lỗi xảy ra!',
         });
+      })
+      .finally(()=>{
+        setLoading(false)
       });
   };
 
@@ -464,7 +476,8 @@ const Recommendations: React.FC = () => {
 
   const handleUpdateSignal = async (payload: any) => {
     console.log(payload);
-
+    if (loading) return
+    setLoading(true)
     return await updateSignal({
       ...payload,
       id: updateData.id,
@@ -496,10 +509,15 @@ const Recommendations: React.FC = () => {
         });
 
         return false;
+      })
+      .finally(()=>{
+        setLoading(false)
       });
   };
 
   const handleApproveSignal = async (signal_ids: any, approve: boolean) => {
+    if (loading) return
+    setLoading(true)
     await approveManySignal({
       signal_ids: signal_ids || [],
       approve: approve,
@@ -528,15 +546,16 @@ const Recommendations: React.FC = () => {
           setData(filter);
         }
         notification.success(({
-          message: `${approve ? 'Duyệt': 'Từ chối'} thành công`
+          message: `${approve ? 'Duyệt' : 'Từ chối'} thành công`
         }))
-      }).catch((err) =>{
+      }).catch((err) => {
         notification.error(({
           message: err.message
         }))
       })
       .finally(() => {
         setSelectedRow([]);
+        setLoading(false)
       });
   };
 
@@ -547,7 +566,7 @@ const Recommendations: React.FC = () => {
       </div>
       <div className="mb-[20px]">
         <Row>
-          <Col xs={12} lg={6}>
+          <Col xs={12} lg={8}>
             <div className="flex items-center">
               <Typography className="me-[10px]">Loại</Typography>
               <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
@@ -558,7 +577,7 @@ const Recommendations: React.FC = () => {
             </div>
           </Col>
 
-          <Col xs={12} lg={12}>
+          <Col xs={12} lg={8}>
             <div className='flex items-center'>
               <Typography className='me-[10px]' >Tình trạng</Typography>
               <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
@@ -569,8 +588,8 @@ const Recommendations: React.FC = () => {
               </Radio.Group>
             </div>
           </Col>
-          <Col lg={6} xs={12} className="flex justify-end">
-            <Button  onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
+          <Col lg={8} xs={12} className="flex justify-end">
+            <Button onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
           </Col>
         </Row>
         <div

@@ -15,11 +15,11 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   config => {
-    store.dispatch(
-      setGlobalState({
-        loading: true,
-      }),
-    );
+    // store.dispatch(
+    //   setGlobalState({
+    //     loading: true,
+    //   }),
+    // );
     const token =
       config.url == '/admin/refresh_token' ? localStorage.getItem('rf-token') : localStorage.getItem('token');
 

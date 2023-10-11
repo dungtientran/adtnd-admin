@@ -18,6 +18,7 @@ function CreateSingalDrawer({
     onClose,
     onSubmit
 }: CreateSingalDrawerProps) {
+    const [loading, setLoading] = useState(false)
     const [form] = Form.useForm();
     const [stockId, setStockId] = useState<any>('')
     const [stockList, setStockList] = useState<IlistStock[]>([]);
@@ -28,6 +29,8 @@ function CreateSingalDrawer({
     };
 
     const handleSubmit = async (value: any) => {
+        if(loading) return
+        setLoading(true)
         console.log('form value: ', value)
         console.log('stock_id: ', stockId)
         const res = await onSubmit({
@@ -37,6 +40,7 @@ function CreateSingalDrawer({
         if (res) {
             form.resetFields()
         }
+        setLoading(false)
     }
     return (
         <Drawer
