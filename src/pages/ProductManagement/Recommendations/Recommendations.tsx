@@ -583,8 +583,8 @@ const Recommendations: React.FC = () => {
               </div>
             </Col>
             {statusFilter == 'closed' && (
-              <Col xs={24} md={12} lg={12} xl={6}>
-                <div className="flex items-center">
+              <Col xs={24} md={12} lg={12} xl={8}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <Typography className="me-[10px]">Độ ưu tiên</Typography>
                   <Radio.Group defaultValue={''} onChange={e => setPriorityFilter(e.target.value)}>
                     <Radio.Button value={''}>Tất cả</Radio.Button>
@@ -596,32 +596,22 @@ const Recommendations: React.FC = () => {
             )}
           </Row>
           <div
-            // className="items-center mt-[15px]
-            //             gap-5 border-[1px] w-fit
-            //             px-[10px] py-[10px] rounded-[6px] border-[#ccc] relative"
+            className="items-center mt-[15px] 
+                        gap-5 border-[1px] w-fit 
+                        px-[10px] py-[10px] rounded-[6px] border-[#ccc] relative"
             style={{
-              margin: '15px 0 0',
+              alignItems: 'center',
+              gap: '5px',
+              width: 'fit-content',
+              padding: '10px',
+              borderRadius: '10px',
               border: '1px solid #ccc',
               position: 'relative',
-              borderRadius: '6px',
-              padding: '10px',
-              width: 'fit-content',
+              marginTop: '10px'
             }}
           >
-            <div
-              // className="flex items-center  mt-[10px]"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginTop: '10px',
-              }}
-            >
-              <Typography
-                // className="me-[10px]"
-                style={{ marginInlineEnd: '10px' }}
-              >
-                Ngày tạo
-              </Typography>
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+              <Typography style={{ marginLeft: '10px' }}>Ngày tạo</Typography>
               <RangePicker
                 style={{
                   width: '300px',
@@ -729,7 +719,8 @@ const Recommendations: React.FC = () => {
           </div>
         </div>
       </div>
-      <Result total={tableParams.pagination?.total} />
+      <Typography>Có tất cả {count} kết quả</Typography>
+
       <Table
         columns={columns}
         rowKey={record => record.id}
