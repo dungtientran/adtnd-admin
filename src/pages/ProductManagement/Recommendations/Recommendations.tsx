@@ -70,6 +70,7 @@ const getRandomuserParams = (params: TableParams) => ({
 });
 
 const Recommendations: React.FC = () => {
+  const [count, setCount] = useState();
   const [data, setData] = useState<any>([]);
   const subscriptions = useSelector(state => state.subsciptions.subscriptions);
   const [loading, setLoading] = useState(false);
@@ -362,6 +363,7 @@ const Recommendations: React.FC = () => {
             },
           });
           console.log(data.data);
+          setCount(data?.data?.count);
           setData(data?.data?.rows);
         }
       })
@@ -396,7 +398,7 @@ const Recommendations: React.FC = () => {
       }
       setTableParams({
         ...tableParams,
-        pagination:{
+        pagination: {
           ...tableParams.pagination,
           current: 1
         }
@@ -498,10 +500,13 @@ const Recommendations: React.FC = () => {
   };
 
   const handleClosedSignal = async () => {
+    if(loading) return;
+    setLoading(true)
     if (closeSignalModal.data.closed_price == 0) {
       return notification.error({
         message: 'Giá đóng phải lớn hơn 0',
       });
+
     } else {
       await closeSignal(closeSignalModal.data)
         .then((res: any) => {
@@ -543,6 +548,7 @@ const Recommendations: React.FC = () => {
           });
         });
     }
+    setLoading(false)
   };
 
   return (
@@ -556,8 +562,8 @@ const Recommendations: React.FC = () => {
           style={{ marginBottom: '20px' }}
         >
           <Row gutter={10}>
-            <Col xs={24} md={12} lg={12} xl={6}>
-              <div className="flex items-center">
+            <Col xs={24} md={12} lg={12} xl={8}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Typography className="me-[10px]">Loại</Typography>
                 <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
                   <Radio.Button value={''}>Tất cả</Radio.Button>
@@ -566,8 +572,8 @@ const Recommendations: React.FC = () => {
                 </Radio.Group>
               </div>
             </Col>
-            <Col xs={24} md={12} lg={12} xl={6}>
-              <div className="flex items-center">
+            <Col xs={24} md={12} lg={12} xl={8}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Typography className="me-[10px]">Tình trạng</Typography>
                 <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                   <Radio.Button value={''}>Tất cả</Radio.Button>
@@ -638,14 +644,7 @@ const Recommendations: React.FC = () => {
                 }}
               />
             </div>
-            <div
-              // className="flex items-center mt-[10px]"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginTop: '10px',
-              }}
-            >
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
               <Typography>Giá mua : Từ</Typography>
               <InputNumber
                 className="mx-[7px]"
@@ -670,20 +669,14 @@ const Recommendations: React.FC = () => {
               />
             </div>
 
-            <div
-              // className="flex mt-[10px]"
-              style={{ display: 'flex', marginTop: '10px' }}
-            >
+            <div style={{ display: 'flex', marginTop: '10px' }}>
               <Button className="" onClick={onFilter}>
                 <Typography>Lọc</Typography>
               </Button>
             </div>
           </div>
         </div>
-        <div
-          // className="flex justify-between mb-4"
-          style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}
-        >
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
           <div>
             {selectedRow.length > 0 && (
               <>
@@ -792,6 +785,7 @@ const Recommendations: React.FC = () => {
         handleOk={() => {
           handleClosedSignal();
         }}
+        loading={loading}
         data={closeSignalModal}
         setData={setCloseSignalModal}
         handleCancel={() =>

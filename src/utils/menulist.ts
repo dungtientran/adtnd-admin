@@ -162,4 +162,23 @@ export const menuListHandle: MenuList = [
       },
     ],
   },
+  {
+    code: 'thanhtoan',
+    icon: 'documentation',
+    label: {
+      en_US: 'Hoa Hồng',
+      zh_CN: '文档',
+    },
+    path: '/invoice',
+    children: [
+      {
+        code: 'invoice',
+        label: {
+          en_US: 'Chứng từ thanh toán',
+          zh_CN: '基本',
+        },
+        path: '/invoice/list',
+      },
+    ],
+  },
 ];

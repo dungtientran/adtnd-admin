@@ -198,7 +198,7 @@ const Recommendations: React.FC = () => {
 
       setTableParams({
         ...tableParams,
-        pagination:{
+        pagination: {
           ...tableParams.pagination,
           current: 1
         }
@@ -442,7 +442,7 @@ const Recommendations: React.FC = () => {
           message: 'Có lỗi xảy ra!',
         });
       })
-      .finally(()=>{
+      .finally(() => {
         setLoading(false)
       });
   };
@@ -512,7 +512,7 @@ const Recommendations: React.FC = () => {
 
         return false;
       })
-      .finally(()=>{
+      .finally(() => {
         setLoading(false)
       });
   };
@@ -567,10 +567,10 @@ const Recommendations: React.FC = () => {
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Duyệt/ Tạo Khuyến nghị</Typography.Title>
       </div>
-      <div className="mb-[20px]" style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '20px' }}>
         <Row>
-          <Col xs={12} lg={6}>
-            <div className="flex items-center">
+          <Col xs={12} lg={8}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <Typography className="me-[10px]">Loại</Typography>
               <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
@@ -580,8 +580,8 @@ const Recommendations: React.FC = () => {
             </div>
           </Col>
 
-          <Col xs={12} lg={12}>
-            <div className='flex items-center'>
+          <Col xs={12} lg={8}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <Typography className='me-[10px]' >Tình trạng</Typography>
               <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
@@ -591,37 +591,25 @@ const Recommendations: React.FC = () => {
               </Radio.Group>
             </div>
           </Col>
-          <Col lg={6} xs={12} className="flex justify-end">
-            <Button  onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
+          <Col lg={8} xs={12} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
           </Col>
         </Row>
         <div
-          // className="items-center mt-[15px]
-          //               gap-5 border-[1px] w-fit
-          //               px-[10px] py-[10px] rounded-[6px] border-[#ccc] relative"
           style={{
-            margin: '15px 0 0',
-            border: '1px solid #ccc',
-            position: 'relative',
-            borderRadius: '6px',
-            padding: '10px',
+            // display: 'flex',
+            alignItems: 'center',
+            marginTop: '10px',
+            gap: '5px',
             width: 'fit-content',
+            padding: '10px',
+            borderRadius: '10px',
+            border: '1px solid #ccc',
+            position: 'relative'
           }}
         >
-          <div
-            // className="flex items-center  mt-[10px]"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginTop: '10px',
-            }}
-          >
-            <Typography
-              // className="me-[10px]"
-              style={{ marginInlineEnd: '10px' }}
-            >
-              Ngày tạo
-            </Typography>
+          <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+            <Typography className='me-[10px]'>Ngày tạo</Typography>
             <RangePicker
               style={{
                 width: '300px',
@@ -644,14 +632,7 @@ const Recommendations: React.FC = () => {
               }}
             />
           </div>
-          <div
-            //  className="flex items-center mt-[10px]"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginTop: '10px',
-            }}
-          >
+          <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
             <Typography>Giá mua : Từ</Typography>
             <InputNumber
               className="mx-[7px]"
@@ -676,9 +657,9 @@ const Recommendations: React.FC = () => {
             />
           </div>
 
-          <div className="flex mt-[10px]" style={{ display: 'flex', marginTop: '10px' }}>
-            <Button className="" onClick={onFilter}>
-              <Typography>Lọc</Typography>
+          <div style={{ display: 'flex', marginTop: '10px' }}>
+            <Button className='' onClick={onFilter}>
+              <Typography >Lọc</Typography>
             </Button>
           </div>
         </div>
