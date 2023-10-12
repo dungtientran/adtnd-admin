@@ -244,8 +244,7 @@ const Invoicetable: React.FC = () => {
             await createInvoice(period).then((res: any) => {
                 console.log(res)
                 if (res.code === 200) {
-                    const new_data = [...res.data.data, data]
-                    setData(new_data)
+                    getData()
                     notification.success({
                         message: 'Thao tác thành công!'
                     })
