@@ -307,7 +307,17 @@ function GroupTablePage() {
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Danh sách nhóm khách hàng</Typography.Title>
       </div>
-      <div className="flex justify-end">
+      {checkIsFilter() && (
+        <>
+          <Button onClick={() => {
+            resetFilter()
+          }} style={{marginBottom: '10px'}}>
+            <Typography>Reset Bộ Lọc</Typography>
+          </Button>
+
+        </>
+      )}
+      <div style={{display: 'flex', justifyContent:'flex-end'}}>
         <Button
           onClick={() => {
             setUpdate(null);
@@ -317,9 +327,7 @@ function GroupTablePage() {
           <Typography>Tạo nhóm mới</Typography>
         </Button>
       </div>
-      <Typography className="mt-[10px]" style={{ marginTop: '10px' }}>
-        Có tất cả {tableParams.pagination?.total} kết quả
-      </Typography>
+      <Typography style={{marginTop: '10px'}}>Có tất cả {tableParams.pagination?.total} kết quả</Typography>
       <div>
         <Table
           columns={columns}

@@ -289,7 +289,7 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
           }}
         />
       </div>
-      <AddMember open={openAddMember} onClose={() => setOpenAddMember(false)} onSubmit={() => {}} />
+      <AddMember open={openAddMember} onClose={() => setOpenAddMember(false)} onSubmit={() => {}} group_id={group_id}/>
     </div>
   );
 }

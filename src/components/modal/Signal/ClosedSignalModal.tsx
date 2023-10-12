@@ -8,7 +8,8 @@ interface ClosedSignalModalProps {
     confirmLoading?: boolean
     handleCancel?: () => void,
     data: any
-    setData: (value: any) => void
+    setData: (value: any) => void,
+    loading: boolean
 }
 
 function ClosedSignalModal({
@@ -17,13 +18,14 @@ function ClosedSignalModal({
     handleCancel,
     data,
     setData,
+    loading
 }: ClosedSignalModalProps) {
     return (
         <Modal
             title="Đóng khuyến nghị"
             open={open}
             onOk={handleOk}
-            confirmLoading={data.data?.loading ? true : false}
+            confirmLoading={loading}
             onCancel={handleCancel}
         >
             <div>

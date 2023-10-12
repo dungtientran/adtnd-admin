@@ -54,6 +54,7 @@ function AddMember({ open, onClose, onSubmit, group_id }: AddMemberProps) {
   const [filterQuery, setFilterQuery] = useState<any>([]);
 
   const getCustomer = async () => {
+    console.log('get customer');
     setLoading(true);
     await GetMemberNotIn(group_id, tableParams.pagination, filterQuery)
       .then((data: any) => {
