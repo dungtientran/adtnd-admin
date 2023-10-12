@@ -208,7 +208,7 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
             <div style={{ textAlign: 'center' }}>
                 <Typography.Title level={2}>Danh Sách thành viên</Typography.Title>
             </div>
-            <div className='flex justify-center'>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
                 <Button onClick={() => {
                     // setUpdate(null)
                         setOpenAddMember(true)
@@ -216,7 +216,7 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
                     <Typography>Thêm thành viên</Typography>
                 </Button>
             </div>
-            <Typography className='mt-[10px]'>Có tất cả {tableParams.pagination?.total} kết quả</Typography>
+            <Typography style={{marginTop: '10px'}}>Có tất cả {tableParams.pagination?.total} kết quả</Typography>
             <div>
                 {selectedRow.length > 0 && (
                     <>

@@ -52,12 +52,28 @@ function GroupDetailPage() {
                 <Typography.Title level={2}>XEM CHI TẾT NHÓM</Typography.Title>
             </div>
 
-            <div className='px-[20px] py-[20px] rounded-[6px] border-[#ccc] border-[1px]'>
-                <div className='flex justify-between'>
+            <div 
+                style={{
+                    padding: '20px',
+                    borderRadius: '6px',
+                    border: '1px solid #ccc',
+                }}
+            >
+                <div className='flex justify-between'
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between'
+                    }}
+                >
                     <div>
                         <Typography>Thông tin nhóm</Typography>
                     </div>
-                    <div className='flex gap-3'>
+                    <div className='flex gap-3'
+                         style={{
+                            display: 'flex',
+                            gap: '5px'
+                        }}
+                    >
                         <Button onClick={()=>setDeleteModal(true)}><Typography>Xóa nhóm</Typography></Button>
                         <Button  onClick={()=>setGroupModal(true)}><Typography>Sửa nhóm</Typography></Button>
                     </div>

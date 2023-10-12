@@ -196,7 +196,7 @@ const Recommendations: React.FC = () => {
 
       setTableParams({
         ...tableParams,
-        pagination:{
+        pagination: {
           ...tableParams.pagination,
           current: 1
         }
@@ -440,7 +440,7 @@ const Recommendations: React.FC = () => {
           message: 'Có lỗi xảy ra!',
         });
       })
-      .finally(()=>{
+      .finally(() => {
         setLoading(false)
       });
   };
@@ -510,7 +510,7 @@ const Recommendations: React.FC = () => {
 
         return false;
       })
-      .finally(()=>{
+      .finally(() => {
         setLoading(false)
       });
   };
@@ -564,10 +564,10 @@ const Recommendations: React.FC = () => {
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Duyệt/ Tạo Khuyến nghị</Typography.Title>
       </div>
-      <div className="mb-[20px]">
+      <div style={{ marginBottom: '20px' }}>
         <Row>
           <Col xs={12} lg={8}>
-            <div className="flex items-center">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <Typography className="me-[10px]">Loại</Typography>
               <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
@@ -578,7 +578,7 @@ const Recommendations: React.FC = () => {
           </Col>
 
           <Col xs={12} lg={8}>
-            <div className='flex items-center'>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <Typography className='me-[10px]' >Tình trạng</Typography>
               <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
@@ -588,16 +588,24 @@ const Recommendations: React.FC = () => {
               </Radio.Group>
             </div>
           </Col>
-          <Col lg={8} xs={12} className="flex justify-end">
+          <Col lg={8} xs={12} style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button onClick={() => setOpenDrawer(true)}>Tạo mới</Button>
           </Col>
         </Row>
         <div
-          className='items-center mt-[15px] 
-                        gap-5 border-[1px] w-fit 
-                        px-[10px] py-[10px] rounded-[6px] border-[#ccc] relative'
+          style={{
+            // display: 'flex',
+            alignItems: 'center',
+            marginTop: '10px',
+            gap: '5px',
+            width: 'fit-content',
+            padding: '10px',
+            borderRadius: '10px',
+            border: '1px solid #ccc',
+            position: 'relative'
+          }}
         >
-          <div className='flex items-center  mt-[10px]'>
+          <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
             <Typography className='me-[10px]'>Ngày tạo</Typography>
             <RangePicker
               style={{
@@ -620,7 +628,7 @@ const Recommendations: React.FC = () => {
               }}
             />
           </div>
-          <div className='flex items-center mt-[10px]'>
+          <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
             <Typography>Giá mua : Từ</Typography>
             <InputNumber className='mx-[7px]'
               onChange={(value: any) => {
@@ -643,7 +651,7 @@ const Recommendations: React.FC = () => {
 
           </div>
 
-          <div className="flex mt-[10px]">
+          <div style={{ display: 'flex', marginTop: '10px' }}>
             <Button className='' onClick={onFilter}>
               <Typography >Lọc</Typography>
             </Button>

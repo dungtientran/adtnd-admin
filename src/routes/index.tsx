@@ -33,6 +33,8 @@ const SetInterestRate = lazy(() => import('@/pages/InterestRate/SetInterestRate/
 const TransactionHistory = lazy(() => import('@/pages/FinancialManagement/transaction-history/TransactionHistory'));
 
 const UserManagement = lazy(() => import('@/pages/UserManagement/UserManagement/UserManagement'));
+const Invoice = lazy(() => import('@/pages/Invoice/InvoiceTablePage'));
+const InvoiceDetail = lazy(() => import('@/pages/Invoice/InvoiceDetail'));
 
 
 const routeList: RouteObject[] = [
@@ -108,6 +110,14 @@ const routeList: RouteObject[] = [
       {
         path: '/user-management/list',
         element: <WrapperRouteComponent element={<UserManagement />} titleId="Danh sách quản trị viên" />,
+      },
+      {
+        path: '/invoice/list',
+        element: <WrapperRouteComponent element={<Invoice />} titleId="Danh sách chứng từ thanh toán!" />,
+      },
+      {
+        path: '/invoice/detail/:id',
+        element: <WrapperRouteComponent element={<InvoiceDetail />} titleId="Danh sách chứng từ thanh toán!" />,
       },
       {
         path: '*',
