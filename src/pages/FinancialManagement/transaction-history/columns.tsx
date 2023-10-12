@@ -134,7 +134,7 @@ export const Column = (
       title: 'Số tiền',
       dataIndex: 'amount',
       width: '8%',
-      // render: (_, record) => <Text>{record.subscription_plan?.cost?.toLocaleString()}</Text>,
+      render: (_, record) => <Text>{record?.amount ? record.amount?.toLocaleString() : 0} VND</Text>,
     },
   ];
 

@@ -76,14 +76,14 @@ const TransactionHistory = () => {
       const newArr = data?.data?.rows?.map((item: InitDataType) => {
         const b = {
           id: item.id,
-          amount: item.amount,
-          customer_id: item.customer_id,
-          created_at: item.created_at,
-          description: item.description,
-          name: item.customer.fullname,
-          email: item.customer.email,
-          phone_number: item.customer.phone_number,
-          package: `${item.subscription_plan.subscription_product.name} ${item.subscription_plan.name}`,
+          amount: item?.amount,
+          customer_id: item?.customer_id,
+          created_at: item?.created_at,
+          description: item?.description,
+          name: item?.customer?.fullname,
+          email: item?.customer?.email,
+          phone_number: item?.customer?.phone_number,
+          package: `${item.subscription_plan?.subscription_product?.name} ${item?.subscription_plan?.name}`,
         };
 
         return b;

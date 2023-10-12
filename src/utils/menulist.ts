@@ -9,7 +9,7 @@ export const menuListHandle: MenuList = [
   },
   {
     code: 'sanpham',
-    icon: 'documentation',
+    icon: 'product',
     label: {
       en_US: 'Quản lý sản phẩm',
       zh_CN: '文档',
@@ -36,7 +36,7 @@ export const menuListHandle: MenuList = [
   },
   {
     code: 'Khuyennghi',
-    icon: 'documentation',
+    icon: 'notification',
     label: {
       en_US: 'Quản lý khuyến nghị',
       zh_CN: '文档',
@@ -63,7 +63,7 @@ export const menuListHandle: MenuList = [
   },
   {
     code: 'khachhang',
-    icon: 'documentation',
+    icon: 'client',
     label: {
       en_US: 'Quản lý khách hàng',
       zh_CN: '文档',
@@ -98,7 +98,7 @@ export const menuListHandle: MenuList = [
   },
   {
     code: 'hoahong',
-    icon: 'guide',
+    icon: 'rate',
     label: {
       en_US: 'Quản lý hoa hồng',
       zh_CN: '文档',
@@ -125,7 +125,7 @@ export const menuListHandle: MenuList = [
   },
   {
     code: 'tracsaction',
-    icon: 'permission',
+    icon: 'finance',
     label: {
       en_US: 'Quản lý tài chính',
       zh_CN: '文档',
