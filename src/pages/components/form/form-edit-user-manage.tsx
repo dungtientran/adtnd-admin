@@ -135,7 +135,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
         >
           <Input placeholder="Họ tên" />
         </Form.Item> */}
-          <Form.Item
+        <Form.Item
           name="fullname"
           label="Tên khách hàng"
           rules={[{ required: true, message: 'Không đc bỏ trống !', whitespace: true }]}
@@ -147,6 +147,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
             filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             size="large"
             // onChange={value => setNameSelect(value)}
+            disabled={initForm}
           />
         </Form.Item>
 
@@ -161,6 +162,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
             placeholder="Chức vụ"
             filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             size="large"
+            disabled={initForm}
           />
         </Form.Item>
         <Form.Item name="level" label="Level">

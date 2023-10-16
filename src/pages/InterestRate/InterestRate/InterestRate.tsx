@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { TableParams } from './index.interface';
+import type { ColumnTyle, DataType, TableParams } from './index.interface';
 
 import { PlusOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -16,7 +16,6 @@ import Result from '@/pages/components/result/Result';
 import BoxFilter from './boxFilter';
 import { Column } from './columns';
 
-const { getCustomerSupport, updateCustomerSupport, deleteCustomerSupport } = listCustomerApi;
 const { getListContract, createContract, updateContract } = listContractApi;
 
 const InterestRate: React.FC = () => {
@@ -40,7 +39,7 @@ const InterestRate: React.FC = () => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['getListContract', tableParams, queryFilter, searchText],
-    queryFn: () => getListContract(),
+    queryFn: () => getListContract(queryFilter, qs.stringify(searchText)),
   });
 
   const update = useMutation({
@@ -109,7 +108,27 @@ const InterestRate: React.FC = () => {
           total: data?.data?.count,
         },
       });
-      setListCustomerSp(data?.data?.rows);
+      const columndata = data?.data?.rows.map((item: DataType) => {
+        return {
+          id: item?.id,
+          contract_no: item?.contract_no,
+          customer_code: item?.customer?.customer_code,
+          name: item?.customer?.fullname,
+          phone_number: item?.customer?.phone_number,
+          email: item?.customer?.email,
+          staff_code: item?.sale?.staff_code,
+          name_sale: item?.sale?.fullname,
+          start_date: item?.start_date,
+          end_date: item?.end_date,
+          initial_value: item?.initial_value,
+          expected_end_value: item?.expected_end_value,
+          commission: item?.commission,
+          status: item?.status,
+        };
+      });
+
+      // console.log('newArrData_____________________', newArrData);
+      setListCustomerSp(columndata);
     }
   }, [data]);
 
@@ -124,7 +143,11 @@ const InterestRate: React.FC = () => {
       create.mutate();
     }
   }, [newContract]);
-  console.log('updateDataSp', updateDataSp);
+
+  // console.log('updateDataSp', updateDataSp);
+
+  // console.log('data___________________', data);
+  console.log('search_____________', searchText);
 
   return (
     <div className="aaa">
@@ -148,7 +171,7 @@ const InterestRate: React.FC = () => {
         rowKey={record => record.id}
         dataSource={listCustomerSp}
         pagination={tableParams.pagination}
-        // loading={isLoading}
+        loading={isLoading}
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
         style={{ height: 'auto' }}
