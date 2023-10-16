@@ -46,13 +46,28 @@ export interface DataType {
     role_id: string;
     staff_code: string;
     updated_date: string;
-  }
+  };
 }
-
+export interface ColumnTyle {
+  contract_no: string;
+  customer_code: string;
+  name: string;
+  phone_number: string;
+  email: string;
+  staff_code: string;
+  name_sale: string;
+  start_date: string;
+  end_date: string;
+  initial_value: string;
+  expected_end_value: string;
+  commission: string;
+  status: string;
+  id: number;
+}
 export interface TableParams {
   pagination?: TablePaginationConfig;
   sortField?: string;
   sortOrder?: string;
   filters?: Record<string, FilterValue>;
 }
-export type DataIndex = keyof DataType;
+export type DataIndex = keyof ColumnTyle;

@@ -1,4 +1,4 @@
-import type { DataIndex, DataType } from './index.interface';
+import type { ColumnTyle, DataIndex, DataType } from './index.interface';
 import type { InputRef } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 import type { ColumnsType, FilterConfirmProps } from 'antd/es/table/interface';
@@ -14,7 +14,7 @@ export const ColumnSearchProps = (
   dataIndex: DataIndex,
   title: string,
   setSearchQuery: (query: any) => void,
-): ColumnType<DataType> => {
+): ColumnType<ColumnTyle> => {
   const searchInput = useRef<InputRef>(null);
 
   const handleSearch = (selectedKeys: string, confirm: (param?: FilterConfirmProps) => void, dataIndex: DataIndex) => {
@@ -73,62 +73,60 @@ export const Column = (
   setCustomerSelect: (customer: any) => void,
   deleteRequest: (id: string) => void,
 ) => {
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<ColumnTyle> = [
     {
       title: 'Số hợp đồng',
       dataIndex: 'contract_no',
       // render: (_, record) => <Text>{moment(record.created_at).format('DD/MM/YYYY')}</Text>,
-      // width: '14%',
+      width: '5%',
     },
     {
       title: 'Mã KH',
-      dataIndex: 'customer',
+      dataIndex: 'customer_code',
       width: '6%',
-      render: (_, record) => <Text>{record?.customer?.customer_code}</Text>,
-
-      // ...ColumnSearchProps('customer', 'tên khách hàng', setSearchQuery),
+      ...ColumnSearchProps('customer_code', 'mã KH', setSearchQuery),
     },
     {
       title: 'Tên KH',
-      dataIndex: 'customer',
-      // width: '8%',
-      render: (_, record) => <Text>{record?.customer?.fullname}</Text>,
+      dataIndex: 'name',
+      width: '8%',
+      // render: (_, record) => <Text>{record?.customer?.fullname}</Text>,
 
-      // ...ColumnSearchProps('name', 'tên khách hàng', setSearchQuery),
+      ...ColumnSearchProps('name', 'tên khách hàng', setSearchQuery),
     },
     {
       title: 'SĐT',
       // sorter: true,
-      dataIndex: 'customer',
+      dataIndex: 'phone_number',
       // width: '15%',
-      render: (_, record) => <Text>{record?.customer?.phone_number}</Text>,
+      // render: (_, record) => <Text>{record?.customer?.phone_number}</Text>,
 
-      // ...ColumnSearchProps('phone_number', 'tên khách hàng', setSearchQuery),
+      ...ColumnSearchProps('phone_number', 'số điện thoại', setSearchQuery),
     },
     {
       title: 'Email',
       // sorter: true,
-      dataIndex: 'customer',
+      dataIndex: 'email',
       // width: '14%',
-      render: (_, record) => <Text>{record?.customer?.email}</Text>,
+      // render: (_, record) => <Text>{record?.customer?.email}</Text>,
 
-      // ...ColumnSearchProps('email', 'email', setSearchQuery),
+      ...ColumnSearchProps('email', 'email', setSearchQuery),
     },
     {
       title: 'Mã nhân viên QL',
-      dataIndex: 'sale',
+      dataIndex: 'staff_code',
       width: '8%',
-      render: (_, record) => <Text>{record?.sale?.staff_code}</Text>,
+      // render: (_, record) => <Text>{record?.sale?.staff_code}</Text>,
 
       // ...ColumnSearchProps('address', 'địa chỉ', setSearchQuery),
     },
     {
       title: 'Tên nhân viên QL',
-      dataIndex: 'sale',
-      // width: '14%',
-      render: (_, record) => <Text>{record?.sale?.fullname}</Text>,
+      dataIndex: 'name_sale',
+      width: '10%',
+      // render: (_, record) => <Text>{record?.sale?.fullname}</Text>,
 
-      // ...ColumnSearchProps('address', 'địa chỉ', setSearchQuery),
+      ...ColumnSearchProps('name_sale', 'tên nhân viên QL', setSearchQuery),
     },
     {
       title: 'Ngày bắt đầu',
@@ -165,7 +163,13 @@ export const Column = (
       dataIndex: 'status',
       width: '8%',
       render: (_, record) => (
-        <Fragment>{record?.status === 'active' ? <Text>Đang có hiệu lực</Text> : <Text>Đã thanh lý</Text>}</Fragment>
+        <Fragment>
+          {record?.status === 'active' ? (
+            <Tag color="#108ee9">Đang có hiệu lực</Tag>
+          ) : (
+            <Tag color="red">Đã thanh lý</Tag>
+          )}
+        </Fragment>
       ),
     },
     {

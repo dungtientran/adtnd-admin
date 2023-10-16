@@ -1,15 +1,15 @@
 import type { FC } from 'react';
 
 import { ReactComponent as AccountSvg } from '@/assets/menu/account.svg';
+import { ReactComponent as ClientSvg } from '@/assets/menu/client.svg';
 import { ReactComponent as DashboardSvg } from '@/assets/menu/dashboard.svg';
 import { ReactComponent as DocumentationSvg } from '@/assets/menu/documentation.svg';
+import { ReactComponent as FinanceSvg } from '@/assets/menu/finance.svg';
 import { ReactComponent as GuideSvg } from '@/assets/menu/guide.svg';
+import { ReactComponent as NotificationSvg } from '@/assets/menu/notification.svg';
 import { ReactComponent as PermissionSvg } from '@/assets/menu/permission.svg';
 import { ReactComponent as ProductSvg } from '@/assets/menu/product.svg';
-import { ReactComponent as NotificationSvg } from '@/assets/menu/notification.svg';
-import { ReactComponent as ClientSvg } from '@/assets/menu/client.svg';
 import { ReactComponent as RateSvg } from '@/assets/menu/rate.svg';
-import { ReactComponent as FinanceSvg } from '@/assets/menu/finance.svg';
 
 interface CustomIconProps {
   type: string;

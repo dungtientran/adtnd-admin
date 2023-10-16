@@ -29,11 +29,11 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
   };
 
   const handleSelectIsContact = (e: RadioChangeEvent) => {
-    const is_contact = e.target.value;
+    const status = e.target.value;
 
     setQueryObj(prev => ({
       ...prev,
-      is_contact,
+      status,
     }));
   };
 
@@ -64,7 +64,12 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
         <Space>
           <InputNumber
             addonBefore={<Text>Từ</Text>}
-            // onChange={value => setNav_Low(value as number)}
+            onChange={value =>
+              setQueryObj(prev => ({
+                ...prev,
+                initial_value_from: value,
+              }))
+            }
             style={{ width: '120px' }}
             min={0}
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -72,7 +77,12 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
 
           <InputNumber
             addonBefore={<Text>Đến</Text>}
-            // onChange={value => setNav_Hight(value as number)}
+            onChange={value =>
+              setQueryObj(prev => ({
+                ...prev,
+                initial_value_to: value,
+              }))
+            }
             style={{ width: '120px' }}
             min={0}
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -84,7 +94,12 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
         <Space>
           <InputNumber
             addonBefore={<Text>Từ</Text>}
-            // onChange={value => setNav_Low(value as number)}
+            onChange={value =>
+              setQueryObj(prev => ({
+                ...prev,
+                expected_end_value_from: value,
+              }))
+            }
             style={{ width: '120px' }}
             min={0}
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -92,7 +107,12 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
 
           <InputNumber
             addonBefore={<Text>Đến</Text>}
-            // onChange={value => setNav_Hight(value as number)}
+            onChange={value =>
+              setQueryObj(prev => ({
+                ...prev,
+                expected_end_value_to: value,
+              }))
+            }
             style={{ width: '120px' }}
             min={0}
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -122,8 +142,8 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
         <Text strong>Tình trạng: </Text>
         <Radio.Group defaultValue={''} onChange={handleSelectIsContact}>
           <Radio.Button value="">Tất cả</Radio.Button>
-          <Radio.Button value={true}>Đang có hiệu lực</Radio.Button>
-          <Radio.Button value={false}>Đã thanh lý</Radio.Button>
+          <Radio.Button value="active">Đang có hiệu lực</Radio.Button>
+          <Radio.Button value="inactive">Đã thanh lý</Radio.Button>
         </Radio.Group>
       </Space>
     </Space>

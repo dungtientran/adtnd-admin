@@ -60,9 +60,9 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
     if (initForm) {
       const setInitForm = {
         ...initForm,
-        fullname: initForm.customer.fullname,
-        email: initForm.customer.email,
-        sale_name: initForm.sale.fullname,
+        fullname: initForm?.name,
+        email: initForm?.email,
+        sale_name: initForm?.name_sale,
       };
 
       form.setFieldsValue(setInitForm);
@@ -121,7 +121,7 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
     });
   };
 
-  console.log('init form_____________', initForm);
+  // console.log('init form_____________', initForm);
 
   return (
     <Fragment>
