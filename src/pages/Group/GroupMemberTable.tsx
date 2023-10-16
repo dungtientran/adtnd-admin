@@ -2,6 +2,8 @@ import type { DeleteMemberForm } from '@/stores/group/group.actions';
 import type { TablePaginationConfig } from 'antd';
 import type { FilterValue } from 'antd/es/table/interface';
 
+import './index.less';
+
 import { MenuOutlined } from '@ant-design/icons';
 import { Avatar, Button, Checkbox, Dropdown, Table, Typography } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -272,7 +274,7 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
           </>
         )}
       </div>
-      <div>
+      <div className="">
         <Table
           columns={columns}
           rowKey={record => record.id}
@@ -289,7 +291,7 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
           }}
         />
       </div>
-      <AddMember open={openAddMember} onClose={() => setOpenAddMember(false)} onSubmit={() => {}} group_id={group_id}/>
+      <AddMember open={openAddMember} onClose={() => setOpenAddMember(false)} onSubmit={() => {}} group_id={group_id} />
     </div>
   );
 }

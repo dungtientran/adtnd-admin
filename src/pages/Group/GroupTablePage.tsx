@@ -30,6 +30,8 @@ function GroupTablePage() {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: [10, 20, 50],
     },
   });
   const [selectedRow, setSelectedRow] = useState<any>([]);
@@ -107,9 +109,7 @@ function GroupTablePage() {
               console.log(record.id);
             }}
           >
-
             Xem chi tiết
-
           </Typography>
         </Link>
       ),
@@ -153,7 +153,7 @@ function GroupTablePage() {
         <Link
           to={`/customer-management/customer-group/detail/${record.id}`}
           className="text-left"
-          style={{ textAlign: 'left', textDecoration:'none' }}
+          style={{ textAlign: 'left', textDecoration: 'none' }}
         >
           {text}
         </Link>
@@ -212,12 +212,13 @@ function GroupTablePage() {
   ];
 
   useEffect(() => {
-    if (nameSearch != null || subsciptionFilter.length > 0|| saleSearch != null) {
+    if (nameSearch != null || subsciptionFilter.length > 0 || saleSearch != null) {
       let query = '';
 
       if (nameSearch) {
         query += `&searchText=${nameSearch}`;
       }
+
       if (saleSearch) {
         query += `&saleSearch=${saleSearch}`;
       }
@@ -292,15 +293,17 @@ function GroupTablePage() {
   };
 
   const checkIsFilter = () => {
-    if (nameSearch != null || saleSearch != null || subsciptionFilter.length > 0) return true
-    return false
-  }
+    if (nameSearch != null || saleSearch != null || subsciptionFilter.length > 0) return true;
+
+    return false;
+  };
+
   const resetFilter = () => {
-    setNameSearch(null)
-    setSaleSearch(null)
-    setSubsciptionFilter([])
-    setFilterQuery('')
-  }
+    setNameSearch(null);
+    setSaleSearch(null);
+    setSubsciptionFilter([]);
+    setFilterQuery('');
+  };
 
   return (
     <div>
@@ -309,15 +312,17 @@ function GroupTablePage() {
       </div>
       {checkIsFilter() && (
         <>
-          <Button onClick={() => {
-            resetFilter()
-          }} style={{marginBottom: '10px'}}>
+          <Button
+            onClick={() => {
+              resetFilter();
+            }}
+            style={{ marginBottom: '10px' }}
+          >
             <Typography>Reset Bộ Lọc</Typography>
           </Button>
-
         </>
       )}
-      <div style={{display: 'flex', justifyContent:'flex-end'}}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           onClick={() => {
             setUpdate(null);
@@ -327,8 +332,8 @@ function GroupTablePage() {
           <Typography>Tạo nhóm mới</Typography>
         </Button>
       </div>
-      <Typography style={{marginTop: '10px'}}>Có tất cả {tableParams.pagination?.total} kết quả</Typography>
-      <div>
+      <Typography style={{ marginTop: '10px' }}>Có tất cả {tableParams.pagination?.total} kết quả</Typography>
+      <div className='table_member'>
         <Table
           columns={columns}
           rowKey={record => record.id}
@@ -336,13 +341,14 @@ function GroupTablePage() {
           pagination={tableParams.pagination}
           onChange={handleTableChange}
           scroll={{ x: 'max-content', y: '100%' }}
-        // rowSelection={{
-        //   type: 'checkbox',
-        //   onChange: (value: any) => {
-        //     console.log(value);
-        //     setSelectedRow(value);
-        //   },
-        // }}
+          // rowSelection={{
+          //   type: 'checkbox',
+          //   onChange: (value: any) => {
+          //     console.log(value);
+          //     setSelectedRow(value);
+          //   },
+          // }}
+          
         />
       </div>
       <CreateGroupModal

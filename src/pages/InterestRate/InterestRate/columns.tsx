@@ -3,6 +3,8 @@ import type { InputRef } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 import type { ColumnsType, FilterConfirmProps } from 'antd/es/table/interface';
 
+import './index.less';
+
 import { DeleteOutlined, EditOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Popconfirm, Space, Tag, Typography } from 'antd';
 import moment from 'moment';
@@ -41,20 +43,7 @@ export const ColumnSearchProps = (
           }}
           style={{ marginBottom: 8, display: 'block' }}
         />
-        <Space size="large">
-          <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
+      
       </div>
     ),
     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,
@@ -107,7 +96,7 @@ export const Column = (
       title: 'Email',
       // sorter: true,
       dataIndex: 'email',
-      // width: '14%',
+      width: '10%',
       // render: (_, record) => <Text>{record?.customer?.email}</Text>,
 
       ...ColumnSearchProps('email', 'email', setSearchQuery),

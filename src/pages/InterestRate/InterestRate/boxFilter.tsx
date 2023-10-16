@@ -59,9 +59,9 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
         marginTop: '10px',
       }}
     >
-      <Space>
+      <Space style={{ width: '100%' }}>
         <Text strong>Giá trị ban đầu:</Text>
-        <Space>
+        <Space style={{ marginLeft: '26px' }}>
           <InputNumber
             addonBefore={<Text>Từ</Text>}
             onChange={value =>
@@ -89,9 +89,9 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
           />
         </Space>
       </Space>
-      <Space>
+      <Space >
         <Text strong>Lợi nhuận dự kiến:</Text>
-        <Space>
+        <Space style={{ marginLeft: '6px' }}>
           <InputNumber
             addonBefore={<Text>Từ</Text>}
             onChange={value =>

@@ -107,7 +107,7 @@ const SetInterestRate = () => {
   const [open, setOpen] = useState(false);
   const [newInteres, setNewInterst] = useState<any>();
   const [total, setTotal] = useState<number>(0);
-  const [page, setPage] = useState<number>(1)
+  const [page, setPage] = useState<number>(1);
 
   const isEditing = (record: Item) => record.id === editingKey;
 
@@ -362,7 +362,7 @@ const SetInterestRate = () => {
       //     total: getdataProfit.data?.data?.count,
       //   },
       // });
-      setTotal(getdataProfit.data?.data?.count)
+      setTotal(getdataProfit.data?.data?.count);
       setListProfit(getdataProfit.data?.data?.rows);
     }
   }, [getdataSubscription, getdataProfit]);
@@ -395,9 +395,10 @@ const SetInterestRate = () => {
           dataSource={listSubscription}
           columns={mergedColumns}
           rowClassName="editable-row"
-          pagination={{
-            onChange: cancel,
-          }}
+          // pagination={{
+          //   onChange: cancel,
+          // }}
+          pagination={false}
           style={{
             height: 'auto',
           }}
@@ -422,7 +423,11 @@ const SetInterestRate = () => {
           columns={mergedColumnsProfit}
           rowClassName="editable-row"
           pagination={{
-            total: total
+            total: total,
+            current: 1,
+            pageSize: 10,
+            showSizeChanger: true,
+            pageSizeOptions: [10, 20, 50],
           }}
           //  onChange={handleTableChange}
           style={{ height: 'auto' }}

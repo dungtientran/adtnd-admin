@@ -106,6 +106,8 @@ const Recommendations: React.FC = () => {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: [10, 20, 50],
     },
   });
   const [sendSignalModal, setSendSignalModal] = useState<{ open: boolean; data: any }>({
@@ -396,12 +398,13 @@ const Recommendations: React.FC = () => {
       } else if (statusFilter == 'open') {
         query += '&is_approve=true';
       }
+
       setTableParams({
         ...tableParams,
         pagination: {
           ...tableParams.pagination,
-          current: 1
-        }
+          current: 1,
+        },
       });
       setFilterQuery(query);
     }
@@ -500,13 +503,13 @@ const Recommendations: React.FC = () => {
   };
 
   const handleClosedSignal = async () => {
-    if(loading) return;
-    setLoading(true)
+    if (loading) return;
+    setLoading(true);
+
     if (closeSignalModal.data.closed_price == 0) {
       return notification.error({
         message: 'Giá đóng phải lớn hơn 0',
       });
-
     } else {
       await closeSignal(closeSignalModal.data)
         .then((res: any) => {
@@ -548,7 +551,8 @@ const Recommendations: React.FC = () => {
           });
         });
     }
-    setLoading(false)
+
+    setLoading(false);
   };
 
   return (
@@ -564,7 +568,9 @@ const Recommendations: React.FC = () => {
           <Row gutter={10}>
             <Col xs={24} md={12} lg={12} xl={8}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography className="me-[10px]">Loại</Typography>
+                <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
+                  Loại:{' '}
+                </Typography>
                 <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
                   <Radio.Button value={''}>Tất cả</Radio.Button>
                   <Radio.Button value={1}>Ngắn hạn</Radio.Button>
@@ -574,7 +580,9 @@ const Recommendations: React.FC = () => {
             </Col>
             <Col xs={24} md={12} lg={12} xl={8}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography className="me-[10px]">Tình trạng</Typography>
+                <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
+                  Tình trạng:
+                </Typography>
                 <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                   <Radio.Button value={''}>Tất cả</Radio.Button>
                   <Radio.Button value={'open'}>Đang mở</Radio.Button>
@@ -585,7 +593,9 @@ const Recommendations: React.FC = () => {
             {statusFilter == 'closed' && (
               <Col xs={24} md={12} lg={12} xl={8}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <Typography className="me-[10px]">Độ ưu tiên</Typography>
+                  <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
+                    Độ ưu tiên:
+                  </Typography>
                   <Radio.Group defaultValue={''} onChange={e => setPriorityFilter(e.target.value)}>
                     <Radio.Button value={''}>Tất cả</Radio.Button>
                     <Radio.Button value={true}>Ưu tiên</Radio.Button>
@@ -607,11 +617,11 @@ const Recommendations: React.FC = () => {
               borderRadius: '10px',
               border: '1px solid #ccc',
               position: 'relative',
-              marginTop: '10px'
+              marginTop: '10px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
-              <Typography style={{ marginLeft: '10px' }}>Ngày tạo</Typography>
+              <Typography style={{ marginInlineEnd: '10px' }}>Ngày tạo: </Typography>
               <RangePicker
                 style={{
                   width: '300px',

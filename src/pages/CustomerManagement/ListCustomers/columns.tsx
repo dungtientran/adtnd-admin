@@ -104,7 +104,7 @@ export const Column = (
       title: 'Tên khách hàng',
       // sorter: true,
       dataIndex: 'fullname',
-      width: '15%',
+      width: '10%',
       ...ColumnSearchProps('fullname', 'tên khách hàng', setSearchQuery),
     },
     {

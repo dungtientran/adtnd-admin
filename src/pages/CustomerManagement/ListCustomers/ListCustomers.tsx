@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { TableParams } from './index.interface';
 
+import './index.less';
+
 import { PlusOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button, Drawer, message, Table } from 'antd';
@@ -124,6 +126,8 @@ const ListCustomers: React.FC = () => {
         pagination: {
           ...tableParams.pagination,
           total: data?.data?.count,
+          showSizeChanger: true,
+          pageSizeOptions: ['10', '20', '50'],
         },
       });
       setListCustomer(data?.data?.rows);
@@ -159,15 +163,17 @@ const ListCustomers: React.FC = () => {
       </div>
       <BoxFilterListCustomer setQueryFiter={setQuerFilter} />
       <Result total={data?.data?.count} searchText={searchedColumn} />
-      <Table
-        columns={Column(setSearchText, setSearchedColumn, setOpen, setCustomerSelect, setCustomer_id)}
-        rowKey={record => record.id}
-        dataSource={listCustomer}
-        pagination={tableParams.pagination}
-        // loading={isLoading}
-        onChange={handleTableChange}
-        scroll={{ x: 'max-content', y: '100%' }}
-      />
+      <div className="table_list_customer">
+        <Table
+          columns={Column(setSearchText, setSearchedColumn, setOpen, setCustomerSelect, setCustomer_id)}
+          rowKey={record => record.id}
+          dataSource={listCustomer}
+          pagination={tableParams.pagination}
+          // loading={isLoading}
+          onChange={handleTableChange}
+          scroll={{ x: 'max-content', y: '100%' }}
+        />
+      </div>
       <Drawer
         title={!customerSelect ? 'Tạo mới người dùng' : 'Thêm nhân viên hỗ trợ'}
         width={360}

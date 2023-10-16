@@ -19,6 +19,8 @@ import Result from '@/pages/components/result/Result';
 
 const { getStockList } = apiListStock;
 
+const LIMIT = Number(import.meta.env.VITE_PAGE_SIZE);
+
 interface DataType {
   id: string;
   code: string;
@@ -45,6 +47,8 @@ const Recommendations: React.FC = () => {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: [10, 20, 50],
     },
   });
   const [sort, setSort] = useState<string>('');
@@ -57,7 +61,6 @@ const Recommendations: React.FC = () => {
     queryKey: ['getListStock', tableParams, sort, searchText],
     queryFn: () => getStockList(qs.stringify(getRandomuserParams(tableParams)), sort, searchText),
   });
-
   const getRandomuserParams = (params: TableParams) => ({
     size: params.pagination?.pageSize,
     page: params.pagination?.current,
@@ -115,20 +118,7 @@ const Recommendations: React.FC = () => {
           }}
           style={{ marginBottom: 8, display: 'block', width: '240px' }}
         />
-        <Space size="large">
-          <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            Đóng
-          </Button>
-        </Space>
+       
       </div>
     ),
     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,

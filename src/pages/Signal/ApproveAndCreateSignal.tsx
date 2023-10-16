@@ -3,7 +3,7 @@ import type { FilterValue } from 'antd/es/table/interface';
 
 import './index.less';
 
-import { MenuOutlined, SearchOutlined,StarOutlined,StarFilled } from '@ant-design/icons';
+import { MenuOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import {
   Button,
   Col,
@@ -107,6 +107,8 @@ const Recommendations: React.FC = () => {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: [10, 20, 50],
     },
   });
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -200,8 +202,8 @@ const Recommendations: React.FC = () => {
         ...tableParams,
         pagination: {
           ...tableParams.pagination,
-          current: 1
-        }
+          current: 1,
+        },
       });
       setFilterQuery(query);
     }
@@ -425,8 +427,8 @@ const Recommendations: React.FC = () => {
   };
 
   const handleDeleteSignal = (id: string) => {
-    if (loading) return
-    setLoading(true)
+    if (loading) return;
+    setLoading(true);
     deleteSignal(id)
       .then(res => {
         console.log(res);
@@ -443,7 +445,7 @@ const Recommendations: React.FC = () => {
         });
       })
       .finally(() => {
-        setLoading(false)
+        setLoading(false);
       });
   };
 
@@ -478,8 +480,9 @@ const Recommendations: React.FC = () => {
 
   const handleUpdateSignal = async (payload: any) => {
     console.log(payload);
-    if (loading) return
-    setLoading(true)
+    if (loading) return;
+    setLoading(true);
+
     return await updateSignal({
       ...payload,
       id: updateData.id,
@@ -513,13 +516,13 @@ const Recommendations: React.FC = () => {
         return false;
       })
       .finally(() => {
-        setLoading(false)
+        setLoading(false);
       });
   };
 
   const handleApproveSignal = async (signal_ids: any, approve: boolean) => {
-    if (loading) return
-    setLoading(true)
+    if (loading) return;
+    setLoading(true);
     await approveManySignal({
       signal_ids: signal_ids || [],
       approve: approve,
@@ -548,17 +551,19 @@ const Recommendations: React.FC = () => {
 
           setData(filter);
         }
-        notification.success(({
-          message: `${approve ? 'Duyệt': 'Từ chối'} thành công`
-        }))
-      }).catch((err) =>{
-        notification.error(({
-          message: err.message
-        }))
+
+        notification.success({
+          message: `${approve ? 'Duyệt' : 'Từ chối'} thành công`,
+        });
+      })
+      .catch(err => {
+        notification.error({
+          message: err.message,
+        });
       })
       .finally(() => {
         setSelectedRow([]);
-        setLoading(false)
+        setLoading(false);
       });
   };
 
@@ -571,7 +576,9 @@ const Recommendations: React.FC = () => {
         <Row>
           <Col xs={12} lg={8}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Typography className="me-[10px]">Loại</Typography>
+              <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
+                Loại:
+              </Typography>
               <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
                 <Radio.Button value={1}>Ngắn hạn</Radio.Button>
@@ -582,7 +589,9 @@ const Recommendations: React.FC = () => {
 
           <Col xs={12} lg={8}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Typography className='me-[10px]' >Tình trạng</Typography>
+              <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
+                Tình trạng:
+              </Typography>
               <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
                 <Radio.Button value={''}>Tất cả</Radio.Button>
                 <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
@@ -605,11 +614,13 @@ const Recommendations: React.FC = () => {
             padding: '10px',
             borderRadius: '10px',
             border: '1px solid #ccc',
-            position: 'relative'
+            position: 'relative',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
-            <Typography className='me-[10px]'>Ngày tạo</Typography>
+            <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
+              Ngày tạo:
+            </Typography>
             <RangePicker
               style={{
                 width: '300px',
@@ -658,8 +669,8 @@ const Recommendations: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', marginTop: '10px' }}>
-            <Button className='' onClick={onFilter}>
-              <Typography >Lọc</Typography>
+            <Button className="" onClick={onFilter}>
+              <Typography>Lọc</Typography>
             </Button>
           </div>
         </div>
@@ -727,6 +738,7 @@ const Recommendations: React.FC = () => {
             setSelectedRow(value);
           },
         }}
+        style={{ height: 'auto' }}
       />
       <CreateSingalDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} onSubmit={handleCreateSignal} />
       <UpdateSingalDrawer

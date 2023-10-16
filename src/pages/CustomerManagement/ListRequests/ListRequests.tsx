@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { TableParams } from './index.interface';
 
+import './index.less';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Drawer, message, Table } from 'antd';
 import qs from 'qs';
@@ -23,6 +25,8 @@ const ListRequests: React.FC = () => {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: [10, 20, 50],
     },
   });
   const [sort, setSort] = useState<string>('');
@@ -113,7 +117,7 @@ const ListRequests: React.FC = () => {
       update.mutate();
     }
   }, [updateDataSp]);
-  
+
   useEffect(() => {
     if (idDelete) {
       deleteRequest.mutate();
@@ -125,15 +129,17 @@ const ListRequests: React.FC = () => {
       <HeadTitle title="Danh sách yêu cầu hỗ trợ" />
       <BoxFilter setQueryFilter={setQueryFilter} />
       <Result total={data?.data?.count} searchText={searchedColumn} />
-      <Table
-        columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
-        rowKey={record => record.id}
-        dataSource={listCustomerSp}
-        pagination={tableParams.pagination}
-        // loading={isLoading}
-        onChange={handleTableChange}
-        scroll={{ x: 'max-content', y: '100%' }}
-      />
+      <div className="table_list_resquet">
+        <Table
+          columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
+          rowKey={record => record.id}
+          dataSource={listCustomerSp}
+          pagination={tableParams.pagination}
+          // loading={isLoading}
+          onChange={handleTableChange}
+          scroll={{ x: 'max-content', y: '100%' }}
+        />
+      </div>
       <Drawer title="Chỉnh sửa" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
         <EditRequest setUpdateDataSp={setUpdateDataSp} initForm={customerSelect} />
       </Drawer>

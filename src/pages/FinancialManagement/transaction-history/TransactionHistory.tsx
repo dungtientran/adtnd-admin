@@ -21,6 +21,8 @@ const TransactionHistory = () => {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: [10, 20, 50],
     },
   });
   const [sort, setSort] = useState<string>('');
@@ -33,7 +35,8 @@ const TransactionHistory = () => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['getListTransactionHistory', tableParams, queryFilter, searchText],
-    queryFn: () => getListTransactionHistory(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText)),
+    queryFn: () =>
+      getListTransactionHistory(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText)),
   });
 
   const getRandomuserParams = (params: TableParams) => ({
@@ -91,10 +94,10 @@ const TransactionHistory = () => {
 
       setListCustomerSp(newArr);
 
-      console.log('newArr____________', newArr);
+      // console.log('newArr____________', newArr);
     }
   }, [data]);
-  console.log('data________________', data);
+  // console.log('data________________', data);
 
   return (
     <div className="aaa">
@@ -109,7 +112,7 @@ const TransactionHistory = () => {
         // loading={isLoading}
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
-        style={{height: 'auto'}}
+        style={{ height: 'auto' }}
       />
     </div>
   );

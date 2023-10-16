@@ -77,8 +77,8 @@ export const Column = (
       title: 'SĐT',
       // sorter: true,
       dataIndex: 'phone_number',
-      width: '15%',
-      ...ColumnSearchProps('phone_number', 'tên khách hàng', setSearchQuery),
+      width: '8%',
+      ...ColumnSearchProps('phone_number', 'sđt', setSearchQuery),
     },
     {
       title: 'Email',

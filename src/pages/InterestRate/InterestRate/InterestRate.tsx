@@ -24,7 +24,9 @@ const InterestRate: React.FC = () => {
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
-      pageSize: 100,
+      pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: [10, 20, 50],
     },
   });
   const [sort, setSort] = useState<string>('');
@@ -147,7 +149,7 @@ const InterestRate: React.FC = () => {
   // console.log('updateDataSp', updateDataSp);
 
   // console.log('data___________________', data);
-  console.log('search_____________', searchText);
+  // console.log('search_____________', searchText);
 
   return (
     <div className="aaa">
@@ -166,16 +168,18 @@ const InterestRate: React.FC = () => {
       </div>
       <BoxFilter setQueryFilter={setQueryFilter} />
       <Result total={data?.data?.count} />
-      <Table
-        columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
-        rowKey={record => record.id}
-        dataSource={listCustomerSp}
-        pagination={tableParams.pagination}
-        loading={isLoading}
-        onChange={handleTableChange}
-        scroll={{ x: 'max-content', y: '100%' }}
-        style={{ height: 'auto' }}
-      />
+      <div className="table_contract">
+        <Table
+          columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
+          rowKey={record => record.id}
+          dataSource={listCustomerSp}
+          pagination={tableParams.pagination}
+          loading={isLoading}
+          onChange={handleTableChange}
+          scroll={{ x: 'max-content', y: '100%' }}
+          style={{ height: 'auto' }}
+        />
+      </div>
       <Drawer
         title={!customerSelect ? 'Thêm hợp đồng' : 'Sửa hợp đồng'}
         width={360}

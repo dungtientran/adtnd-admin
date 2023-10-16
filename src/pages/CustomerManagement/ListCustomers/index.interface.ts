@@ -1,4 +1,4 @@
-import type { TablePaginationConfig } from 'antd';
+import type { TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue } from 'antd/es/table/interface';
 
 export interface DataType {
@@ -36,7 +36,7 @@ export interface DataType {
   remaining_subscription_day: number;
   CaculatorHistories: {
     expected_amount: number | null;
-  }
+  };
 }
 
 export interface TableParams {
