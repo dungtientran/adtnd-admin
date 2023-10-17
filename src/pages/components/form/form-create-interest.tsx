@@ -2,10 +2,10 @@ import { AutoComplete, Button, Form, Input, InputNumber, Select } from 'antd';
 import { Fragment, useState } from 'react';
 
 interface ICreateInterest {
-    setNewInteres: (data: any) => void;
+  setNewInteres: (data: any) => void;
 }
 
-const CreateInterest = ({setNewInteres}: ICreateInterest) => {
+const CreateInterest = ({ setNewInteres }: ICreateInterest) => {
   const [form] = Form.useForm();
   const [option2, setOption2] = useState([
     {
@@ -70,46 +70,46 @@ const CreateInterest = ({setNewInteres}: ICreateInterest) => {
           />
         </Form.Item> */}
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '100px' }}>
-          <Form.Item name="profit_from" label="Từ: " rules={[{ required: true, message: 'Không được bỏ trống!' }]}>
-            <InputNumber />
-          </Form.Item>
-          <Form.Item name="profit_to" label="Đến:" rules={[{ required: true, message: 'Không được bỏ trống!' }]}>
-            <InputNumber />
-          </Form.Item>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '100px' }}>
-          <Form.Item
-            name="fila_commission_rate"
-            label="LN Fila hưởng"
-            rules={[{ required: true, message: 'Không được bỏ trống!' }]}
-          >
-            <InputNumber />
-          </Form.Item>
-          <Form.Item
-            name="director_commission_rate"
-            label="Giám đốc"
-            rules={[{ required: true, message: 'Không được bỏ trống!' }]}
-          >
-            <InputNumber />
-          </Form.Item>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '100px' }}>
-          <Form.Item
-            name="manager_commision_rate"
-            label="Trưởng phòng"
-            rules={[{ required: true, message: 'Không được bỏ trống!' }]}
-          >
-            <InputNumber />
-          </Form.Item>
-          <Form.Item
-            name="sale_commission_rate"
-            label="Sale"
-            rules={[{ required: true, message: 'Không được bỏ trống!' }]}
-          >
-            <InputNumber />
-          </Form.Item>
-        </div>
+        {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '100px' }}> */}
+        <Form.Item name="profit_from" label="Từ: " rules={[{ required: true, message: 'Không được bỏ trống!' }]}>
+          <InputNumber style={{ width: '100%' }} min={0} />
+        </Form.Item>
+        <Form.Item name="profit_to" label="Đến:" rules={[{ required: true, message: 'Không được bỏ trống!' }]}>
+          <InputNumber style={{ width: '100%' }} min={0} />
+        </Form.Item>
+        {/* </div> */}
+        {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '100px' }}> */}
+        <Form.Item
+          name="fila_commission_rate"
+          label="LN Fila hưởng"
+          rules={[{ required: true, message: 'Không được bỏ trống!' }]}
+        >
+          <InputNumber style={{ width: '100%' }} min={0} />
+        </Form.Item>
+        <Form.Item
+          name="director_commission_rate"
+          label="Giám đốc"
+          rules={[{ required: true, message: 'Không được bỏ trống!' }]}
+        >
+          <InputNumber style={{ width: '100%' }} min={0} />
+        </Form.Item>
+        {/* </div> */}
+        {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '100px' }}> */}
+        <Form.Item
+          name="manager_commision_rate"
+          label="Trưởng phòng"
+          rules={[{ required: true, message: 'Không được bỏ trống!' }]}
+        >
+          <InputNumber style={{ width: '100%' }} min={0} />
+        </Form.Item>
+        <Form.Item
+          name="sale_commission_rate"
+          label="Sale"
+          rules={[{ required: true, message: 'Không được bỏ trống!' }]}
+        >
+          <InputNumber style={{ width: '100%' }} min={0} />
+        </Form.Item>
+        {/* </div> */}
         <Form.Item style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px' }}>
           <Button type="primary" htmlType="submit">
             Tạo

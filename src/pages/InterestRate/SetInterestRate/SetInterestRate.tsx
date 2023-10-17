@@ -379,6 +379,8 @@ const SetInterestRate = () => {
     }
   }, [newInteres]);
 
+  // console.log('page______________', page);
+
   return (
     <div>
       <Form form={form} component={false}>
@@ -424,8 +426,8 @@ const SetInterestRate = () => {
           rowClassName="editable-row"
           pagination={{
             total: total,
-            current: 1,
-            pageSize: 10,
+            // current: 1,
+            // pageSize: 10,
             showSizeChanger: true,
             pageSizeOptions: [10, 20, 50],
           }}

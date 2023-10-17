@@ -36,44 +36,60 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
 
   return (
     <Space
-      direction="vertical"
-      size="middle"
-      style={{ marginBottom: '20px', padding: '1rem', border: '1px solid #ccc', borderRadius: '6px' }}
+      direction="horizontal"
+      size="large"
+      style={{
+        marginBottom: '20px',
+        padding: '1rem',
+        border: '1px solid #ccc',
+        borderRadius: '6px',
+        alignItems: 'start',
+      }}
     >
-      <Text strong>Lọc theo:</Text>
+      {/* <Text strong>Lọc theo:</Text> */}
 
-      <Space>
+      <Space direction="vertical">
         <Text strong>Ngày giao dịch:</Text>
         <Space>
           <RangePicker format="YYYY/MM/DD" onChange={onChange} />
         </Space>
       </Space>
 
-      <Space>
+      <Space direction="vertical">
         <Text strong>Số tiền giao dịch: </Text>
-        <Space>
+        <Space direction="vertical">
           <InputNumber
-            addonBefore={<Text>Từ</Text>}
+            addonBefore={
+              <div style={{ width: '30px' }}>
+                <Text>Từ</Text>
+              </div>
+            }
             onChange={value =>
               setQueryObj(prev => ({
                 ...prev,
                 amount_min: value,
               }))
             }
-            style={{ width: '120px' }}
+            style={{ width: '320px' }}
             min={0}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
 
           <InputNumber
-            addonBefore={<Text>Đến</Text>}
+            addonBefore={
+              <div style={{ width: '30px' }}>
+                <Text>Đến</Text>
+              </div>
+            }
             onChange={value =>
               setQueryObj(prev => ({
                 ...prev,
                 amount_max: value,
               }))
             }
-            style={{ width: '120px' }}
+            style={{ width: '320px' }}
             min={0}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
         </Space>
       </Space>

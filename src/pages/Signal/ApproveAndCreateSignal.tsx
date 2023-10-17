@@ -654,6 +654,7 @@ const Recommendations: React.FC = () => {
                 });
               }}
               style={{ margin: '0 7px' }}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
             <Typography> Đến </Typography>
             <InputNumber
@@ -665,6 +666,7 @@ const Recommendations: React.FC = () => {
                 });
               }}
               style={{ margin: '0 7px' }}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
           </div>
 

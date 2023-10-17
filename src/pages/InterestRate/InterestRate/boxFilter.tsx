@@ -59,86 +59,113 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
         marginTop: '10px',
       }}
     >
-      <Space style={{ width: '100%' }}>
-        <Text strong>Giá trị ban đầu:</Text>
-        <Space style={{ marginLeft: '26px' }}>
-          <InputNumber
-            addonBefore={<Text>Từ</Text>}
-            onChange={value =>
-              setQueryObj(prev => ({
-                ...prev,
-                initial_value_from: value,
-              }))
-            }
-            style={{ width: '120px' }}
-            min={0}
-            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          />
+      <Space size="large">
+        <Space style={{ width: '100%' }} direction="vertical">
+          <Text strong>Giá trị ban đầu:</Text>
+          <Space direction="vertical">
+            <InputNumber
+              addonBefore={
+                <div style={{ width: '30px' }}>
+                  <Text>Từ</Text>
+                </div>
+              }
+              onChange={value =>
+                setQueryObj(prev => ({
+                  ...prev,
+                  initial_value_from: value,
+                }))
+              }
+              style={{ width: '320px' }}
+              min={0}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            />
 
-          <InputNumber
-            addonBefore={<Text>Đến</Text>}
-            onChange={value =>
-              setQueryObj(prev => ({
-                ...prev,
-                initial_value_to: value,
-              }))
-            }
-            style={{ width: '120px' }}
-            min={0}
-            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          />
+            <InputNumber
+              addonBefore={
+                <div style={{ width: '30px' }}>
+                  <Text>Đến</Text>
+                </div>
+              }
+              onChange={value =>
+                setQueryObj(prev => ({
+                  ...prev,
+                  initial_value_to: value,
+                }))
+              }
+              style={{ width: '320px' }}
+              min={0}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            />
+          </Space>
+        </Space>
+        <Space direction="vertical">
+          <Text strong>Lợi nhuận dự kiến:</Text>
+          <Space direction="vertical">
+            <InputNumber
+              addonBefore={
+                <div style={{ width: '30px' }}>
+                  <Text>Từ</Text>
+                </div>
+              }
+              onChange={value =>
+                setQueryObj(prev => ({
+                  ...prev,
+                  expected_end_value_from: value,
+                }))
+              }
+              style={{ width: '320px' }}
+              min={0}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            />
+
+            <InputNumber
+              addonBefore={
+                <div style={{ width: '30px' }}>
+                  <Text>Đến</Text>
+                </div>
+              }
+              onChange={value =>
+                setQueryObj(prev => ({
+                  ...prev,
+                  expected_end_value_to: value,
+                }))
+              }
+              style={{ width: '320px' }}
+              min={0}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            />
+          </Space>
+        </Space>
+        <Space direction="vertical">
+          <Text strong>Hoa hồng tạm tính:</Text>
+          <Space direction="vertical">
+            <InputNumber
+              addonBefore={
+                <div style={{ width: '30px' }}>
+                  <Text>Từ</Text>
+                </div>
+              }
+              // onChange={value => setNav_Low(value as number)}
+              style={{ width: '320px' }}
+              min={0}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            />
+            <InputNumber
+              addonBefore={
+                <div style={{ width: '30px' }}>
+                  <Text>Đến</Text>
+                </div>
+              }
+              // onChange={value => setNav_Hight(value as number)}
+              style={{ width: '320px' }}
+              min={0}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            />
+          </Space>
         </Space>
       </Space>
-      <Space >
-        <Text strong>Lợi nhuận dự kiến:</Text>
-        <Space style={{ marginLeft: '6px' }}>
-          <InputNumber
-            addonBefore={<Text>Từ</Text>}
-            onChange={value =>
-              setQueryObj(prev => ({
-                ...prev,
-                expected_end_value_from: value,
-              }))
-            }
-            style={{ width: '120px' }}
-            min={0}
-            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          />
 
-          <InputNumber
-            addonBefore={<Text>Đến</Text>}
-            onChange={value =>
-              setQueryObj(prev => ({
-                ...prev,
-                expected_end_value_to: value,
-              }))
-            }
-            style={{ width: '120px' }}
-            min={0}
-            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          />
-        </Space>
-      </Space>
-      <Space>
-        <Text strong>Hoa hồng tạm tính:</Text>
-        <Space>
-          <InputNumber
-            addonBefore={<Text>Từ</Text>}
-            // onChange={value => setNav_Low(value as number)}
-            style={{ width: '120px' }}
-            min={0}
-          />
-
-          <InputNumber
-            addonBefore={<Text>Đến</Text>}
-            // onChange={value => setNav_Hight(value as number)}
-            style={{ width: '120px' }}
-            min={0}
-          />
-        </Space>
-      </Space>
-
-      <Space>
+      <Space direction="vertical">
         <Text strong>Tình trạng: </Text>
         <Radio.Group defaultValue={''} onChange={handleSelectIsContact}>
           <Radio.Button value="">Tất cả</Radio.Button>

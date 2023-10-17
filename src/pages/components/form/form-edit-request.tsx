@@ -65,7 +65,7 @@ const EditRequest: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm }) => {
           label="SĐT"
           rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
         >
-          <Input style={{ width: '100%' }} />
+          <Input style={{ width: '100%' }} type="number" />
         </Form.Item>
         <Form.Item name="address" label="Địa chỉ">
           <Input />

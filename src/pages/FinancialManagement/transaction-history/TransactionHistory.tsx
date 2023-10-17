@@ -86,13 +86,17 @@ const TransactionHistory = () => {
           name: item?.customer?.fullname,
           email: item?.customer?.email,
           phone_number: item?.customer?.phone_number,
-          package: `${item.subscription_plan?.subscription_product?.name} ${item?.subscription_plan?.name}`,
+          package:
+            item.subscription_plan?.subscription_product?.name &&
+            item?.subscription_plan?.name &&
+            `${item.subscription_plan?.subscription_product?.name} ${item?.subscription_plan?.name}`,
         };
 
         return b;
       });
 
       setListCustomerSp(newArr);
+      console.log('newArr_________________', newArr);
 
       // console.log('newArr____________', newArr);
     }

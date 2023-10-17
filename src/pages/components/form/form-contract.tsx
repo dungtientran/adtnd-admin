@@ -5,6 +5,7 @@ import type { RangePickerProps } from 'antd/es/date-picker';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AutoComplete, Button, DatePicker, Form, Input, InputNumber, Switch } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
+import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
 
 import { listCustomerApi } from '@/api/ttd_list_customer';
@@ -18,8 +19,12 @@ interface IEditRequest {
   setNewContract: (data: any) => void;
 }
 
+const rangeConfig = {
+  rules: [{ type: 'array' as const, required: true, message: 'Không được bỏ trống!' }],
+};
+
 const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, setNewContract }) => {
-  const [option, setOption] = useState<{ id: string; value: string }[]>([]);
+  const [option, setOption] = useState<{ id: string; value: string; fullname: string }[]>([]);
   const [option2, setOption2] = useState<{ id: string; value: string; email: string; fullname: string }[]>([]);
   const [nameSelect, setNameSelect] = useState('');
   const [saleSelect, setsaleSelect] = useState('');
@@ -39,9 +44,14 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
 
   useEffect(() => {
     if (data) {
-      const newOption = data?.data?.rows.map((item: any) => ({ value: item?.email, id: item?.id }));
+      const newOption = data?.data?.rows.map((item: any) => ({
+        value: item?.email,
+        id: item?.id,
+        fullname: item?.fullname,
+      }));
 
       setOption(newOption);
+      // console.log('_______________________________', newOption);
     }
 
     if (userData.data) {
@@ -50,7 +60,7 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
         id: item?.id,
         email: item?.email,
         fullname: item?.fullname,
-      }));
+      })); 
 
       setOption2(newOption2);
     }
@@ -62,7 +72,10 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
         ...initForm,
         fullname: initForm?.name,
         email: initForm?.email,
-        sale_name: initForm?.name_sale,
+        sale_name: option.find(item => item?.fullname === initForm?.name_sale)?.value,
+        customer_id: option2.find(item => item?.fullname === initForm?.name)?.value,
+        sale_id: option.find(item => item?.fullname === initForm?.name_sale)?.id,
+        // time_contract: [moment('2023-08-26'), moment('2023-08-29')],
       };
 
       form.setFieldsValue(setInitForm);
@@ -94,19 +107,25 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
   const [form] = Form.useForm();
 
   const onFinish = (values: any) => {
-    const customer_id = option2.find(item => item.value === values?.customer_id)?.id;
+    const rangeValue = values['time_contract'];
+    const timeSelect = [rangeValue[0].format('YYYY-MM-DD'), rangeValue[1].format('YYYY-MM-DD')];
+    // console.log('values______________', values);
 
-    const newValues = {
-      ...values,
-      ...days,
-      customer_id,
-    };
+    // console.log("timeSelect________________", timeSelect);
 
-    if (!initForm) {
-      setNewContract(newValues);
-    } else {
-      setUpdateDataSp(newValues);
-    }
+    // const customer_id = option2.find(item => item.value === values?.customer_id)?.id;
+
+    // const newValues = {
+    //   ...values,
+    //   ...days,
+    //   customer_id,
+    // };
+
+    // if (!initForm) {
+    //   setNewContract(newValues);
+    // } else {
+    //   setUpdateDataSp(newValues);
+    // }
   };
 
   const onChange = (
@@ -190,8 +209,11 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
           <Input />
         </Form.Item>
 
-        <Form.Item name="" label="Thời gian hợp đồng" rules={[{ required: true, message: 'Không đc bỏ trống !' }]}>
-          <RangePicker format="YYYY/MM/DD" onChange={onChange} />
+        <Form.Item name="time_contract" label="Thời gian hợp đồng" {...rangeConfig}>
+          <RangePicker
+            format="YYYY/MM/DD"
+            // onChange={onChange}
+          />
         </Form.Item>
 
         <Form.Item

@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import './index.less';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AutoComplete, Button, Form, Input, Select, Space, Typography } from 'antd';
 import { Fragment, useEffect, useState } from 'react';
@@ -95,6 +97,7 @@ const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleC
         scrollToFirstError
         // initialValues={initValue}
         disabled={isDisable}
+        className="form_add_user"
       >
         <Form.Item
           name="fullname"
@@ -125,7 +128,7 @@ const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleC
           label="SĐT"
           rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
         >
-          <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
+          <Input addonBefore={prefixSelector} style={{ width: '100%' }} type="number" />
         </Form.Item>
 
         {!isDisable && (

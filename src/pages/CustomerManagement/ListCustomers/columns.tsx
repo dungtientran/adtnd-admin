@@ -49,20 +49,6 @@ export const ColumnSearchProps = (
           }}
           style={{ marginBottom: 8, display: 'block' }}
         />
-        <Space size="large">
-          <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
       </div>
     ),
     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,

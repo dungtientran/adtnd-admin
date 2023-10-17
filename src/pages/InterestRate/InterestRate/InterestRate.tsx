@@ -9,18 +9,21 @@ import { useEffect, useState } from 'react';
 
 import { listContractApi } from '@/api/ttd_contract';
 import { listCustomerApi } from '@/api/ttd_list_customer';
+import MyModal from '@/components/basic/modal';
 import CreateContract from '@/pages/components/form/form-contract';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
 
 import BoxFilter from './boxFilter';
 import { Column } from './columns';
+import DetailsContract from './DetailsContract';
 
 const { getListContract, createContract, updateContract } = listContractApi;
 
 const InterestRate: React.FC = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModel] = useState(false);
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
@@ -146,10 +149,7 @@ const InterestRate: React.FC = () => {
     }
   }, [newContract]);
 
-  // console.log('updateDataSp', updateDataSp);
-
-  // console.log('data___________________', data);
-  // console.log('search_____________', searchText);
+  // console.log('customerSelect_______________________', customerSelect);
 
   return (
     <div className="aaa">
@@ -170,7 +170,7 @@ const InterestRate: React.FC = () => {
       <Result total={data?.data?.count} />
       <div className="table_contract">
         <Table
-          columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
+          columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete, setOpenModel)}
           rowKey={record => record.id}
           dataSource={listCustomerSp}
           pagination={tableParams.pagination}
@@ -189,6 +189,16 @@ const InterestRate: React.FC = () => {
       >
         <CreateContract setUpdateDataSp={setUpdateDataSp} initForm={customerSelect} setNewContract={setNewContract} />
       </Drawer>
+      <MyModal
+        // title="Chi tiết hợp đồng"
+        centered
+        open={openModal}
+        onCancel={() => setOpenModel(false)}
+        className="modal_contract"
+        width={1000}
+      >
+        <DetailsContract details={customerSelect} />
+      </MyModal>
     </div>
   );
 };

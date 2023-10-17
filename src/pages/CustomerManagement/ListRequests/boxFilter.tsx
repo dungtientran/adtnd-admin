@@ -13,7 +13,7 @@ interface IBoxFilter {
   setQueryFilter: (query: string) => void;
 }
 
-const BoxFilter = ({setQueryFilter} : IBoxFilter) => {
+const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
   const [queryObj, setQueryObj] = useState({});
 
   const onChange = (
@@ -44,23 +44,23 @@ const BoxFilter = ({setQueryFilter} : IBoxFilter) => {
     const querystring = qs.stringify(queryObj);
 
     // console.log('querystring_______________', querystring);
-    setQueryFilter(querystring)
+    setQueryFilter(querystring);
   }, [queryObj]);
 
   return (
     <Space
-      direction="vertical"
+      direction="horizontal"
       size="middle"
       style={{ marginBottom: '20px', padding: '1rem', border: '1px solid #ccc', borderRadius: '6px' }}
     >
-      <Space>
+      <Space direction="vertical">
         <Text strong>Lọc theo ngày yêu cầu:</Text>
         <Space>
           <RangePicker format="YYYY/MM/DD" onChange={onChange} />
         </Space>
       </Space>
 
-      <Space>
+      <Space direction="vertical">
         <Text strong>Tình trạng liên hệ: </Text>
         <Radio.Group defaultValue={''} onChange={handleSelectIsContact}>
           <Radio.Button value="">Tất cả</Radio.Button>

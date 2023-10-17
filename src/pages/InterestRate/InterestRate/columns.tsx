@@ -61,6 +61,7 @@ export const Column = (
   setOpenDrawer: (isOpen: boolean) => void,
   setCustomerSelect: (customer: any) => void,
   deleteRequest: (id: string) => void,
+  setOpenModel: (open: boolean) => void
 ) => {
   const columns: ColumnsType<ColumnTyle> = [
     {
@@ -177,15 +178,16 @@ export const Column = (
           >
             <EditOutlined />
           </Button>
-          {/* <Button
+          <Button
             type="primary"
             size="small"
-            // onClick={() => {
-            //   setCustomerSelect(record);
-            // }}
+            onClick={() => {
+              setCustomerSelect(record);
+              setOpenModel(true)
+            }}
           >
             <EyeOutlined />
-          </Button> */}
+          </Button>
         </Space>
       ),
     },

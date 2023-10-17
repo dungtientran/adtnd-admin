@@ -174,12 +174,14 @@ function GroupTablePage() {
       filterDropdown: () => {
         return (
           <div>
-            <Checkbox.Group className="flex-col ps-[5px]">
+            <Checkbox.Group style={{ display: 'flex', flexDirection: 'column', paddingInlineStart: '5px' }}>
               {subscriptions?.map((item: any, index: number) => {
                 return (
                   <Checkbox
                     value={item.id}
-                    className={`${index == 0 ? 'ml-[8px]' : ''}`}
+                    style={{
+                      marginLeft: `${index == 0 ? '8px' : ''}`,
+                    }}
                     onChange={e => {
                       subscriptionFilterChange(e.target.checked, item.id);
                     }}
@@ -333,7 +335,7 @@ function GroupTablePage() {
         </Button>
       </div>
       <Typography style={{ marginTop: '10px' }}>Có tất cả {tableParams.pagination?.total} kết quả</Typography>
-      <div className='table_member'>
+      <div className="table_member">
         <Table
           columns={columns}
           rowKey={record => record.id}
@@ -348,7 +350,6 @@ function GroupTablePage() {
           //     setSelectedRow(value);
           //   },
           // }}
-          
         />
       </div>
       <CreateGroupModal

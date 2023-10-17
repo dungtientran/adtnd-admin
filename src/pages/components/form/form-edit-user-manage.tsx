@@ -113,7 +113,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
     // setCustomerForm(newCustomer);
   };
 
-  console.log('init__________', initForm);
+  // console.log('init__________', initForm);
 
   return (
     <Fragment>

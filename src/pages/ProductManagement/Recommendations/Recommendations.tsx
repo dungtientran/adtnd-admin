@@ -1,60 +1,20 @@
 import type { SignalModel } from '@/interface/signal';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import type { FilterValue, SorterResult } from 'antd/es/table/interface';
+import type { FilterValue } from 'antd/es/table/interface';
 
-import { BorderOuterOutlined, MenuOutlined, StarFilled, UploadOutlined } from '@ant-design/icons';
-import {
-  Avatar,
-  Button,
-  Col,
-  DatePicker,
-  Dropdown,
-  InputNumber,
-  notification,
-  Popconfirm,
-  Radio,
-  Row,
-  Select,
-  Slider,
-  Space,
-  Table,
-  Tag,
-  Typography,
-  Upload,
-} from 'antd';
-import axios from 'axios';
+import { MenuOutlined, StarFilled } from '@ant-design/icons';
+import { Button, Col, DatePicker, Dropdown, InputNumber, notification, Radio, Row, Table, Tag, Typography } from 'antd';
 import moment from 'moment';
-import qs from 'qs';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import {
-  approveManySignal,
-  closeSignal,
-  deleteManySignal,
-  getSignalList,
-  sendManySignal,
-  sendSignalNotification,
-} from '@/api/signal';
-import MyButton from '@/components/basic/button';
-import MyModal from '@/components/basic/modal';
+import { closeSignal, deleteManySignal, getSignalList, sendManySignal, sendSignalNotification } from '@/api/signal';
 import ClosedSignalModal from '@/components/modal/Signal/ClosedSignalModal';
 import ConfirmDeleteModal from '@/components/modal/Signal/ConfirmDeleteModal';
 import SendSignalNotificationModal from '@/components/modal/Signal/SendNotificationModal';
-import CreateSignalModal from '@/components/modal/Signal/SendSignalModal';
 import SendSignalModal from '@/components/modal/Signal/SendSignalModal';
-import Result from '@/pages/components/result/Result';
 
 import { getColumnSearchProps } from '../../Signal/ApproveAndCreateSignal';
-
-interface DataType {
-  id: string;
-  code: string;
-  en_name: string;
-  logo_url: string;
-  market: string;
-  name: string;
-}
 
 interface TableParams {
   pagination?: TablePaginationConfig;
@@ -63,16 +23,10 @@ interface TableParams {
   filters?: Record<string, FilterValue>;
 }
 const { RangePicker } = DatePicker;
-const getRandomuserParams = (params: TableParams) => ({
-  results: params.pagination?.pageSize,
-  page: params.pagination?.current,
-  ...params,
-});
 
 const Recommendations: React.FC = () => {
   const [count, setCount] = useState();
   const [data, setData] = useState<any>([]);
-  const subscriptions = useSelector(state => state.subsciptions.subscriptions);
   const [loading, setLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState<any>([]);
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState<boolean>(false);
@@ -86,12 +40,7 @@ const Recommendations: React.FC = () => {
     signal_ids: [],
     loading: false,
   });
-  const [noteForm, setNoteForm] = useState({
-    note: '',
-    signal_id: '',
-    signal_ids: [],
-    loading: false,
-  });
+
   const [closeSignalModal, setCloseSignalModal] = useState<{ open: boolean; data: any }>({
     open: false,
     data: {
@@ -655,6 +604,7 @@ const Recommendations: React.FC = () => {
                   });
                 }}
                 style={{ margin: '0 7px' }}
+                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
               />
               <Typography> Đến </Typography>
               <InputNumber
@@ -666,6 +616,8 @@ const Recommendations: React.FC = () => {
                     to: value,
                   });
                 }}
+                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                min={0}
               />
             </div>
 
