@@ -5,7 +5,7 @@ import type { RangePickerProps } from 'antd/es/date-picker';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AutoComplete, Button, DatePicker, Form, Input, InputNumber, Switch } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import moment from 'moment';
+// import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
 
 import { listCustomerApi } from '@/api/ttd_list_customer';
@@ -113,19 +113,25 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
 
     // console.log("timeSelect________________", timeSelect);
 
-    // const customer_id = option2.find(item => item.value === values?.customer_id)?.id;
+    const customer_id = option2.find(item => item.value === values?.customer_id)?.id;
 
-    // const newValues = {
-    //   ...values,
-    //   ...days,
-    //   customer_id,
-    // };
+    const newValues = {
+      ...values,
+      ...days,
+      customer_id,
+    };
 
-    // if (!initForm) {
-    //   setNewContract(newValues);
-    // } else {
-    //   setUpdateDataSp(newValues);
-    // }
+
+    // console.log("day______________________", days);
+    // console.log("new value______________________", newValues);
+
+    if (!initForm) {
+      setNewContract(newValues);
+    } else {
+      setUpdateDataSp(newValues);
+    }
+
+  
   };
 
   const onChange = (
@@ -212,7 +218,7 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
         <Form.Item name="time_contract" label="Thời gian hợp đồng" {...rangeConfig}>
           <RangePicker
             format="YYYY/MM/DD"
-            // onChange={onChange}
+            onChange={onChange}
           />
         </Form.Item>
 
@@ -262,6 +268,7 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
             Lưu
           </Button>
         </Form.Item>
+
       </Form>
     </Fragment>
   );

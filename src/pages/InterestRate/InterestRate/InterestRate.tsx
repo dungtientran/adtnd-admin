@@ -3,7 +3,7 @@ import type { ColumnTyle, DataType, TableParams } from './index.interface';
 
 import { PlusOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Drawer, message, Table } from 'antd';
+import { Button, Drawer, message, Spin, Table } from 'antd';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 
@@ -187,7 +187,9 @@ const InterestRate: React.FC = () => {
         open={open}
         bodyStyle={{ paddingBottom: 80 }}
       >
+        {/* <Spin spinning={update.isLoading}> */}
         <CreateContract setUpdateDataSp={setUpdateDataSp} initForm={customerSelect} setNewContract={setNewContract} />
+        {/* </Spin> */}
       </Drawer>
       <MyModal
         // title="Chi tiết hợp đồng"
