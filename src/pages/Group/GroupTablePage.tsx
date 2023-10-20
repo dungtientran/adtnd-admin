@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { createGroup, getGroupList, updateGroup } from '@/api/group';
 import CreateGroupModal from '@/components/modal/Group/CreateGroupModal';
 
+import ExportExcel from '../components/button-export-excel/ExportExcel';
 import { getColumnSearchProps } from '../components/Table/SearchInTable';
 
 interface TableParams {
@@ -26,6 +27,8 @@ function GroupTablePage() {
   const subscriptions = useSelector(state => state.subsciptions.subscriptions);
 
   const [data, setData] = useState<any>();
+  const [dataExcel, setDataExcel] = useState([]);
+
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
@@ -50,7 +53,7 @@ function GroupTablePage() {
   const getData = async () => {
     await getGroupList(tableParams.pagination, '', filterQuery)
       .then((data: any) => {
-        console.log(data);
+        // console.log("data________________", data);
 
         if (data) {
           setTableParams({
@@ -60,13 +63,49 @@ function GroupTablePage() {
               total: data?.count,
             },
           });
-          setData(data?.data);
+          const columns = data?.data?.map((item: any) => {
+            const column = {
+              ...item,
+              service_pack: item?.subscription_product?.name,
+              sale_email: item?.sale?.email,
+            };
+
+            return column;
+          });
+
+          setData(columns);
         }
       })
       .catch(error => {
         console.log(error);
       });
   };
+
+  const getDataExcel = async (limit: number) => {
+    await getGroupList({ current: 1, pageSize: limit }, '', filterQuery)
+      .then((data: any) => {
+        if (data) {
+          const columns = data?.data?.map((item: any) => {
+            const column = {
+              ...item,
+              service_pack: item?.subscription_product?.name,
+              sale_email: item?.sale?.email,
+            };
+
+            return column;
+          });
+
+          setDataExcel(columns);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    if (tableParams.pagination?.total) getDataExcel(tableParams.pagination?.total);
+  }, [tableParams.pagination?.total]);
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     console.log(pagination);
@@ -148,7 +187,7 @@ function GroupTablePage() {
       title: 'Tên nhóm',
       dataIndex: 'name',
       dataType: 'text',
-      width: '30%',
+      width: '20%',
       render: (text: string, record: any) => (
         <Link
           to={`/customer-management/customer-group/detail/${record.id}`}
@@ -167,10 +206,10 @@ function GroupTablePage() {
     },
     {
       title: 'Gói dịch vụ',
-      dataIndex: ['subscription_product', 'name'],
-      dataType: 'text',
+      dataIndex: 'service_pack',
+      // dataType: 'text',
       width: '20%',
-      render: (text: string, record: any) => <Typography className="text-center">{text}</Typography>,
+      // render: (text: string, record: any) => <Typography className="text-center">{text}</Typography>,
       filterDropdown: () => {
         return (
           <div>
@@ -197,10 +236,10 @@ function GroupTablePage() {
     },
     {
       title: 'Nhân viên chăm sóc',
-      dataIndex: ['sale', 'email'],
-      dataType: 'text',
-      width: '20%',
-      render: (text: string, record: any) => <Typography className="text-center">{text}</Typography>,
+      dataIndex: 'sale_email',
+      // dataType: 'text',
+      width: '30%',
+      // render: (text: string, record: any) => <Typography className="text-center">{text}</Typography>,
       ...getColumnSearchProps({
         setFilter: setSaleSearch,
       }),
@@ -312,18 +351,16 @@ function GroupTablePage() {
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Danh sách nhóm khách hàng</Typography.Title>
       </div>
-      {checkIsFilter() && (
-        <>
-          <Button
-            onClick={() => {
-              resetFilter();
-            }}
-            style={{ marginBottom: '10px' }}
-          >
-            <Typography>Reset Bộ Lọc</Typography>
-          </Button>
-        </>
-      )}
+
+      <Button
+        onClick={() => {
+          resetFilter();
+        }}
+        style={{ marginBottom: '10px' }}
+      >
+        <Typography>Reset Bộ Lọc</Typography>
+      </Button>
+
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           onClick={() => {
@@ -334,7 +371,10 @@ function GroupTablePage() {
           <Typography>Tạo nhóm mới</Typography>
         </Button>
       </div>
-      <Typography style={{ marginTop: '10px' }}>Có tất cả {tableParams.pagination?.total} kết quả</Typography>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '10px' }}>
+        <Typography style={{ marginTop: '10px' }}>Có tất cả {tableParams.pagination?.total} kết quả</Typography>
+        <ExportExcel columns={columns} dataSource={dataExcel} />
+      </div>
       <div className="table_member">
         <Table
           columns={columns}

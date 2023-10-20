@@ -5,6 +5,7 @@ import type { FilterValue } from 'antd/es/table/interface';
 import { MenuOutlined, StarFilled } from '@ant-design/icons';
 import { Button, Col, DatePicker, Dropdown, InputNumber, notification, Radio, Row, Table, Tag, Typography } from 'antd';
 import moment from 'moment';
+import qs from 'qs';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -13,6 +14,7 @@ import ClosedSignalModal from '@/components/modal/Signal/ClosedSignalModal';
 import ConfirmDeleteModal from '@/components/modal/Signal/ConfirmDeleteModal';
 import SendSignalNotificationModal from '@/components/modal/Signal/SendNotificationModal';
 import SendSignalModal from '@/components/modal/Signal/SendSignalModal';
+import ExportExcel from '@/pages/components/button-export-excel/ExportExcel';
 
 import { getColumnSearchProps } from '../../Signal/ApproveAndCreateSignal';
 
@@ -26,7 +28,10 @@ const { RangePicker } = DatePicker;
 
 const Recommendations: React.FC = () => {
   const [count, setCount] = useState();
+
   const [data, setData] = useState<any>([]);
+  const [dataExcel, setDataExcel] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState<any>([]);
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState<boolean>(false);
@@ -82,9 +87,12 @@ const Recommendations: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState(null);
   const [priorityFilter, setPriorityFilter] = useState(null);
   const [codeFilter, setCodeFilter] = useState<string>('');
-  const [dateSort, setDateSort] = useState('DESC');
+  const [dateSort, setDateSort] = useState('');
+  const [selectedDates, setSelectedDates] = useState(null);
 
   const [filterQuery, setFilterQuery] = useState('');
+
+  const [sortedInfo, setSortedInfo] = useState('');
 
   const onFilter = () => {
     let query = '';
@@ -199,17 +207,19 @@ const Recommendations: React.FC = () => {
     {
       title: 'Ngày tạo',
       dataIndex: 'action_date',
-      width: '10%',
-      sorter: () => {
-        if (dateSort == 'DESC') {
-          setDateSort('ASC');
-        } else {
-          setDateSort('DESC');
-        }
+      width: '8%',
+      // sorter: () => {
+      //   if (dateSort == 'DESC') {
+      //     setDateSort('ASC');
+      //   } else {
+      //     setDateSort('DESC');
+      //   }
 
-        return 1;
-      },
-      sortDirections: ['ascend', 'descend'],
+      //   return 1;
+      // },
+      // sortDirections: ['ascend', 'descend'],
+      sorter: true,
+      render: (_, record) => <Typography.Text>{record?.action_date}</Typography.Text>,
     },
     {
       title: 'Mã CK',
@@ -223,15 +233,15 @@ const Recommendations: React.FC = () => {
     },
     {
       title: 'Loại',
-      dataIndex: 'is_long_term',
-      width: '8%',
-      render: (is_long_term: boolean) => {
-        if (is_long_term) {
-          return 'Dài hạn';
-        } else {
-          return 'Ngắn hạn';
-        }
-      },
+      dataIndex: 'long_term',
+      width: '5%',
+      // render: (is_long_term: boolean) => {
+      //   if (is_long_term) {
+      //     return 'Dài hạn';
+      //   } else {
+      //     return 'Ngắn hạn';
+      //   }
+      // },
     },
     {
       title: 'Giá mua',
@@ -241,54 +251,119 @@ const Recommendations: React.FC = () => {
     {
       title: 'Giá chốt lời 1',
       dataIndex: 'target_sell_price_1',
-      width: '10%',
+      width: '6%',
     },
     {
       title: 'Giá chốt lời 2',
       dataIndex: 'target_sell_price_2',
-      width: '10%',
+      width: '6%',
     },
     {
       title: 'Giá chốt lời 3',
       dataIndex: 'target_sell_price_3',
-      width: '10%',
+      width: '6%',
     },
     {
       title: 'Giá cắt lỗ',
       dataIndex: 'target_stop_loss',
-      width: '10%',
+      width: '6%',
     },
     {
-      title: 'Giá đóng',
-      dataIndex: 'closed_price',
-      width: '10%',
+      title: 'Giá hiện tại',
+      dataIndex: 'current_value',
+      width: '6%',
+      render: (_, record) => {
+        if (record?.is_closed) {
+          return <Tag color="red">Đóng</Tag>;
+        } else {
+          return <Typography.Text>{record?.current_value}</Typography.Text>;
+        }
+      },
+      sorter: true,
+    },
+    {
+      title: 'Lợi nhuận hiện tại',
+      dataIndex: 'current_profit',
+      width: '8%',
+      sorter: true,
+
+      render: (_, record) => {
+        if (record?.is_closed) {
+          return <Tag color="red">Đóng</Tag>;
+        } else {
+          return (
+            <Tag color={record?.current_profit >= 0 ? '#3b5999' : '#f03838'}>{record?.current_profit?.toFixed(2)}</Tag>
+          );
+        }
+      },
+    },
+    {
+      title: 'Lợi nhuận (%)',
+      dataIndex: 'target_take_profit',
+      width: '8%',
+      sorter: true,
+
+      render: (_, record) => {
+        if (record?.is_closed) {
+          return <Tag color="red">Đóng</Tag>;
+        } else {
+          return (
+            <Tag color={record?.target_take_profit >= 0 ? '#3b5999' : '#f03838'}>{record?.target_take_profit}</Tag>
+          );
+        }
+      },
     },
 
     {
       title: 'Ngày đóng',
       dataIndex: 'closed_date',
-      width: '12%',
-      sorter: (a: any, b: any) => a.closed_date.localeCompare(b.closed_date),
-      sortDirections: ['ascend', 'descend', 'ascend'],
+      width: '8%',
+      // render: (_, record) => <Typography.Text>{record?.closed_date ? record?.closed_date : 'Abc'}</Typography.Text>,
+    },
+    {
+      title: 'Lợi nhuận khi đóng',
+      dataIndex: 'closed_profit',
+      width: '10%',
+      sorter: true,
+
+      render: (_, record) => {
+        return (
+          <Tag color={record?.closed_profit >= 0 ? '#3b5999' : '#f03838'}>{record?.closed_profit?.toFixed(2)}</Tag>
+        );
+      },
+    },
+    {
+      title: 'Lợi nhuận (%)',
+      dataIndex: 'closed_profit_percentage',
+      width: '10%',
+      sorter: true,
+
+      render: (_, record) => {
+        return (
+          <Tag color={record?.closed_profit_percentage >= 0 ? '#3b5999' : '#f03838'}>
+            {record?.closed_profit_percentage?.toFixed(1)}
+          </Tag>
+        );
+      },
     },
     {
       title: 'Ưu tiên',
       dataIndex: 'priority',
-      width: '8%',
+      width: '5%',
       sortDirections: ['ascend', 'descend', 'ascend'],
       render: data => (
-        <div>
+        <div style={{ width: '30px' }}>
           <StarFilled style={data ? { color: '#eb8f19' } : {}} size={20} />
         </div>
       ),
     },
     {
       title: 'Tình trạng',
-      dataIndex: 'is_closed',
+      dataIndex: 'status',
       width: '5%',
-      render: (is_closed: boolean, record: any) => (
+      render: (_, record: any) => (
         <>
-          {is_closed ? (
+          {record?.is_closed ? (
             <Tag color="red">Đóng</Tag>
           ) : record.is_approved ? (
             <Tag color="geekblue">Đã duyệt</Tag>
@@ -303,7 +378,7 @@ const Recommendations: React.FC = () => {
 
   const getSignal = async () => {
     setLoading(true);
-    await getSignalList(tableParams.pagination, codeFilter, filterQuery, dateSort)
+    await getSignalList(qs.stringify(getRandomuserParams(tableParams)), codeFilter, filterQuery, sortedInfo)
       .then(data => {
         if (data.code === 200) {
           setTableParams({
@@ -313,9 +388,46 @@ const Recommendations: React.FC = () => {
               total: data?.data?.count,
             },
           });
-          console.log(data.data);
+          // console.log(data.data);
+          const columns = data?.data?.rows?.map((item: any) => {
+            const column = {
+              ...item,
+              date: item?.action_date,
+              long_term: item?.is_long_term ? 'Dài hạn' : 'Ngắn hạn',
+              status: item?.is_closed ? 'Đóng' : item?.is_approved ? 'Đã duyệt' : 'Mới',
+            };
+
+            return column;
+          });
+
           setCount(data?.data?.count);
-          setData(data?.data?.rows);
+          setData(columns);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+    setLoading(false);
+  };
+
+  const getSignalDataExcel = async (limit: string) => {
+    setLoading(true);
+    await getSignalList(`page=1&size=${limit}`, codeFilter, filterQuery, sortedInfo)
+      .then(data => {
+        if (data.code === 200) {
+          const columns = data?.data?.rows?.map((item: any) => {
+            const column = {
+              ...item,
+              date: item?.action_date,
+              long_term: item?.is_long_term ? 'Dài hạn' : 'Ngắn hạn',
+              status: item?.is_closed ? 'Đóng' : item?.is_approved ? 'Đã duyệt' : 'Mới',
+            };
+
+            return column;
+          });
+
+          setDataExcel(columns);
         }
       })
       .catch(error => {
@@ -358,12 +470,16 @@ const Recommendations: React.FC = () => {
       setFilterQuery(query);
     }
   }, [statusFilter, typeFilter, priorityFilter]);
+
   useEffect(() => {
     getSignal();
-  }, [JSON.stringify(tableParams), filterQuery, codeFilter, dateSort]);
+  }, [JSON.stringify(tableParams), filterQuery, codeFilter, sortedInfo]);
+  useEffect(() => {
+    if (count) getSignalDataExcel(count);
+  }, [count]);
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    console.log(pagination);
+    console.log('sorter_________________', sorter);
     setTableParams({
       pagination,
       filters,
@@ -373,7 +489,27 @@ const Recommendations: React.FC = () => {
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
       setData([]);
     }
+
+    if (sorter.order === 'ascend') {
+      const sorte = `${sorter.field}_order=ASC`;
+
+      console.log('sorte asc_____________________', sorte);
+      setSortedInfo(sorte);
+    } else if (sorter.order === 'descend') {
+      const sorte = `${sorter.field}_order=DESC`;
+
+      console.log('sorte desc_____________________', sorte);
+
+      setSortedInfo(sorte);
+    }
   };
+
+  const getRandomuserParams = (params: TableParams) => ({
+    size: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    // market: params.filters?.market,
+    // code: searchText || undefined,
+  });
 
   const handleDeleteMany = async () => {
     await deleteManySignal(selectedRow)
@@ -504,6 +640,38 @@ const Recommendations: React.FC = () => {
     setLoading(false);
   };
 
+  const handelResetFilter = () => {
+    setSortedInfo('');
+
+    setFilterQuery('');
+    setCodeFilter('');
+    setTypeFilter(null);
+    setStatusFilter(null);
+    setSelectedDates(null);
+    setDateSort('DESC');
+    setPriceRangeFilter({
+      from: null,
+      to: null,
+    });
+    setCreateDateFilter({
+      end_date: '',
+      start_date: '',
+    });
+    setTableParams({
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: [10, 20, 50],
+      },
+    });
+  };
+
+  // console.log('dât____________________', data);
+  // console.log('dateSort_____________', dateSort);
+  // console.log('table param__________________', tableParams);
+
+  // console.log('getRandomuserParams_____________', getRandomuserParams(tableParams));
   return (
     <div className="aaa">
       <div style={{ textAlign: 'center' }}>
@@ -520,8 +688,8 @@ const Recommendations: React.FC = () => {
                 <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
                   Loại:{' '}
                 </Typography>
-                <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
-                  <Radio.Button value={''}>Tất cả</Radio.Button>
+                <Radio.Group value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
+                  <Radio.Button value={null}>Tất cả</Radio.Button>
                   <Radio.Button value={1}>Ngắn hạn</Radio.Button>
                   <Radio.Button value={2}>Dài hạn</Radio.Button>
                 </Radio.Group>
@@ -532,8 +700,8 @@ const Recommendations: React.FC = () => {
                 <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
                   Tình trạng:
                 </Typography>
-                <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
-                  <Radio.Button value={''}>Tất cả</Radio.Button>
+                <Radio.Group value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                  <Radio.Button value={null}>Tất cả</Radio.Button>
                   <Radio.Button value={'open'}>Đang mở</Radio.Button>
                   <Radio.Button value={'closed'}>Đã đóng</Radio.Button>
                 </Radio.Group>
@@ -584,6 +752,7 @@ const Recommendations: React.FC = () => {
                       start_date: moment(value[0].$d).format('MM/DD/YYYY'),
                       end_date: moment(value[1].$d).format('MM/DD/YYYY'),
                     });
+                    setSelectedDates(value);
                   } else {
                     setCreateDateFilter({
                       start_date: '',
@@ -591,6 +760,7 @@ const Recommendations: React.FC = () => {
                     });
                   }
                 }}
+                value={selectedDates}
               />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
@@ -605,6 +775,8 @@ const Recommendations: React.FC = () => {
                 }}
                 style={{ margin: '0 7px' }}
                 formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                min={0}
+                value={priceRangeFilter.from}
               />
               <Typography> Đến </Typography>
               <InputNumber
@@ -618,6 +790,7 @@ const Recommendations: React.FC = () => {
                 }}
                 formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 min={0}
+                value={priceRangeFilter.to}
               />
             </div>
 
@@ -625,6 +798,7 @@ const Recommendations: React.FC = () => {
               <Button className="" onClick={onFilter}>
                 <Typography>Lọc</Typography>
               </Button>
+              {<Button onClick={handelResetFilter}>Reset bộ lọc</Button>}
             </div>
           </div>
         </div>
@@ -681,8 +855,10 @@ const Recommendations: React.FC = () => {
           </div>
         </div>
       </div>
-      <Typography>Có tất cả {count} kết quả</Typography>
-
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+        <Typography>Có tất cả {count} kết quả</Typography>
+        <ExportExcel columns={columns} dataSource={dataExcel} />
+      </div>
       <Table
         columns={columns}
         rowKey={record => record.id}

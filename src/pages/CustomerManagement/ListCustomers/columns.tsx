@@ -1,4 +1,4 @@
-import type { DataIndex, DataType } from './index.interface';
+import type { ColumnListCustomerType, DataIndex, DataType } from './index.interface';
 import type { InputRef } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 import type { ColumnsType, FilterConfirmProps } from 'antd/es/table/interface';
@@ -9,13 +9,14 @@ import { useRef, useState } from 'react';
 
 import user from '@/assets/logo/user.png';
 
+
 const { Text, Link } = Typography;
 
 export const ColumnSearchProps = (
   dataIndex: DataIndex,
   title: string,
   setSearchQuery: (query: any) => void,
-): ColumnType<DataType> => {
+): ColumnType<ColumnListCustomerType> => {
   const searchInput = useRef<InputRef>(null);
 
   const handleSearch = (selectedKeys: string, confirm: (param?: FilterConfirmProps) => void, dataIndex: DataIndex) => {
@@ -68,7 +69,7 @@ export const Column = (
   setCustomerSelect: (customer: any) => void,
   setCustomerId: (id: string) => void,
 ) => {
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<ColumnListCustomerType> = [
     {
       title: 'Mã',
       dataIndex: 'customer_code',
@@ -110,33 +111,37 @@ export const Column = (
       title: 'Gói dịch vụ',
       dataIndex: 'subscription_product',
       width: '8%',
-      filters: [
-        { text: 'Trial', value: 'trial' },
-        { text: 'Vip', value: 'vip' },
-        { text: 'Premium', value: 'premium' },
-      ],
-      render: (_, record) => <Text>{record.subscription?.subscription_product?.name}</Text>,
+      // filters: [
+      //   { text: 'Trial', value: 'trial' },
+      //   { text: 'Vip', value: 'vip' },
+      //   { text: 'Premium', value: 'premium' },
+      // ],
+      // render: (_, record) => <Text>{record.subscription?.subscription_product?.name}</Text>,
+
     },
     {
       title: 'NAV',
-      dataIndex: '',
+      dataIndex: 'nav',
       width: '8%',
-      render: (_, record) => <Text>{record?.CaculatorHistories?.expected_amount}</Text>,
+      sorter: true,
+
+      render: (_, record) => <Text>{record?.nav?.toLocaleString()}</Text>,
     },
     {
       title: 'Số ngày còn lại',
-      dataIndex: 'remaining_subscription_day',
+      dataIndex: 'day_remaining',
       width: '8%',
+      sorter: true,
     },
     {
       title: 'Nhân viên chăm, sóc',
-      dataIndex: 'careby',
+      dataIndex: 'sale_name',
       width: '15%',
       render: (_, record) => (
         <Space size="middle">
-          {record.careby ? (
+          {record.sale_name ? (
             <Space direction="vertical">
-              <Text strong>{record.careby.sale.fullname}</Text>
+              <Text strong>{record.sale_name}</Text>
               <Popconfirm title="Chắc chắn" onConfirm={() => setCustomerId(record.id)}>
                 <Link>Xóa</Link>
               </Popconfirm>

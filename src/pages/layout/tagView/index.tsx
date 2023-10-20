@@ -64,9 +64,9 @@ const TagsView: FC = () => {
     }
   }, [dispatch, location.pathname, menuList]);
 
-  // console.log('tag viewssssssss', tags);
   // console.log('menu list tag views____________', menuList);
-  // console.log('local___________', location);
+  // console.log('tag viewssssssss', tags);
+  // console.log('location.pathname________________', location.pathname);
 
   return (
     <div id="pageTabs" style={{ padding: '6px 4px' }}>

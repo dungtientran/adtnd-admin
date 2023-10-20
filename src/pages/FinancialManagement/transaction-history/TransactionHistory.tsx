@@ -107,7 +107,12 @@ const TransactionHistory = () => {
     <div className="aaa">
       <HeadTitle title="Lịch sử giao dịch" />
       <BoxFilter setQueryFilter={setQueryFilter} />
-      <Result total={data?.data?.count} searchText={searchedColumn} />
+      <Result
+        total={data?.data?.count}
+        searchText={searchedColumn}
+        columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
+        dataSource={listCustomerSp}
+      />
       <Table
         columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
         rowKey={record => record.id}

@@ -5,7 +5,7 @@ import { CheckOutlined, CloseOutlined, EditOutlined, PlusOutlined } from '@ant-d
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button, Drawer, Form, Input, InputNumber, message, Popconfirm, Space, Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 
 import { listInterestRateApi } from '@/api/ttd_interest_rate';
 import CreateInterest from '@/pages/components/form/form-create-interest';
@@ -34,17 +34,6 @@ interface Item {
   };
 }
 
-// const originData: Item[] = [];
-
-// for (let i = 0; i < 100; i++) {
-//   originData.push({
-//     id: i.toString(),
-//     name: `Edward ${i}`,
-//     age: 32,
-//     address: `London Park no. ${i}`,
-//   });
-// }
-
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editing: boolean;
   dataIndex: string;
@@ -65,23 +54,54 @@ const EditableCell: React.FC<EditableCellProps> = ({
   children,
   ...restProps
 }) => {
-  const inputNode = <InputNumber />;
+  const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
 
   return (
     <td {...restProps}>
       {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{ margin: 0 }}
-          rules={[
-            {
-              required: true,
-              message: `Vui lòng nhập ${title}!`,
-            },
-          ]}
-        >
-          <InputNumber />
-        </Form.Item>
+        dataIndex === 'profit' ? (
+          <Space>
+            <Form.Item
+              name={'profit_from'}
+              style={{ margin: 0 }}
+              rules={[
+                {
+                  required: true,
+                  message: `Vui lòng nhập ${title}!`,
+                },
+              ]}
+              label="Từ"
+            >
+              <InputNumber min={0} />
+            </Form.Item>
+            <Form.Item
+              label="Đến"
+              name={'profit_to'}
+              style={{ margin: 0 }}
+              rules={[
+                {
+                  required: true,
+                  message: `Vui lòng nhập ${title}!`,
+                },
+              ]}
+            >
+              <InputNumber min={0} />
+            </Form.Item>
+          </Space>
+        ) : (
+          <Form.Item
+            name={dataIndex}
+            style={{ margin: 0 }}
+            rules={[
+              {
+                required: true,
+                message: `Vui lòng nhập ${title}!`,
+              },
+            ]}
+          >
+            {inputNode}
+          </Form.Item>
+        )
       ) : (
         children
       )}
@@ -146,6 +166,7 @@ const SetInterestRate = () => {
   });
 
   const edit = (record: any) => {
+    // console.log('record_____________', record);
     form.setFieldsValue({ ...record });
     setEditingKey(record.id as string);
   };
@@ -160,6 +181,8 @@ const SetInterestRate = () => {
 
   const save = async (record: Item) => {
     const row = await form.validateFields();
+
+    // console.log('record_________________save', record);
     const editSubscription = {
       ...row,
       id: record.id,
@@ -168,6 +191,7 @@ const SetInterestRate = () => {
     setInterestSelect(editSubscription);
 
     // console.log('editSubscription___________', editSubscription);
+
     if (interestSelect) {
       update.mutate();
     }
@@ -178,7 +202,6 @@ const SetInterestRate = () => {
       title: 'Gói dịch vụ',
       dataIndex: 'subscription_product',
       width: '25%',
-      // editable: true,
       render: (record: any) => <Text>{record.name}</Text>,
     },
     {
@@ -233,13 +256,13 @@ const SetInterestRate = () => {
   ];
   const columnsProfit = [
     {
-      title: 'Gói dịch vụ',
-      // dataIndex: 'profit_from',
+      title: 'Lợi nhuận (%)',
+      dataIndex: 'profit',
       // width: '25%',
-      // editable: true,
-      render: (record: any) => (
+      editable: true,
+      render: (_: any, record: any) => (
         <Text>
-          Từ <Text strong>{record.profit_from}</Text> đến <Text strong>{record.profit_to}</Text>
+          Từ <Text strong>{record?.profit_from}</Text> đến <Text strong>{record?.profit_to}</Text>
         </Text>
       ),
     },
@@ -303,7 +326,7 @@ const SetInterestRate = () => {
       ...col,
       onCell: (record: Item) => ({
         record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
+        inputType: col.dataIndex === 'profit' ? 'text' : 'number',
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -320,7 +343,7 @@ const SetInterestRate = () => {
       ...col,
       onCell: (record: Item) => ({
         record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
+        inputType: col.dataIndex === 'profit' ? 'text' : 'number',
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -386,7 +409,7 @@ const SetInterestRate = () => {
       <Form form={form} component={false}>
         <HeadTitle title="Biểu hoa hồng kinh doanh theo gói dịch vụ" />
 
-        <Result total={getdataSubscription.data?.data?.count} />
+        <Result total={getdataSubscription.data?.data?.count} isButtonExcel={false} />
         <Table
           components={{
             body: {
@@ -413,7 +436,7 @@ const SetInterestRate = () => {
             <PlusOutlined /> Tạo mới
           </Button>
         </div>
-        <Result total={getdataProfit.data?.data?.count} />
+        <Result total={getdataProfit.data?.data?.count} isButtonExcel={false} />
         <Table
           components={{
             body: {

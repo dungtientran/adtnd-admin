@@ -2,15 +2,32 @@
 // @tailwind components;
 // @tailwind utilities;
 
-// .table_member {
-//     .ant-table-row .ant-table-cell:nth-child(3) {
-//         text-align: left !important;
-//     }
+.table_member {
+    .ant-table-row .ant-table-cell:nth-child(3) {
+        text-align: left !important;
+        padding: 0 30px !important;
 
-//     .ant-table-row .ant-table-cell:nth-child(1) {
-//         text-align: left !important;
-//     }
-// }
-// .ant-checkbox-input {
-//     z-index: 10 !important;
-// }
+    }
+    .ant-table-row .ant-table-cell:nth-child(4) {
+        text-align: left !important;
+        padding: 0 30px !important;
+    }
+
+    .ant-table-row .ant-table-cell:nth-child(1) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        a {
+            width: 100%;
+            display: inline-block;
+            // text-align: left !important;
+            padding-left: 60px;
+        }
+    }
+   
+}
+
+.ant-checkbox-input {
+    z-index: 10 !important;
+}

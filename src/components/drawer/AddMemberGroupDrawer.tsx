@@ -183,19 +183,19 @@ function AddMember({ open, onClose, onSubmit, group_id }: AddMemberProps) {
   const columns = [
     {
       title: 'Ảnh đại diện',
-      dataIndex: 'avatar_url',
+      dataIndex: 'customer_code',
       width: '8%',
-      render: (_: any, record: any) => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Avatar
-            src={record.avatar_url}
-            size="large"
-            onClick={() => {
-              // setModalOpen(true), setRecordSelected(record);
-            }}
-          />
-        </div>
-      ),
+      // render: (_: any, record: any) => (
+      //   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      //     <Avatar
+      //       src={record.avatar_url}
+      //       size="large"
+      //       onClick={() => {
+      //         // setModalOpen(true), setRecordSelected(record);
+      //       }}
+      //     />
+      //   </div>
+      // ),
     },
     {
       title: 'Tên khách hàng',
@@ -282,6 +282,8 @@ function AddMember({ open, onClose, onSubmit, group_id }: AddMemberProps) {
     },
   ];
 
+  // console.log("data________________________", data);
+
   return (
     <Drawer
       title="Thêm thành viên mới"
@@ -306,6 +308,7 @@ function AddMember({ open, onClose, onSubmit, group_id }: AddMemberProps) {
                 resetFilter();
               }}
               className="mb-[10px]"
+              style={{ marginBottom: '10px' }}
             >
               <Typography>Reset Bộ Lọc</Typography>
             </Button>
@@ -347,6 +350,7 @@ function AddMember({ open, onClose, onSubmit, group_id }: AddMemberProps) {
               setSelectedRow(value);
             },
           }}
+          style={{ height: 'auto' }}
         />
       </div>
     </Drawer>

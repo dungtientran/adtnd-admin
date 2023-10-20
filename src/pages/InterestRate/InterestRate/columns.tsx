@@ -143,7 +143,7 @@ export const Column = (
       render: (_, record) => <Text>{record?.expected_end_value?.toLocaleString()}</Text>,
     },
     {
-      title: 'Hoa hồng tạm tính',
+      title: 'Hoa hồng tạm tính (Fila)',
       dataIndex: 'commission',
       width: '8%',
       render: (_, record) => <Text>{record?.commission?.toLocaleString()}</Text>,

@@ -27,6 +27,7 @@ import type { SignalModel } from '@/interface/signal';
 
 import _debounce from 'lodash/debounce';
 import moment from 'moment';
+import qs from 'qs';
 
 import {
   approveManySignal,
@@ -40,6 +41,8 @@ import CreateSingalDrawer from '@/components/drawer/CreateSingalDrawer';
 import UpdateSingalDrawer from '@/components/drawer/UpdateSignalDrawer';
 import ConfirmDeleteModal from '@/components/modal/Signal/ConfirmDeleteModal';
 import SendSignalNotificationModal from '@/components/modal/Signal/SendNotificationModal';
+
+import ExportExcel from '../components/button-export-excel/ExportExcel';
 
 interface TableParams {
   pagination?: TablePaginationConfig;
@@ -64,34 +67,11 @@ export const getColumnSearchProps = ({ setFilter }: any) => {
           // value={value}
           onChange={handleInputChange}
           onPressEnter={() => {
-            console.log(value);
+            // console.log(value);
             setFilter(value);
           }}
           style={{ marginBottom: 8, display: 'block' }}
         />
-        {/* <Space>
-          <Button
-            type="primary"
-            onClick={() => {
-              setFilter(value);
-            }}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => {
-              setFilter('');
-              setValue('');
-            }}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Reset
-          </Button>
-        </Space> */}
       </div>
     ),
     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,
@@ -100,6 +80,7 @@ export const getColumnSearchProps = ({ setFilter }: any) => {
 
 const Recommendations: React.FC = () => {
   const [data, setData] = useState<any>([]);
+  const [dataExcel, setDataExcel] = useState([]);
   const [count, setCount] = useState();
   const [loading, setLoading] = useState(false);
   const [selectedRow, setSelectedRow] = useState<any>([]);
@@ -117,6 +98,7 @@ const Recommendations: React.FC = () => {
 
   // filter state
   const [codeFilter, setCodeFilter] = useState<string>('');
+  const [selectedDates, setSelectedDates] = useState(null);
   const [createDateFilter, setCreateDateFilter] = useState({
     start_date: '',
     end_date: '',
@@ -258,7 +240,7 @@ const Recommendations: React.FC = () => {
   };
 
   const actionsColumn = {
-    title: 'ACTION',
+    title: '',
     width: '10%',
     editable: false,
     render: (_: any, record: any) => (
@@ -269,10 +251,11 @@ const Recommendations: React.FC = () => {
       </Dropdown>
     ),
   };
+
   const columns: ColumnsType<any> = [
     {
       title: 'Ngày tạo',
-      dataIndex: 'action_date',
+      dataIndex: 'date',
       width: '10%',
       sorter: () => {
         if (dateSort == 'DESC') {
@@ -288,7 +271,7 @@ const Recommendations: React.FC = () => {
     {
       title: 'Mã CK',
       dataIndex: 'code',
-      width: '5%',
+      width: '10%',
       ...getColumnSearchProps({
         setFilter: setCodeFilter,
       }),
@@ -298,29 +281,29 @@ const Recommendations: React.FC = () => {
     {
       title: 'Loại',
       dataIndex: 'is_long_term',
-      width: '8%',
-      render: (is_long_term: boolean) => {
-        if (is_long_term) {
-          return 'Dài hạn';
-        } else {
-          return 'Ngắn hạn';
-        }
-      },
+      width: '10%',
+      // render: (is_long_term: boolean) => {
+      //   if (is_long_term) {
+      //     return 'Dài hạn';
+      //   } else {
+      //     return 'Ngắn hạn';
+      //   }
+      // },
     },
     {
       title: 'Giá mua',
       dataIndex: 'target_buy_price',
-      width: '8%',
+      width: '10%',
     },
     {
       title: 'Giá bán mục tiêu 1',
       dataIndex: 'target_sell_price_1',
-      width: '8%',
+      width: '10%',
     },
     {
       title: 'Giá bán mục tiêu 2',
       dataIndex: 'target_sell_price_2',
-      width: '8%',
+      width: '10%',
     },
     {
       title: 'Giá bán mục tiêu 3',
@@ -332,34 +315,34 @@ const Recommendations: React.FC = () => {
       dataIndex: 'target_stop_loss',
       width: '10%',
     },
-    {
-      title: 'Giá đóng',
-      dataIndex: 'closed_price',
-      width: '10%',
-    },
+    // {
+    //   title: 'Giá đóng',
+    //   dataIndex: 'closed_price',
+    //   width: '10%',
+    // },
 
-    {
-      title: 'Ngày đóng',
-      dataIndex: 'closed_date',
-      width: '12%',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-    },
-    {
-      title: 'Ưu tiên',
-      dataIndex: 'priority',
-      width: '5%',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      render: data => (
-        <div>
-          <StarFilled style={data ? { color: '#eb8f19' } : {}} size={20} />
-        </div>
-      ),
-    },
+    // {
+    //   title: 'Ngày đóng',
+    //   dataIndex: 'closed_date',
+    //   width: '12%',
+    //   sortDirections: ['ascend', 'descend', 'ascend'],
+    // },
+    // {
+    //   title: 'Ưu tiên',
+    //   dataIndex: 'priority',
+    //   width: '5%',
+    //   sortDirections: ['ascend', 'descend', 'ascend'],
+    //   render: data => (
+    //     <div>
+    //       <StarFilled style={data ? { color: '#eb8f19' } : {}} size={20} />
+    //     </div>
+    //   ),
+    // },
     {
       title: 'Tình trạng',
-      dataIndex: 'is_closed',
-      width: '1%',
-      render: (is_closed: boolean, record: any) => (
+      dataIndex: 'status',
+      width: '10%',
+      render: (is_closed: string, record: any) => (
         <>
           {is_closed ? (
             <Tag color="red">Đóng</Tag>
@@ -376,7 +359,7 @@ const Recommendations: React.FC = () => {
 
   const getSignal = async () => {
     setLoading(true);
-    await getSignalList(tableParams.pagination, codeFilter, filterQuery, dateSort)
+    await getSignalList(qs.stringify(getRandomuserParams(tableParams)), codeFilter, filterQuery, dateSort)
       .then(data => {
         if (data.code === 200) {
           setTableParams({
@@ -386,9 +369,58 @@ const Recommendations: React.FC = () => {
               total: data?.data?.count,
             },
           });
-          console.log(data.data);
-          setData(data?.data?.rows);
+          // console.log(data.data);
+          const columns = data?.data?.rows?.map((item: any) => {
+            const column = {
+              date: item?.action_date,
+              code: item?.code,
+              is_long_term: item?.is_long_term ? 'Dài hạn' : 'Ngắn hạn',
+              target_buy_price: item?.target_buy_price,
+              target_sell_price_1: item?.target_sell_price_1,
+              target_sell_price_2: item?.target_sell_price_2,
+              target_sell_price_3: item?.target_sell_price_3,
+              target_stop_loss: item?.target_stop_loss,
+              status: item?.is_closed ? 'Đóng' : item?.is_approved ? 'Đã duyệt' : 'Mới',
+              is_closed: item?.is_closed,
+            };
+
+            return column;
+          });
+
+          setData(columns);
           setCount(data?.data?.count);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+    setLoading(false);
+  };
+
+  const getSignalDataExcel = async (limit: string) => {
+    setLoading(true);
+    await getSignalList(`page=1&size=${limit}`, codeFilter, filterQuery, dateSort)
+      .then(data => {
+        if (data.code === 200) {
+          const columns = data?.data?.rows?.map((item: any) => {
+            const column = {
+              date: item?.action_date,
+              code: item?.code,
+              is_long_term: item?.is_long_term ? 'Dài hạn' : 'Ngắn hạn',
+              target_buy_price: item?.target_buy_price,
+              target_sell_price_1: item?.target_sell_price_1,
+              target_sell_price_2: item?.target_sell_price_2,
+              target_sell_price_3: item?.target_sell_price_3,
+              target_stop_loss: item?.target_stop_loss,
+              status: item?.is_closed ? 'Đóng' : item?.is_approved ? 'Đã duyệt' : 'Mới',
+              is_closed: item?.is_closed,
+            };
+
+            return column;
+          });
+
+          setDataExcel(columns);
         }
       })
       .catch(error => {
@@ -402,8 +434,12 @@ const Recommendations: React.FC = () => {
     getSignal();
   }, [JSON.stringify(tableParams), filterQuery, codeFilter, dateSort]);
 
+  useEffect(() => {
+    if (count) getSignalDataExcel(count);
+  }, [count]);
+
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    console.log(pagination);
+    // console.log(pagination);
     setTableParams({
       pagination,
       filters,
@@ -414,6 +450,11 @@ const Recommendations: React.FC = () => {
       setData([]);
     }
   };
+
+  const getRandomuserParams = (params: TableParams) => ({
+    size: params.pagination?.pageSize,
+    page: params.pagination?.current,
+  });
 
   const checkIsNewSignal = () => {
     const filter = data.filter((item: any) => selectedRow.includes(item.id)) || [];
@@ -579,8 +620,8 @@ const Recommendations: React.FC = () => {
               <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
                 Loại:
               </Typography>
-              <Radio.Group defaultValue={''} onChange={e => setTypeFilter(e.target.value)}>
-                <Radio.Button value={''}>Tất cả</Radio.Button>
+              <Radio.Group value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
+                <Radio.Button value={null}>Tất cả</Radio.Button>
                 <Radio.Button value={1}>Ngắn hạn</Radio.Button>
                 <Radio.Button value={2}>Dài hạn</Radio.Button>
               </Radio.Group>
@@ -592,11 +633,11 @@ const Recommendations: React.FC = () => {
               <Typography className="me-[10px]" style={{ marginInlineEnd: '10px' }}>
                 Tình trạng:
               </Typography>
-              <Radio.Group defaultValue={''} onChange={e => setStatusFilter(e.target.value)}>
-                <Radio.Button value={''}>Tất cả</Radio.Button>
+              <Radio.Group value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                <Radio.Button value={null}>Tất cả</Radio.Button>
                 <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
                 <Radio.Button value={'open'}>Đã duyệt</Radio.Button>
-                <Radio.Button value={'closed'}>Đã đóng</Radio.Button>
+                {/* <Radio.Button value={'closed'}>Đã đóng</Radio.Button> */}
               </Radio.Group>
             </div>
           </Col>
@@ -634,6 +675,7 @@ const Recommendations: React.FC = () => {
                     start_date: moment(value[0].$d).format('MM/DD/YYYY'),
                     end_date: moment(value[1].$d).format('MM/DD/YYYY'),
                   });
+                  setSelectedDates(value);
                 } else {
                   setCreateDateFilter({
                     start_date: '',
@@ -641,10 +683,11 @@ const Recommendations: React.FC = () => {
                   });
                 }
               }}
+              value={selectedDates}
             />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
-            <Typography>Giá mua : Từ</Typography>
+            <Typography>Giá mua: Từ</Typography>
             <InputNumber
               className="mx-[7px]"
               onChange={(value: any) => {
@@ -655,6 +698,7 @@ const Recommendations: React.FC = () => {
               }}
               style={{ margin: '0 7px' }}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              value={priceRangeFilter.from}
             />
             <Typography> Đến </Typography>
             <InputNumber
@@ -667,14 +711,34 @@ const Recommendations: React.FC = () => {
               }}
               style={{ margin: '0 7px' }}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              value={priceRangeFilter.to}
             />
           </div>
-
-          <div style={{ display: 'flex', marginTop: '10px' }}>
-            <Button className="" onClick={onFilter}>
+          <Space size="large" style={{ marginTop: '10px' }}>
+            <Button onClick={onFilter}>
               <Typography>Lọc</Typography>
             </Button>
-          </div>
+
+            <Button
+              onClick={() => {
+                setCodeFilter('');
+                setFilterQuery('');
+                setTypeFilter(null);
+                setStatusFilter(null);
+                setSelectedDates(null);
+                setPriceRangeFilter({
+                  from: null,
+                  to: null,
+                });
+                setCreateDateFilter({
+                  end_date: '',
+                  start_date: '',
+                });
+              }}
+            >
+              Reset bộ lọc
+            </Button>
+          </Space>
         </div>
       </div>
       <div>
@@ -708,7 +772,10 @@ const Recommendations: React.FC = () => {
           </>
         )}
       </div>
-      <Typography>Có tất cả {count} kết quả</Typography>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+        <Typography>Có tất cả {count} kết quả</Typography>
+        <ExportExcel columns={columns} dataSource={dataExcel} />
+      </div>
       <Table
         columns={columns}
         rowKey={record => record.id}

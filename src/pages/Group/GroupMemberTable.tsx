@@ -4,11 +4,12 @@ import type { FilterValue } from 'antd/es/table/interface';
 
 import './index.less';
 
-import { MenuOutlined } from '@ant-design/icons';
-import { Avatar, Button, Checkbox, Dropdown, Table, Typography } from 'antd';
+import { DeleteOutlined, MenuOutlined } from '@ant-design/icons';
+import { Avatar, Button, Checkbox, Dropdown, Popconfirm, Table, Typography } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import user from '@/assets/logo/user.png';
 import AddMember from '@/components/drawer/AddMemberGroupDrawer';
 import { deleteGroupMember, getGroupMember } from '@/stores/group/group.actions';
 
@@ -30,6 +31,8 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
       current: 1,
       pageSize: 10,
       total: groupDetail?.member_count,
+      showSizeChanger: true,
+      pageSizeOptions: ['10', '20', '50'],
     },
   });
   const [selectedRow, setSelectedRow] = useState<any>([]);
@@ -143,30 +146,56 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
 
   const actionsColumn = {
     title: '',
-    width: '20%',
+    width: '10%',
     editable: false,
     render: (_: any, record: any) => (
-      <Dropdown menu={{ items: actions(record) }} arrow placement="bottom">
-        <Button type="ghost" size="small" shape="circle">
-          <MenuOutlined />
+      // <Dropdown menu={{ items: actions(record) }} arrow placement="bottom">
+
+      // <Button type="primary" size="middle" shape="circle">
+      //   <DeleteOutlined />
+      // </Button>
+      <Popconfirm
+        title="Chắc chắn xóa"
+        onConfirm={() => {
+          if (group_id) {
+            handleDeleteMember({
+              group_id: group_id,
+              customer_id: record.id,
+            });
+          }
+        }}
+      >
+        <Button type="primary" size="middle" shape="circle">
+          <DeleteOutlined />
         </Button>
-      </Dropdown>
+      </Popconfirm>
+      // </Dropdown>
     ),
   };
   const columns = [
     {
-      title: 'Ảnh đại diện',
+      title: 'Mã khách hàng',
       dataIndex: 'avatar_url',
       width: '8%',
       render: (_: any, record: any) => (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Avatar
-            src={record.avatar_url}
-            size="large"
-            onClick={() => {
-              // setModalOpen(true), setRecordSelected(record);
-            }}
-          />
+          {record?.avatar_url ? (
+            <Avatar
+              src={record.avatar_url}
+              size="large"
+              onClick={() => {
+                // setModalOpen(true), setRecordSelected(record);
+              }}
+            />
+          ) : (
+            <Avatar
+              src={user}
+              size="large"
+              onClick={() => {
+                // setModalOpen(true), setRecordSelected(record);
+              }}
+            />
+          )}
         </div>
       ),
     },
@@ -195,8 +224,8 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
         return (
           <div>
             <Checkbox.Group
-              // className="flex-col ps-[5px]"
-              style={{ paddingInlineStart: '5px' }}
+            // className="flex-col ps-[5px]"
+            // style={{ paddingInlineStart: '5px', display: 'flex', flexDirection: 'column' }}
             >
               {subscriptions?.map((item: any, index: number) => {
                 return (
@@ -221,7 +250,7 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
     },
     {
       title: 'Số điện thoại',
-      sorter: true,
+      // sorter: true,
       dataIndex: 'phone_number',
       ...getColumnSearchProps({
         setFilter: setPhoneSearch,
@@ -238,6 +267,8 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
     actionsColumn,
   ];
 
+  // console.log('data___________________', data);
+
   return (
     <div className="mt-[10px]">
       <div style={{ textAlign: 'center' }}>
@@ -252,8 +283,11 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
         >
           <Typography>Thêm thành viên</Typography>
         </Button>
+        {filterQuery?.length > 0 && <Button onClick={() => setFilterQuery([])}>Reset bộ lọc</Button>}
       </div>
-      <Typography className="mt-[10px]">Có tất cả {tableParams.pagination?.total} kết quả</Typography>
+      <Typography className="mt-[10px]" style={{ marginTop: '10px' }}>
+        Có tất cả {tableParams.pagination?.total} kết quả
+      </Typography>
       <div>
         {selectedRow.length > 0 && (
           <>
@@ -289,6 +323,7 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
               setSelectedRow(value);
             },
           }}
+          style={{ height: 'auto' }}
         />
       </div>
       <AddMember open={openAddMember} onClose={() => setOpenAddMember(false)} onSubmit={() => {}} group_id={group_id} />

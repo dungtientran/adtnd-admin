@@ -1,8 +1,8 @@
 import { axiosInstance } from './request';
 
 export const listCustomerApi = {
-  getListCustomer(param: string, searchText: string, queryFilter: string): Promise<any> {
-    return axiosInstance.get(`/admin/customer/list?${searchText}&${param}&${queryFilter}`);
+  getListCustomer(param: string, searchText: string, queryFilter: string, sort: string): Promise<any> {
+    return axiosInstance.get(`/admin/customer/list?${sort}&${param}&${searchText}&${queryFilter}`);
   },
   createCustomer(newUser: any): Promise<any> {
     return axiosInstance.post('/admin/customer/create', newUser);

@@ -167,7 +167,11 @@ const InterestRate: React.FC = () => {
         </Button>
       </div>
       <BoxFilter setQueryFilter={setQueryFilter} />
-      <Result total={data?.data?.count} />
+      <Result
+        total={data?.data?.count}
+        columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete, setOpenModel)}
+        dataSource={listCustomerSp}
+      />
       <div className="table_contract">
         <Table
           columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete, setOpenModel)}

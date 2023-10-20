@@ -71,24 +71,32 @@ const CreateInterest = ({ setNewInteres }: ICreateInterest) => {
         </Form.Item> */}
 
         {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '100px' }}> */}
-        <Form.Item name="profit_from" label="Từ: " rules={[{ required: true, message: 'Không được bỏ trống!' }]}>
+        <Form.Item
+          name="profit_from"
+          label="Lợi nhuận từ (%): "
+          rules={[{ required: true, message: 'Không được bỏ trống!' }]}
+        >
           <InputNumber style={{ width: '100%' }} min={0} />
         </Form.Item>
-        <Form.Item name="profit_to" label="Đến:" rules={[{ required: true, message: 'Không được bỏ trống!' }]}>
+        <Form.Item
+          name="profit_to"
+          label="Lợi nhuận đến (%):"
+          rules={[{ required: true, message: 'Không được bỏ trống!' }]}
+        >
           <InputNumber style={{ width: '100%' }} min={0} />
         </Form.Item>
         {/* </div> */}
         {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '100px' }}> */}
         <Form.Item
           name="fila_commission_rate"
-          label="LN Fila hưởng"
+          label="LN Fila hưởng:"
           rules={[{ required: true, message: 'Không được bỏ trống!' }]}
         >
           <InputNumber style={{ width: '100%' }} min={0} />
         </Form.Item>
         <Form.Item
           name="director_commission_rate"
-          label="Giám đốc"
+          label="Giám đốc:"
           rules={[{ required: true, message: 'Không được bỏ trống!' }]}
         >
           <InputNumber style={{ width: '100%' }} min={0} />
@@ -97,14 +105,14 @@ const CreateInterest = ({ setNewInteres }: ICreateInterest) => {
         {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '100px' }}> */}
         <Form.Item
           name="manager_commision_rate"
-          label="Trưởng phòng"
+          label="Trưởng phòng:"
           rules={[{ required: true, message: 'Không được bỏ trống!' }]}
         >
           <InputNumber style={{ width: '100%' }} min={0} />
         </Form.Item>
         <Form.Item
           name="sale_commission_rate"
-          label="Sale"
+          label="Sale:"
           rules={[{ required: true, message: 'Không được bỏ trống!' }]}
         >
           <InputNumber style={{ width: '100%' }} min={0} />

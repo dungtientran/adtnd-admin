@@ -13,7 +13,7 @@ export interface DataType {
     sale_id: string;
     sale: {
       id: string;
-      fullname: string;
+      fullname: string | undefined;
       email: string;
       phone_number: string;
       created_date: string;
@@ -38,6 +38,18 @@ export interface DataType {
     expected_amount: number | null;
   };
 }
+export interface ColumnListCustomerType {
+  id: string;
+  avatar_url: string;
+  fullname: string;
+  email: string;
+  customer_code: string;
+  phone_number: string;
+  subscription_product: string;
+  nav: number | null;
+  sale_name: string | undefined;
+  day_remaining: number;
+}
 
 export interface TableParams {
   pagination?: TablePaginationConfig;
@@ -45,4 +57,4 @@ export interface TableParams {
   sortOrder?: string;
   filters?: Record<string, FilterValue>;
 }
-export type DataIndex = keyof DataType;
+export type DataIndex = keyof ColumnListCustomerType;

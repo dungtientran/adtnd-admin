@@ -150,7 +150,6 @@ export const menuListHandle: MenuList = [
       },
     ],
   },
-  
   {
     code: 'user',
     icon: 'account',
