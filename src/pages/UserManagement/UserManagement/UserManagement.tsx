@@ -138,7 +138,12 @@ const UserManagement: React.FC = () => {
           Tạo quản trị viên mới
         </Button>
       </div>
-      <Result total={data?.data?.count} searchText={searchedColumn} />
+      <Result
+        total={data?.data?.count}
+        searchText={searchedColumn}
+        columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
+        dataSource={listCustomerSp}
+      />
       <div className="table_user">
         <Table
           columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}

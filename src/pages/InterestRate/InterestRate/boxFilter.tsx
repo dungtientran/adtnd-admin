@@ -59,10 +59,18 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
         marginTop: '10px',
       }}
     >
-      <Space size="large">
-        <Space style={{ width: '100%' }} direction="vertical">
+      <Space>
+        <Text strong>Tình trạng: </Text>
+        <Radio.Group defaultValue={''} onChange={handleSelectIsContact}>
+          <Radio.Button value="">Tất cả</Radio.Button>
+          <Radio.Button value="active">Đang có hiệu lực</Radio.Button>
+          <Radio.Button value="inactive">Đã thanh lý</Radio.Button>
+        </Radio.Group>
+      </Space>
+      <Space direction="vertical" size="middle">
+        <Space style={{ width: '100%' }}>
           <Text strong>Giá trị ban đầu:</Text>
-          <Space direction="vertical">
+          <Space>
             <InputNumber
               addonBefore={
                 <div style={{ width: '30px' }}>
@@ -75,7 +83,7 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
                   initial_value_from: value,
                 }))
               }
-              style={{ width: '320px' }}
+              style={{ width: '200px' }}
               min={0}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
@@ -92,15 +100,15 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
                   initial_value_to: value,
                 }))
               }
-              style={{ width: '320px' }}
+              style={{ width: '200px' }}
               min={0}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
           </Space>
         </Space>
-        <Space direction="vertical">
+        <Space>
           <Text strong>Lợi nhuận dự kiến:</Text>
-          <Space direction="vertical">
+          <Space>
             <InputNumber
               addonBefore={
                 <div style={{ width: '30px' }}>
@@ -113,7 +121,7 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
                   expected_end_value_from: value,
                 }))
               }
-              style={{ width: '320px' }}
+              style={{ width: '200px' }}
               min={0}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
@@ -130,15 +138,15 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
                   expected_end_value_to: value,
                 }))
               }
-              style={{ width: '320px' }}
+              style={{ width: '200px' }}
               min={0}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
           </Space>
         </Space>
-        <Space direction="vertical">
-          <Text strong>Hoa hồng tạm tính:</Text>
-          <Space direction="vertical">
+        <Space>
+          <Text strong>Hoa hồng tạm tính (Fila):</Text>
+          <Space>
             <InputNumber
               addonBefore={
                 <div style={{ width: '30px' }}>
@@ -146,7 +154,7 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
                 </div>
               }
               // onChange={value => setNav_Low(value as number)}
-              style={{ width: '320px' }}
+              style={{ width: '200px' }}
               min={0}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
@@ -157,21 +165,12 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
                 </div>
               }
               // onChange={value => setNav_Hight(value as number)}
-              style={{ width: '320px' }}
+              style={{ width: '200px' }}
               min={0}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
           </Space>
         </Space>
-      </Space>
-
-      <Space direction="vertical">
-        <Text strong>Tình trạng: </Text>
-        <Radio.Group defaultValue={''} onChange={handleSelectIsContact}>
-          <Radio.Button value="">Tất cả</Radio.Button>
-          <Radio.Button value="active">Đang có hiệu lực</Radio.Button>
-          <Radio.Button value="inactive">Đã thanh lý</Radio.Button>
-        </Radio.Group>
       </Space>
     </Space>
   );

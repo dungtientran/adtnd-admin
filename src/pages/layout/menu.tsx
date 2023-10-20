@@ -49,7 +49,6 @@ const MenuComponent: FC<MenuProps> = props => {
   };
 
   // console.log('menu____________', menuList);
-
   return (
     <Menu
       mode="inline"

@@ -55,7 +55,10 @@ const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleC
   useEffect(() => {
     if (initForm) {
       setIsisDisable(true);
-      form.setFieldsValue(initForm);
+      form.setFieldsValue({
+        ...initForm,
+        phone_number: Number(initForm?.phone_number),
+      });
     } else {
       form.resetFields();
       setIsisDisable(false);
@@ -83,6 +86,8 @@ const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleC
       sale_id,
     });
   };
+
+  // console.log('initform______________', initForm);
 
   return (
     <Fragment>

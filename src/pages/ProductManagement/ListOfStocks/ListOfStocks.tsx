@@ -118,7 +118,6 @@ const Recommendations: React.FC = () => {
           }}
           style={{ marginBottom: 8, display: 'block', width: '240px' }}
         />
-       
       </div>
     ),
     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,
@@ -285,7 +284,7 @@ const Recommendations: React.FC = () => {
   return (
     <div className="aaa">
       <HeadTitle title="Danh mục cổ phiếu" />
-      <Result total={data?.data?.count} />
+      <Result total={data?.data?.count} columns={columns} dataSource={listStock} />
       <div className="table_stock">
         <Table
           columns={columns}

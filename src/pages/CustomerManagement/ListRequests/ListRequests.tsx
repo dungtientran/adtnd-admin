@@ -128,7 +128,12 @@ const ListRequests: React.FC = () => {
     <div className="aaa">
       <HeadTitle title="Danh sách yêu cầu hỗ trợ" />
       <BoxFilter setQueryFilter={setQueryFilter} />
-      <Result total={data?.data?.count} searchText={searchedColumn} />
+      <Result
+        total={data?.data?.count}
+        searchText={searchedColumn}
+        dataSource={listCustomerSp}
+        columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
+      />
       <div className="table_list_resquet">
         <Table
           columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}

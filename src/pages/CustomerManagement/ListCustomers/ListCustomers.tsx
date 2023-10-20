@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { TableParams } from './index.interface';
+import type { ColumnListCustomerType, DataType, TableParams } from './index.interface';
 
 import './index.less';
 
@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 
 import { listCustomerApi } from '@/api/ttd_list_customer';
 import BoxFilterListCustomer from '@/pages/components/box-filter/BoxFilterListCustomer';
+import ExportExcel from '@/pages/components/button-export-excel/ExportExcel';
 import CreateUser from '@/pages/components/form/form-add-user';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
@@ -35,13 +36,52 @@ const ListCustomers: React.FC = () => {
   const [listCustomer, setListCustomer] = useState([]);
   const [newCustomer, setNewCustomer] = useState<any>();
   const [sale, setSale] = useState<any>();
+
   const [customerSelect, setCustomerSelect] = useState<any>();
   const [customer_id, setCustomer_id] = useState<string>('');
+
+  const [dataExcel, setDataExcel] = useState([]);
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListCustomer', tableParams, queryFilter, searchText],
+    queryKey: ['getListCustomer', tableParams, queryFilter, searchText, sort],
     queryFn: () =>
-      getListCustomer(qs.stringify(getRandomuserParams(tableParams)), qs.stringify(searchText), queryFilter),
+      getListCustomer(qs.stringify(getRandomuserParams(tableParams)), qs.stringify(searchText), queryFilter, sort),
   });
+
+  const getExcelData = async (limit: string) => {
+    try {
+      const res = await getListCustomer(` page=1&size=${limit}`, qs.stringify(searchText), queryFilter, sort);
+
+      if (res?.code === 200) {
+        const columnsExcel = res?.data?.rows?.map((item: DataType) => {
+          const column: ColumnListCustomerType = {
+            avatar_url: item?.avatar_url,
+            customer_code: item?.customer_code,
+            email: item?.email,
+            nav: item?.CaculatorHistories?.expected_amount,
+            fullname: item?.fullname,
+            id: item?.id,
+            phone_number: item?.phone_number,
+            day_remaining: item?.remaining_subscription_day,
+            sale_name: item?.careby?.sale?.fullname,
+            subscription_product: item?.subscription?.subscription_product?.name,
+          };
+
+          return column;
+        });
+
+        // console.log('columns__________________', columns);
+
+        setDataExcel(columnsExcel);
+      } else {
+        message.warning('Lỗi khi xuất dữ liệu');
+      }
+    } catch (error) {
+      console.log(error);
+      message.error('Lỗi server');
+    }
+  };
+
   const getRandomuserParams = (params: TableParams) => ({
     size: params.pagination?.pageSize,
     page: params.pagination?.current,
@@ -108,15 +148,20 @@ const ListCustomers: React.FC = () => {
       // setData([]);
     }
 
-    // if (sorter.order === 'ascend') {
-    //   const sorte = `${sorter.field}_order=ASC`;
+    if (sorter.order === 'ascend') {
+      const sorte = `${sorter.field}_order=ASC`;
 
-    //   setSort(sorte);
-    // } else if (sorter.order === 'descend') {
-    //   const sorte = `${sorter.field}_order=DESC`;
+      setSort(sorte);
+    } else if (sorter.order === 'descend') {
+      const sorte = `${sorter.field}_order=DESC`;
 
-    //   setSort(sorte);
-    // }
+      setSort(sorte);
+    }
+  };
+
+  const handleClearFilter = () => {
+    setSearchText({});
+    setQuerFilter('');
   };
 
   useEffect(() => {
@@ -127,10 +172,47 @@ const ListCustomers: React.FC = () => {
           ...tableParams.pagination,
           total: data?.data?.count,
           showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50'],
+          pageSizeOptions: ['10', '20', '50', '100'],
         },
       });
-      setListCustomer(data?.data?.rows);
+      const columns = data?.data?.rows?.map((item: DataType) => {
+        const column: ColumnListCustomerType = {
+          avatar_url: item?.avatar_url,
+          customer_code: item?.customer_code,
+          email: item?.email,
+          nav: item?.CaculatorHistories?.expected_amount,
+          fullname: item?.fullname,
+          id: item?.id,
+          phone_number: item?.phone_number,
+          day_remaining: item?.remaining_subscription_day,
+          sale_name: item?.careby?.sale?.fullname,
+          subscription_product: item?.subscription?.subscription_product?.name,
+        };
+
+        return column;
+      });
+      // const columnsExcel = excelData.data?.data?.rows?.map((item: DataType) => {
+      //   const column: ColumnListCustomerType = {
+      //     avatar_url: item?.avatar_url,
+      //     customer_code: item?.customer_code,
+      //     email: item?.email,
+      //     nav: item?.CaculatorHistories?.expected_amount,
+      //     fullname: item?.fullname,
+      //     id: item?.id,
+      //     phone_number: item?.phone_number,
+      //     day_remaining: item?.remaining_subscription_day,
+      //     sale_name: item?.careby?.sale?.fullname,
+      //     subscription_product: item?.subscription?.subscription_product?.name,
+      //   };
+
+      //   return column;
+      // });
+      // console.log('columns__________________', columns);
+
+      // setDataExcel(columnsExcel);
+      setListCustomer(columns);
+      getExcelData(data?.data?.count as string);
+      // setDataExcel();
     }
   }, [data]);
 
@@ -149,9 +231,8 @@ const ListCustomers: React.FC = () => {
       remoteSaleUser.mutate();
     }
   }, [customer_id]);
-  // console.log('data_______', data);
-  console.log('searchText____________', searchText);
-  // console.log('tableParams____________', tableParams);
+
+  // console.log('excelData_____________', dataExcel);
 
   return (
     <div className="aaa">
@@ -161,8 +242,18 @@ const ListCustomers: React.FC = () => {
           <PlusOutlined /> Tạo mới người dùng
         </Button>
       </div>
-      <BoxFilterListCustomer setQueryFiter={setQuerFilter} />
-      <Result total={data?.data?.count} searchText={searchedColumn} />
+      <BoxFilterListCustomer
+        setQueryFiter={setQuerFilter}
+        queryFilter={queryFilter}
+        searchText={qs.stringify(searchText)}
+        clearFilter={handleClearFilter}
+      />
+      <Result
+        total={data?.data?.count}
+        searchText={searchedColumn}
+        columns={Column(setSearchText, setSearchedColumn, setOpen, setCustomerSelect, setCustomer_id)}
+        dataSource={dataExcel}
+      />
       <div className="table_list_customer">
         <Table
           columns={Column(setSearchText, setSearchedColumn, setOpen, setCustomerSelect, setCustomer_id)}

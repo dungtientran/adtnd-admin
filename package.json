@@ -11,6 +11,7 @@
     "antd": "^5.0.2",
     "axios": "^0.24.0",
     "driver.js": "^0.9.8",
+    "exceljs": "^4.3.0",
     "history": "^5.0.1",
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
@@ -24,7 +25,8 @@
     "react-intl": "^5.23.0",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.0.0",
-    "recharts": "^2.1.13"
+    "recharts": "^2.1.13",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "dev": "vite",

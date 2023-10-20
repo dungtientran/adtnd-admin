@@ -82,7 +82,7 @@ const routeList: RouteObject[] = [
       },
       {
         path: 'customer-management/customer-group/detail/:id',
-        element: <WrapperRouteComponent element={<GroupDetail />} titleId="Nhóm khách hàng" />,
+        element: <WrapperRouteComponent element={<GroupDetail />} titleId="Chi tiết nhóm khách hàng" />,
       },
       {
         path: 'customer-management/list-customer',
