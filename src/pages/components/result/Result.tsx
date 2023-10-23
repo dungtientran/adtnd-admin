@@ -10,9 +10,10 @@ interface IResult {
   columns?: any;
   dataSource?: any;
   isButtonExcel?: boolean;
+  title?: string;
 }
 
-const Result: React.FC<IResult> = ({ searchText, total, columns, dataSource, isButtonExcel = true }) => {
+const Result: React.FC<IResult> = ({ searchText, total, columns, dataSource, isButtonExcel = true , title}) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '10px 0' }}>
       <div style={{ height: '22px' }}>
@@ -30,7 +31,7 @@ const Result: React.FC<IResult> = ({ searchText, total, columns, dataSource, isB
           ''
         )}
       </div>
-      {isButtonExcel && <ExportExcel columns={columns} dataSource={dataSource} />}
+      {isButtonExcel && <ExportExcel columns={columns} dataSource={dataSource} title={title} />}
     </div>
   );
 };

@@ -7,11 +7,12 @@ import { MenuOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Dropdown, notification, Table, Typography } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { createGroup, getGroupList, updateGroup } from '@/api/group';
 import CreateGroupModal from '@/components/modal/Group/CreateGroupModal';
+import { addTag, removeTag, setActiveTag } from '@/stores/tags-view.store';
 
 import ExportExcel from '../components/button-export-excel/ExportExcel';
 import { getColumnSearchProps } from '../components/Table/SearchInTable';
@@ -170,6 +171,22 @@ function GroupTablePage() {
     return actionList;
   };
 
+  const dispatch = useDispatch();
+
+  const handelAddTag = (id: string, name: string) => {
+    dispatch(
+      addTag({
+        code: 'con tro lơ',
+        closable: true,
+        label: {
+          en_US: `${name}`,
+          zh_CN: 'asdas',
+        },
+        path: `/customer-management/customer-group/detail/${id}`,
+      }),
+    );
+  };
+
   const actionsColumn = {
     title: '',
     width: '20%',
@@ -191,8 +208,8 @@ function GroupTablePage() {
       render: (text: string, record: any) => (
         <Link
           to={`/customer-management/customer-group/detail/${record.id}`}
-          className="text-left"
           style={{ textAlign: 'left', textDecoration: 'none' }}
+          onClick={() => handelAddTag(record.id, record.name)}
         >
           {text}
         </Link>

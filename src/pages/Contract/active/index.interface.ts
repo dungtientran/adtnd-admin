@@ -31,6 +31,7 @@ export interface DataType {
     phone_number: string;
     updated_date: string;
     email: string;
+    profit_percent: number;
   };
   sale: {
     active: boolean;
@@ -47,6 +48,7 @@ export interface DataType {
     staff_code: string;
     updated_date: string;
   };
+  profit_percent: number;
 }
 export interface ColumnTyle {
   contract_no: string;
@@ -63,6 +65,7 @@ export interface ColumnTyle {
   commission: string;
   status: string;
   id: number;
+  profit_percent: number;
 }
 export interface TableParams {
   pagination?: TablePaginationConfig;

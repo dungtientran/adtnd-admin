@@ -10,6 +10,7 @@ import ConfirmDeleteModal from '@/components/modal/Signal/ConfirmDeleteModal';
 import { deleteGroup, getGroupDetail, updateGroupDetail } from '@/stores/group/group.actions';
 
 import GroupMemberTable from './GroupMemberTable';
+import { addTag } from '@/stores/tags-view.store';
 
 function GroupDetailPage() {
   const param = useParams();
@@ -47,6 +48,20 @@ function GroupDetailPage() {
         navigate('/customer-management/customer-group');
       }
     }
+  };
+
+  const handelAddTag = () => {
+    dispacth(
+      addTag({
+        code: 'con tro lơ',
+        closable: true,
+        label: {
+          en_US: 'aaaaa',
+          zh_CN: 'asdas',
+        },
+        path: '/123456',
+      }),
+    );
   };
 
   useEffect(() => {

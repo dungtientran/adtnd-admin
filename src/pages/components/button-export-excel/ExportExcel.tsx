@@ -4,12 +4,13 @@ import * as ExcelJS from 'exceljs';
 interface IExportExcel {
   dataSource?: any;
   columns?: any;
+  title?: string
 }
 
-const ExportExcel: React.FC<IExportExcel> = ({ columns, dataSource }) => {
+const ExportExcel: React.FC<IExportExcel> = ({ columns, dataSource, title }) => {
   const exportToExcel = () => {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Dữ liệu');
+    const worksheet = workbook.addWorksheet(title);
 
     worksheet.columns = columns.map((col: any) => ({ header: col.title, key: col.dataIndex }));
 
@@ -32,7 +33,7 @@ const ExportExcel: React.FC<IExportExcel> = ({ columns, dataSource }) => {
       const a = document.createElement('a');
 
       a.href = url;
-      a.download = 'data.xlsx';
+      a.download = `${title}.xlsx`;
       a.click();
 
       window.URL.revokeObjectURL(url);

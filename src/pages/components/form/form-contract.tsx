@@ -3,12 +3,14 @@ import type { DatePickerProps } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AutoComplete, Button, DatePicker, Form, Input, InputNumber, Switch } from 'antd';
+import { AutoComplete, Button, DatePicker, Form, Input, InputNumber, Select, Spin, Switch } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-// import moment from 'moment';
+import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
 
 import { listCustomerApi } from '@/api/ttd_list_customer';
+
+const { Option } = Select;
 
 const { getSaleList, getListUser } = listCustomerApi;
 const { RangePicker } = DatePicker;
@@ -17,17 +19,23 @@ interface IEditRequest {
   setUpdateDataSp: (updateData: any) => void;
   initForm?: any;
   setNewContract: (data: any) => void;
+  loading: boolean;
 }
 
 const rangeConfig = {
   rules: [{ type: 'array' as const, required: true, message: 'Không được bỏ trống!' }],
 };
 
-const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, setNewContract }) => {
+const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, setNewContract, loading }) => {
   const [option, setOption] = useState<{ id: string; value: string; fullname: string }[]>([]);
   const [option2, setOption2] = useState<{ id: string; value: string; email: string; fullname: string }[]>([]);
   const [nameSelect, setNameSelect] = useState('');
   const [saleSelect, setsaleSelect] = useState('');
+  const [selectFinish, setSelectFinish] = useState('');
+  const [isDisable, setIsDisable] = useState<boolean>(true);
+  const [percentProfit, setpercentProfit] = useState(0);
+  const [init, setInit] = useState<number | undefined>(undefined);
+
   const [days, setDays] = useState({
     start_date: '',
     end_date: '',
@@ -60,7 +68,7 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
         id: item?.id,
         email: item?.email,
         fullname: item?.fullname,
-      })); 
+      }));
 
       setOption2(newOption2);
     }
@@ -68,6 +76,13 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
 
   useEffect(() => {
     if (initForm) {
+      const toDay = new Date();
+      const end_date = new Date(initForm?.end_date);
+
+      console.log('end_ddate______________', end_date);
+      console.log('today______________________', toDay);
+      // console.log(end_date > toDay);
+
       const setInitForm = {
         ...initForm,
         fullname: initForm?.name,
@@ -76,6 +91,7 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
         customer_id: option2.find(item => item?.fullname === initForm?.name)?.value,
         sale_id: option.find(item => item?.fullname === initForm?.name_sale)?.id,
         // time_contract: [moment('2023-08-26'), moment('2023-08-29')],
+        status: end_date > toDay,
       };
 
       form.setFieldsValue(setInitForm);
@@ -121,7 +137,6 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
       customer_id,
     };
 
-
     // console.log("day______________________", days);
     // console.log("new value______________________", newValues);
 
@@ -130,8 +145,6 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
     } else {
       setUpdateDataSp(newValues);
     }
-
-  
   };
 
   const onChange = (
@@ -146,7 +159,32 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
     });
   };
 
+  const handleSelectFinish = (value: string) => {
+    // console.log('value)))))))))))))))', value);
+    setSelectFinish(value);
+
+    if (value === '2') {
+      setIsDisable(false);
+    } else if (value === '1') {
+      setIsDisable(true);
+    }
+  };
+
+  const handleOnchange = (value: number) => {
+    // console.log('value_________________', value);
+
+    if (init) {
+      const percent = value / init - 1;
+
+      setpercentProfit(percent);
+      form.setFieldsValue({
+        profit_percent: percent,
+      });
+    }
+  };
+
   // console.log('init form_____________', initForm);
+  // console.log('percentProfit_______________________', percentProfit);
 
   return (
     <Fragment>
@@ -216,10 +254,7 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
         </Form.Item>
 
         <Form.Item name="time_contract" label="Thời gian hợp đồng" {...rangeConfig}>
-          <RangePicker
-            format="YYYY/MM/DD"
-            onChange={onChange}
-          />
+          <RangePicker format="YYYY/MM/DD" onChange={onChange} />
         </Form.Item>
 
         <Form.Item
@@ -231,22 +266,61 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
             style={{ width: '100%' }}
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             min={0}
+            value={init}
+            onChange={value => setInit(value as number)}
           />
         </Form.Item>
 
         <Form.Item
-          name="expected_end_value"
+          name="end_value"
           label="Giá trị tài khoản khi kết thúc"
+          hasFeedback
+          // rules={[{ required: true, message: 'Không đc bỏ trống !' }]}
+        >
+          {/* <InputNumber
+            style={{ width: '100%' }}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            min={0}
+          /> */}
+          <Select placeholder="Giá trị TK kết thúc/ % Lợi nhuận" onChange={handleSelectFinish}>
+            <Option value="1">Giá trị tài khoản kết thúc</Option>
+            <Option value="2">% Lợi nhuận</Option>
+          </Select>
+        </Form.Item>
+
+        {selectFinish && isDisable && (
+          <Form.Item
+            name="expected_end_value"
+            label="Nhập giá trị Tk kết thúc"
+            hasFeedback
+            // rules={[{ required: true, message: 'Không đc bỏ trống !' }]}
+          >
+            <InputNumber
+              style={{ width: '100%' }}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              min={0}
+              onChange={value => handleOnchange(value as number)}
+            />
+          </Form.Item>
+        )}
+
+        <Form.Item
+          name="profit_percent"
+          label="% Lợi nhuận dự kiến: xx.xx %"
           rules={[{ required: true, message: 'Không đc bỏ trống !' }]}
         >
           <InputNumber
             style={{ width: '100%' }}
-            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            formatter={value => `${value} %`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             min={0}
+            disabled={isDisable}
+            // value={percentProfit}
           />
         </Form.Item>
-
-        <Form.Item
+        <Form.Item name="status" label="Tình trạng hợp đồng" valuePropName="checked">
+          <Switch unCheckedChildren="Thanh lý" checkedChildren="Còn hiệu lực" />
+        </Form.Item>
+        {/* <Form.Item
           name="commission"
           label="% lợi nhuận dự kiến"
           rules={[{ required: true, message: 'Không đc bỏ trống !' }]}
@@ -257,18 +331,19 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
             min={0}
             // defaultValue={0}
           />
-        </Form.Item>
+        </Form.Item> */}
 
-        <Form.Item name="note" label="Ghi chú" rules={[{ required: true, message: 'Không đc bỏ trống !' }]}>
+        <Form.Item name="note" label="Ghi chú">
           <TextArea />
         </Form.Item>
 
         <Form.Item style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '' }}>
-          <Button type="primary" htmlType="submit">
-            Lưu
-          </Button>
+          <Spin spinning={loading}>
+            <Button type="primary" htmlType="submit">
+              Lưu
+            </Button>
+          </Spin>
         </Form.Item>
-
       </Form>
     </Fragment>
   );

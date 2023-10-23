@@ -3,9 +3,11 @@ import type { ColumnTyle, DataType, TableParams } from './index.interface';
 
 import { PlusOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Drawer, message, Spin, Table } from 'antd';
+import { Button, DatePicker, Drawer, message, Spin, Table } from 'antd';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
+
+const { RangePicker } = DatePicker;
 
 import { listContractApi } from '@/api/ttd_contract';
 import { listCustomerApi } from '@/api/ttd_list_customer';
@@ -20,7 +22,7 @@ import DetailsContract from './DetailsContract';
 
 const { getListContract, createContract, updateContract } = listContractApi;
 
-const InterestRate: React.FC = () => {
+const BlockContract: React.FC = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModel] = useState(false);
@@ -37,14 +39,17 @@ const InterestRate: React.FC = () => {
   const [listCustomerSp, setListCustomerSp] = useState([]);
   const [newContract, setNewContract] = useState<any>();
 
+  const [dataExcel, setDataExcel] = useState([]);
+
   const [queryFilter, setQueryFilter] = useState<string>('');
   const [updateDataSp, setUpdateDataSp] = useState<any>();
   const [customerSelect, setCustomerSelect] = useState<any>();
   const [idDelete, setIdDelete] = useState<string>('');
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListContract', tableParams, queryFilter, searchText],
-    queryFn: () => getListContract(queryFilter, qs.stringify(searchText)),
+    queryKey: ['getListContract', tableParams, queryFilter, searchText, sort],
+    queryFn: () =>
+      getListContract(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText), sort),
   });
 
   const update = useMutation({
@@ -93,15 +98,21 @@ const InterestRate: React.FC = () => {
       // setData([]);
     }
 
-    // if (sorter.order === 'ascend') {
-    //   const sorte = `${sorter.field}_order=ASC`;
+    if (sorter.order === 'ascend') {
+      const sorte = `${sorter.field}_order=ASC`;
 
-    //   setSort(sorte);
-    // } else if (sorter.order === 'descend') {
-    //   const sorte = `${sorter.field}_order=DESC`;
+      setSort(sorte);
+    } else if (sorter.order === 'descend') {
+      const sorte = `${sorter.field}_order=DESC`;
 
-    //   setSort(sorte);
-    // }
+      setSort(sorte);
+    }
+  };
+
+  const handelResetFilter = () => {
+    setQueryFilter('');
+    setSearchText('');
+    setSort('');
   };
 
   useEffect(() => {
@@ -113,6 +124,7 @@ const InterestRate: React.FC = () => {
           total: data?.data?.count,
         },
       });
+
       const columndata = data?.data?.rows.map((item: DataType) => {
         return {
           id: item?.id,
@@ -128,14 +140,57 @@ const InterestRate: React.FC = () => {
           initial_value: item?.initial_value,
           expected_end_value: item?.expected_end_value,
           commission: item?.commission,
-          status: item?.status,
+          status: 'Đã thanh lý',
+          profit_percent: item?.profit_percent,
         };
       });
 
+      getListDataExcel(data?.data?.count);
+
       // console.log('newArrData_____________________', newArrData);
+      // console.log(getDataExcep.data);
+
       setListCustomerSp(columndata);
     }
   }, [data]);
+
+  const getListDataExcel = async (limit: number) => {
+    try {
+      const res = await getListContract(`page=1&size=${limit}`, queryFilter, qs.stringify(searchText), sort);
+
+      if (res?.code === 200) {
+        const dataExcel = res?.data?.rows;
+        const columnsExcel = dataExcel?.map((item: DataType) => {
+          return {
+            id: item?.id,
+            contract_no: item?.contract_no,
+            customer_code: item?.customer?.customer_code,
+            name: item?.customer?.fullname,
+            phone_number: item?.customer?.phone_number,
+            email: item?.customer?.email,
+            staff_code: item?.sale?.staff_code,
+            name_sale: item?.sale?.fullname,
+            start_date: item?.start_date,
+            end_date: item?.end_date,
+            initial_value: item?.initial_value,
+            expected_end_value: item?.expected_end_value,
+            commission: item?.commission,
+            status: item?.status === 'pending' ? 'Đang có hiệu lực' : 'Đã thanh lý',
+            profit_percent: item?.profit_percent,
+          };
+        });
+
+        setDataExcel(columnsExcel);
+
+      } else {
+        message.error('Có lỗi từ server');
+      }
+    } catch (error) {
+      message.error('Có lỗi từ server');
+    }
+
+    return data;
+  };
 
   useEffect(() => {
     if (updateDataSp) {
@@ -150,27 +205,18 @@ const InterestRate: React.FC = () => {
   }, [newContract]);
 
   // console.log('customerSelect_______________________', customerSelect);
-
+  // console.log("sort______________________", sort);
+  // console.log("dataEcel____________________", dataExcel);
   return (
     <div className="aaa">
-      <HeadTitle title="Quản lý hợp đồng Vip" />
-      <div style={{ display: 'flex', textAlign: 'center', justifyContent: 'center' }}>
-        <Button
-          onClick={() => {
-            setOpen(true);
-            // setNewContract(undefined);
-            setCustomerSelect(undefined);
-          }}
-          type="primary"
-        >
-          <PlusOutlined /> Thêm hợp đồng
-        </Button>
-      </div>
-      <BoxFilter setQueryFilter={setQueryFilter} />
+      <HeadTitle title="Hợp đồng đã thanh lý" />
+    
+      <BoxFilter setQueryFilter={setQueryFilter} handelResetFilter={handelResetFilter} />
       <Result
         total={data?.data?.count}
         columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete, setOpenModel)}
-        dataSource={listCustomerSp}
+        dataSource={dataExcel}
+        title="Danh sách hợp đồng Vip"
       />
       <div className="table_contract">
         <Table
@@ -192,7 +238,12 @@ const InterestRate: React.FC = () => {
         bodyStyle={{ paddingBottom: 80 }}
       >
         {/* <Spin spinning={update.isLoading}> */}
-        <CreateContract setUpdateDataSp={setUpdateDataSp} initForm={customerSelect} setNewContract={setNewContract} />
+        <CreateContract 
+        setUpdateDataSp={setUpdateDataSp}
+         initForm={customerSelect}
+          setNewContract={setNewContract}
+          loading={!customerSelect ? isLoading : update.isLoading}
+           />
         {/* </Spin> */}
       </Drawer>
       <MyModal
@@ -209,4 +260,4 @@ const InterestRate: React.FC = () => {
   );
 };
 
-export default InterestRate;
+export default BlockContract;

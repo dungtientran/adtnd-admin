@@ -10,6 +10,7 @@ import { ReactComponent as NotificationSvg } from '@/assets/menu/notification.sv
 import { ReactComponent as PermissionSvg } from '@/assets/menu/permission.svg';
 import { ReactComponent as ProductSvg } from '@/assets/menu/product.svg';
 import { ReactComponent as RateSvg } from '@/assets/menu/rate.svg';
+import { ReactComponent as SettingSvg } from '@/assets/menu/setting.svg';
 
 interface CustomIconProps {
   type: string;
@@ -39,7 +40,9 @@ export const CustomIcon: FC<CustomIconProps> = props => {
     com = <RateSvg />;
   } else if (type === 'finance') {
     com = <FinanceSvg />;
-  } else {
+  } else if (type === 'setting') {
+    com = <SettingSvg />;
+  }  else {
     com = <GuideSvg />;
   }
 

@@ -97,6 +97,33 @@ export const menuListHandle: MenuList = [
     ],
   },
   {
+    code: 'contract',
+    icon: 'rate',
+    label: {
+      en_US: 'Quản lý hợp đồng Vip',
+      zh_CN: '文档',
+    },
+    path: '/documentation',
+    children: [
+      {
+        code: 'recommendations',
+        label: {
+          en_US: 'Hợp đồng có hiệu lực',
+          zh_CN: '基本',
+        },
+        path: '/contract/active',
+      },
+      {
+        code: 'recommendations',
+        label: {
+          en_US: 'Hợp đồng đã thanh lý',
+          zh_CN: '基本',
+        },
+        path: '/contract/block',
+      },
+    ],
+  },
+  {
     code: 'hoahong',
     icon: 'rate',
     label: {
@@ -112,14 +139,6 @@ export const menuListHandle: MenuList = [
           zh_CN: '基本',
         },
         path: '/interest-rate/set-interest-rate',
-      },
-      {
-        code: 'recommendations',
-        label: {
-          en_US: 'Quản lý hợp đồng Vip',
-          zh_CN: '基本',
-        },
-        path: '/interest-rate/interest-rate',
       },
     ],
   },
@@ -166,6 +185,33 @@ export const menuListHandle: MenuList = [
           zh_CN: '基本',
         },
         path: '/user-management/list',
+      },
+    ],
+  },
+  {
+    code: 'application',
+    icon: 'setting',
+    label: {
+      en_US: 'Thiết lập ứng dụng',
+      zh_CN: '文档',
+    },
+    path: '',
+    children: [
+      {
+        code: 'greeting',
+        label: {
+          en_US: 'Thiết lập câu chào',
+          zh_CN: '基本',
+        },
+        path: '/application/greeting',
+      },
+      {
+        code: 'support',
+        label: {
+          en_US: 'Thiết lập liên kết hỗ trợ',
+          zh_CN: '基本',
+        },
+        path: '/application/support',
       },
     ],
   },

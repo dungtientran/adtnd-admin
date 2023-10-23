@@ -27,7 +27,8 @@ const CustomerGroup = lazy(() => import('@/pages/CustomerManagement/CustomerGrou
 const ListCustomers = lazy(() => import('@/pages/CustomerManagement/ListCustomers/ListCustomers'));
 const ListRequests = lazy(() => import('@/pages/CustomerManagement/ListRequests/ListRequests'));
 
-const InterestRate = lazy(() => import('@/pages/InterestRate/InterestRate/InterestRate'));
+const InterestRate = lazy(() => import('@/pages/Contract/active/InterestRate'));
+const BlockContract = lazy(() => import('@/pages/Contract/block/BlockContract'));
 const SetInterestRate = lazy(() => import('@/pages/InterestRate/SetInterestRate/SetInterestRate'));
 
 const TransactionHistory = lazy(() => import('@/pages/FinancialManagement/transaction-history/TransactionHistory'));
@@ -35,6 +36,9 @@ const TransactionHistory = lazy(() => import('@/pages/FinancialManagement/transa
 const UserManagement = lazy(() => import('@/pages/UserManagement/UserManagement/UserManagement'));
 const Invoice = lazy(() => import('@/pages/Invoice/InvoiceTablePage'));
 const InvoiceDetail = lazy(() => import('@/pages/Invoice/InvoiceDetail'));
+
+const Greeting = lazy(() => import('@/pages/Application/Greeting/Greeting'));
+const Support = lazy(() => import('@/pages/Application/Support/Support'));
 
 
 const routeList: RouteObject[] = [
@@ -98,8 +102,12 @@ const routeList: RouteObject[] = [
         element: <WrapperRouteComponent element={<SetInterestRate />} titleId="Thiết lập hoa hồng" />,
       },
       {
-        path: '/interest-rate/interest-rate',
-        element: <WrapperRouteComponent element={<InterestRate />} titleId="Quản lý hợp đồng Vip" />,
+        path: '/contract/active',
+        element: <WrapperRouteComponent element={<InterestRate />} titleId="Hợp đồng còn hiệu lực" />,
+      },
+      {
+        path: '/contract/block',
+        element: <WrapperRouteComponent element={<BlockContract />} titleId="Hợp đồng đã thanh lý" />,
       },
       // 
       {
@@ -118,6 +126,15 @@ const routeList: RouteObject[] = [
       {
         path: '/invoice/detail/:id',
         element: <WrapperRouteComponent element={<InvoiceDetail />} titleId="Danh sách chứng từ thanh toán!" />,
+      },
+      // 
+      {
+        path: '/application/greeting',
+        element: <WrapperRouteComponent element={<Greeting />} titleId="Thiết lập câu chào" />,
+      },
+      {
+        path: '/application/support',
+        element: <WrapperRouteComponent element={<Support />} titleId="Thiết lập liên kết hỗ trợ" />,
       },
       {
         path: '*',

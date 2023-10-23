@@ -5,8 +5,8 @@ import type { ColumnsType, FilterConfirmProps } from 'antd/es/table/interface';
 
 import './index.less';
 
-import { DeleteOutlined, EditOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Popconfirm, Space, Tag, Typography } from 'antd';
+import { EditOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Input, Space, Tag, Typography } from 'antd';
 import moment from 'moment';
 import { Fragment, useRef } from 'react';
 
@@ -43,7 +43,6 @@ export const ColumnSearchProps = (
           }}
           style={{ marginBottom: 8, display: 'block' }}
         />
-      
       </div>
     ),
     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,
@@ -61,7 +60,7 @@ export const Column = (
   setOpenDrawer: (isOpen: boolean) => void,
   setCustomerSelect: (customer: any) => void,
   deleteRequest: (id: string) => void,
-  setOpenModel: (open: boolean) => void
+  setOpenModel: (open: boolean) => void,
 ) => {
   const columns: ColumnsType<ColumnTyle> = [
     {
@@ -69,12 +68,13 @@ export const Column = (
       dataIndex: 'contract_no',
       // render: (_, record) => <Text>{moment(record.created_at).format('DD/MM/YYYY')}</Text>,
       width: '5%',
+      ...ColumnSearchProps('contract_no', 'mã hợp đồng', setSearchQuery),
     },
     {
       title: 'Mã KH',
       dataIndex: 'customer_code',
       width: '6%',
-      ...ColumnSearchProps('customer_code', 'mã KH', setSearchQuery),
+      // ...ColumnSearchProps('customer_code', 'mã KH', setSearchQuery),
     },
     {
       title: 'Tên KH',
@@ -97,7 +97,7 @@ export const Column = (
       title: 'Email',
       // sorter: true,
       dataIndex: 'email',
-      width: '10%',
+      width: '6%',
       // render: (_, record) => <Text>{record?.customer?.email}</Text>,
 
       ...ColumnSearchProps('email', 'email', setSearchQuery),
@@ -108,7 +108,7 @@ export const Column = (
       width: '8%',
       // render: (_, record) => <Text>{record?.sale?.staff_code}</Text>,
 
-      // ...ColumnSearchProps('address', 'địa chỉ', setSearchQuery),
+      ...ColumnSearchProps('staff_code', 'mã NVQL', setSearchQuery),
     },
     {
       title: 'Tên nhân viên QL',
@@ -123,44 +123,56 @@ export const Column = (
       dataIndex: 'start_date',
       width: '8%',
       render: (_, record) => <Text>{moment(record?.start_date).format('DD/MM/YYYY')}</Text>,
+      sorter: true,
     },
     {
       title: 'Ngày kết thúc',
       dataIndex: 'end_date',
       width: '8%',
       render: (_, record) => <Text>{moment(record?.end_date).format('DD/MM/YYYY')}</Text>,
+      sorter: true,
     },
     {
       title: 'Giá trị ban đầu',
       dataIndex: 'initial_value',
-      width: '8%',
+      width: '10%',
       render: (_, record) => <Text>{record?.initial_value?.toLocaleString()}</Text>,
+      sorter: true,
     },
     {
       title: 'Lợi nhuận % (dự kiến)',
-      dataIndex: 'expected_end_value',
+      dataIndex: 'profit_percent',
       width: '8%',
-      render: (_, record) => <Text>{record?.expected_end_value?.toLocaleString()}</Text>,
+      render: (_, record) => <Tag color={record?.profit_percent > 0 ? 'blue' : 'red'}>{record?.profit_percent}</Tag>,
+      sorter: true,
     },
     {
       title: 'Hoa hồng tạm tính (Fila)',
       dataIndex: 'commission',
-      width: '8%',
-      render: (_, record) => <Text>{record?.commission?.toLocaleString()}</Text>,
+      width: '10%',
+      render: (_, record) => <Text>{record?.commission?.toLocaleString()} %</Text>,
+      sorter: true,
+    },
+    {
+      title: 'Tổng hoa hồng tạm tính (Fila)',
+      dataIndex: 'commission',
+      width: '12%',
+      render: (_, record) => <Text>000000</Text>,
     },
     {
       title: 'Tình trạng',
       dataIndex: 'status',
-      width: '8%',
-      render: (_, record) => (
-        <Fragment>
-          {record?.status === 'active' ? (
-            <Tag color="#108ee9">Đang có hiệu lực</Tag>
-          ) : (
-            <Tag color="red">Đã thanh lý</Tag>
-          )}
-        </Fragment>
-      ),
+      width: '5%',
+      render: (_, record) => <Tag color="#108ee9">{record?.status}</Tag>,
+      // render: (_, record) => (
+      //   <Fragment>
+      //     {record?.status === 'Đang có hiệu lực' ? (
+      //       <Tag color="#108ee9">Đang có hiệu lực</Tag>
+      //     ) : (
+      //       <Tag color="red">Đã thanh lý</Tag>
+      //     )}
+      //   </Fragment>
+      // ),
     },
     {
       title: '',
@@ -183,7 +195,7 @@ export const Column = (
             size="small"
             onClick={() => {
               setCustomerSelect(record);
-              setOpenModel(true)
+              setOpenModel(true);
             }}
           >
             <EyeOutlined />

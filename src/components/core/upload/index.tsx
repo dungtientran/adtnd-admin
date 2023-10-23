@@ -8,9 +8,10 @@ import MyButton from '@/components/basic/button';
 interface IMyUpload {
   setUrlLogo: (url: any) => void;
   record?: any;
+  isTitle?: boolean;
 }
 
-const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record }) => {
+const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record, isTitle = true }) => {
   const [fileList, setFileList] = useState<any[]>([]);
 
   const checkImageType = (file: any) => {
@@ -63,6 +64,8 @@ const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record }) => {
     }
   }, [fileList]);
 
+  console.log('isTitle_______________', isTitle);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       {record?.logo_url && (
@@ -74,12 +77,16 @@ const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record }) => {
           </div>
         </div>
       )}
-      {record?.logo_url ? (
-        <Typography.Text type="danger">Thay đổi</Typography.Text>
-      ) : (
+      {isTitle && (
         <Fragment>
-          <Typography.Text>{record.name}</Typography.Text>
-          <Typography.Text type="warning">Hình ảnh</Typography.Text>
+          {record?.logo_url ? (
+            <Typography.Text type="danger">Thay đổi</Typography.Text>
+          ) : (
+            <Fragment>
+              <Typography.Text>{record?.name}</Typography.Text>
+              <Typography.Text type="warning">Hình ảnh</Typography.Text>
+            </Fragment>
+          )}
         </Fragment>
       )}
 
