@@ -13,13 +13,13 @@ interface Commission {
 
 const columns: ColumnsType<any> = [
     {
-        title: 'ID',
-        dataIndex: 'id',
+        title: 'Mã hợp đồng',
+        dataIndex: 'contract_no',
         width: '10%',
     },
     {
-        title: 'Ngày',
-        dataIndex: 'created_at',
+        title: 'Kỳ',
+        dataIndex: 'payment_period',
         width: '10%',
         render: (_: any, record: any) => {
             return moment(_).format('DD/MM/YYYY')
@@ -27,23 +27,27 @@ const columns: ColumnsType<any> = [
     },
     {
         title: 'Mã khách hàng',
-        dataIndex: 'description',
+        dataIndex: ['customer', 'fullname'],
         width: '15%',
     },
     {
         title: 'Giá trị ban đầu',
-        dataIndex: 'description',
+        dataIndex: 'initial_value',
         width: '15%',
-    },
-    {
-        title: 'Giá trị dự kiến',
-        dataIndex: 'description',
-        width: '15%',
+        render: (_, item) => parseInt(_).toLocaleString()
     },
     {
         title: 'Lợi nhuận (%)',
-        dataIndex: 'amount',
-        width: '15%',
+        dataIndex: 'profit_percent',
+        width: '10%',
+        render: (_: any, record: any) => {
+            return parseInt(_).toLocaleString() + '%'
+        }
+    },
+    {
+        title: 'Hoa hồng',
+        dataIndex: ['contract_commission', 'sales_commission'],
+        width: '10%',
         render: (_: any, record: any) => {
             return parseInt(_).toLocaleString()
         }
@@ -52,21 +56,32 @@ const columns: ColumnsType<any> = [
         title: 'Ngày bắt đầu hợp đồng',
         dataIndex: 'start_date',
         width: '15%',
+        render: (_: any, record: any) => {
+            return moment(_).format('DD/MM/YYYY')
+        }
     },
     {
         title: 'Ngày kết thúc hợp đồng',
-        dataIndex: 'start_date',
+        dataIndex: 'end_date',
         width: '15%',
+        render: (_: any, record: any) => {
+            return moment(_).format('DD/MM/YYYY')
+        }
     },
+
+
 ];
 
 function ContractTable({ data }: { data: Array<Commission> }) {
+    console.log('data :>>>>>>>>>', data)
     return (
         <div>
-
             <Table
                 columns={columns}
-                rowKey={record => record.id}
+                rowKey={record => {
+                    console.log('record', record)
+                    return record?.id
+                }}
                 dataSource={data}
                 scroll={{ x: 'max-content', y: '100%' }}
             />

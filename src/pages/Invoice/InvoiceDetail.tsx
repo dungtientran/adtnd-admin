@@ -176,8 +176,17 @@ const Recommendations: React.FC = () => {
         }
     };
 
+    const getTotalContractValue = () => {
+        return data?.contract?.reduce((accumulator: any, currentValue : any) => {
+            return accumulator + parseInt(currentValue?.contract_commission?.sales_commission) 
+        }, 0)
+    }
 
-
+    const getTotalCommissionValue = () => {
+        return data?.commission?.reduce((accumulator: any, currentValue : any) => {
+            return accumulator + parseInt(currentValue?.amount) 
+        }, 0)
+    }
     return (
         <div className="aaa">
             <div style={{ textAlign: 'center' }}>
@@ -192,12 +201,18 @@ const Recommendations: React.FC = () => {
             </div>
             <div>
                 <Typography.Title level={3} style={{ textAlign: 'center' }}>Gói Premium</Typography.Title>
+                <Typography.Title level={5} style={{ textAlign: 'center' }}>
+                    Tổng cộng : {getTotalCommissionValue()?.toLocaleString()}
+                </Typography.Title>
                 <CommissionTable data={data?.commission} />
             </div>
 
             <div>
                 <Typography.Title level={3} style={{ textAlign: 'center' }}>Hoa hồng tạm tính</Typography.Title>
-                <ContractTable data={[]} />
+                <Typography.Title level={5} style={{ textAlign: 'center' }}>
+                    Tổng cộng : {getTotalContractValue()?.toLocaleString()}
+                </Typography.Title>
+                <ContractTable data={data?.contract} />
             </div>
 
         </div>
