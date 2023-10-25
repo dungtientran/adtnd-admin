@@ -63,7 +63,7 @@ function CreateSingalDrawer({ open, onClose, onSubmit }: CreateSingalDrawerProps
   return (
     <Drawer
       title="Tạo khuyến nghị mới"
-      width={720}
+      width={420}
       onClose={onClose}
       open={open}
       bodyStyle={{ paddingBottom: 80 }}
@@ -76,7 +76,7 @@ function CreateSingalDrawer({ open, onClose, onSubmit }: CreateSingalDrawerProps
         </Space>
       }
     >
-      <Form onFinish={handleSubmit} form={form}>
+      <Form onFinish={handleSubmit} form={form} layout="vertical">
         <div>
           <Form.Item name="is_long_term" initialValue={false}>
             <Radio.Group defaultValue={false}>
@@ -125,7 +125,11 @@ function CreateSingalDrawer({ open, onClose, onSubmit }: CreateSingalDrawerProps
             name="target_buy_price"
             rules={[{ required: true, message: 'Vui lòng điền vào trường này' }]}
           >
-            <InputNumber min={0} />
+            <InputNumber
+              style={{ width: '200px' }}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              min={0}
+            />
           </Form.Item>
           <Form.Item
             label="Giá cắt lỗ"
@@ -145,7 +149,11 @@ function CreateSingalDrawer({ open, onClose, onSubmit }: CreateSingalDrawerProps
               },
             ]}
           >
-            <InputNumber min={0} />
+            <InputNumber
+              style={{ width: '200px' }}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              min={0}
+            />
           </Form.Item>
 
           <Form.Item
@@ -166,7 +174,11 @@ function CreateSingalDrawer({ open, onClose, onSubmit }: CreateSingalDrawerProps
               },
             ]}
           >
-            <InputNumber min={0} />
+            <InputNumber
+              style={{ width: '200px' }}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              min={0}
+            />
           </Form.Item>
           <Form.Item
             label="Giá chốt lời 2"
@@ -186,7 +198,11 @@ function CreateSingalDrawer({ open, onClose, onSubmit }: CreateSingalDrawerProps
               },
             ]}
           >
-            <InputNumber min={0} />
+            <InputNumber
+              style={{ width: '200px' }}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              min={0}
+            />
           </Form.Item>
 
           <Form.Item
@@ -207,7 +223,11 @@ function CreateSingalDrawer({ open, onClose, onSubmit }: CreateSingalDrawerProps
               },
             ]}
           >
-            <InputNumber min={0} />
+            <InputNumber
+              style={{ width: '200px' }}
+              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              min={0}
+            />
           </Form.Item>
           <Form.Item name="note" label="Ghi chú">
             <TextArea autoSize placeholder={'Ghi chú'}></TextArea>
