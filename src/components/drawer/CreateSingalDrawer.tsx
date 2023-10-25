@@ -13,6 +13,7 @@ import {
   Row,
   Select,
   Space,
+  Spin,
   Typography,
 } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
@@ -29,9 +30,10 @@ interface CreateSingalDrawerProps {
   onClose: () => void;
   onSubmit: (value: any) => any;
   open: boolean;
+  spining: boolean;
 }
 
-function CreateSingalDrawer({ open, onClose, onSubmit }: CreateSingalDrawerProps) {
+function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDrawerProps) {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const [stockId, setStockId] = useState<any>('');
@@ -77,6 +79,7 @@ function CreateSingalDrawer({ open, onClose, onSubmit }: CreateSingalDrawerProps
       }
     >
       <Form onFinish={handleSubmit} form={form} layout="vertical">
+        <Spin spinning={spining}>
         <div>
           <Form.Item name="is_long_term" initialValue={false}>
             <Radio.Group defaultValue={false}>
@@ -233,6 +236,8 @@ function CreateSingalDrawer({ open, onClose, onSubmit }: CreateSingalDrawerProps
             <TextArea autoSize placeholder={'Ghi chú'}></TextArea>
           </Form.Item>
         </div>
+        </Spin>
+       
       </Form>
     </Drawer>
   );

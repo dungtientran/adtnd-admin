@@ -3,7 +3,7 @@ import type { DatePickerProps, RangePickerProps } from 'antd/es/date-picker';
 
 import { Button, DatePicker, Radio, Select, Space, Typography } from 'antd';
 import qs from 'qs';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
@@ -11,9 +11,10 @@ const { Text } = Typography;
 interface IBoxFilter {
   setQueryFilter: (query: string) => void;
   setSearchText: (obj: object) => void;
+  handleSetPageOnFilter: () => void
 }
 
-const BoxFilter = ({ setQueryFilter, setSearchText }: IBoxFilter) => {
+const BoxFilter = ({ setQueryFilter, setSearchText, handleSetPageOnFilter }: IBoxFilter) => {
   const [selectedDates, setSelectedDates] = useState<any>(null);
   const [queryObj, setQueryObj] = useState({
     start_date: '',
@@ -48,6 +49,7 @@ const BoxFilter = ({ setQueryFilter, setSearchText }: IBoxFilter) => {
   const handleSetQueryString = () => {
     const querystring = qs.stringify(queryObj);
 
+    handleSetPageOnFilter();
     setQueryFilter(querystring);
   };
 
@@ -59,7 +61,9 @@ const BoxFilter = ({ setQueryFilter, setSearchText }: IBoxFilter) => {
       is_contact: null,
     });
     setSelectedDates(null);
-    setSearchText({})
+    setSearchText({});
+    handleSetPageOnFilter();
+
   };
 
   return (

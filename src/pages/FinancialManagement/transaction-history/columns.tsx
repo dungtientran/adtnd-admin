@@ -90,7 +90,7 @@ export const Column = (
       title: 'Tên khách hàng',
       // sorter: true,
       dataIndex: 'name',
-      width: '14%',
+      width: '8%',
       // render: (_, record) => <Text>{record?.customer?.fullname}</Text>,
       ...ColumnSearchProps('name', 'Tên khách hàng', setSearchQuery),
     },

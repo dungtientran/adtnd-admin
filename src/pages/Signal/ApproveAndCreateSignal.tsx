@@ -34,6 +34,7 @@ import {
   createSignal,
   deleteSignal,
   getSignalList,
+  getSignalListPageApprove,
   sendSignalNotification,
   updateSignal,
 } from '@/api/signal';
@@ -95,6 +96,7 @@ const Recommendations: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [openUpdateDrawer, setOpenUpdateDrawer] = useState<boolean>(false);
   const [updateData, setUpdateData] = useState<any>();
+  const [spining, setSpining] = useState<boolean>(false);
 
   // filter state
   const [codeFilter, setCodeFilter] = useState<string>('');
@@ -133,9 +135,9 @@ const Recommendations: React.FC = () => {
     }
 
     if (typeFilter) {
-      if (typeFilter === "1") {
+      if (typeFilter === '1') {
         query += '&is_long_term=false';
-      } else if (typeFilter === "2") {
+      } else if (typeFilter === '2') {
         query += '&is_long_term=true';
       }
     }
@@ -159,6 +161,13 @@ const Recommendations: React.FC = () => {
     // cái này để mỗi lần nhất lọc đều triger function
     query += '&rd=' + Math.random().toString();
     setFilterQuery(query);
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
   };
 
   useEffect(() => {
@@ -174,7 +183,7 @@ const Recommendations: React.FC = () => {
     if (statusFilter == 'closed') {
       query += '&is_closed=true';
     } else if (statusFilter == 'new') {
-      query += '&is_approve=false'; 
+      query += '&is_approve=false';
     } else if (statusFilter == 'open') {
       query += '&is_approve=true';
     }
@@ -350,7 +359,7 @@ const Recommendations: React.FC = () => {
 
   const getSignal = async () => {
     setLoading(true);
-    await getSignalList(qs.stringify(getRandomuserParams(tableParams)), codeFilter, filterQuery, dateSort)
+    await getSignalListPageApprove(qs.stringify(getRandomuserParams(tableParams)), codeFilter, filterQuery, dateSort)
       .then(data => {
         if (data.code === 200) {
           setTableParams({
@@ -363,6 +372,7 @@ const Recommendations: React.FC = () => {
           // console.log(data.data);
           const columns = data?.data?.rows?.map((item: any) => {
             const column = {
+              id: item?.id,
               date: item?.action_date,
               code: item?.code,
               is_long_term: item?.is_long_term ? 'Dài hạn' : 'Ngắn hạn',
@@ -391,7 +401,7 @@ const Recommendations: React.FC = () => {
 
   const getSignalDataExcel = async (limit: string) => {
     setLoading(true);
-    await getSignalList(`page=1&size=${limit}`, codeFilter, filterQuery, dateSort)
+    await getSignalListPageApprove(`page=1&size=${limit}`, codeFilter, filterQuery, dateSort)
       .then(data => {
         if (data.code === 200) {
           const columns = data?.data?.rows?.map((item: any) => {
@@ -404,7 +414,7 @@ const Recommendations: React.FC = () => {
               target_sell_price_2: item?.target_sell_price_2,
               target_sell_price_3: item?.target_sell_price_3,
               target_stop_loss: item?.target_stop_loss,
-              status: item?.is_closed ? 'Đóng' : item?.is_approved ? 'Đã duyệt' : 'Mới',
+              status: item?.is_approved ? 'Đã duyệt' : 'Mới',
               is_closed: item?.is_closed,
             };
 
@@ -450,7 +460,6 @@ const Recommendations: React.FC = () => {
   const checkIsNewSignal = () => {
     const filter = data.filter((item: any) => selectedRow.includes(item.id)) || [];
 
-    console.log(filter);
     const bool = filter.every((item: any) => item.is_approved == false);
 
     console.log('check ', bool);
@@ -482,25 +491,24 @@ const Recommendations: React.FC = () => {
   };
 
   const handleCreateSignal = async (payload: any) => {
-    return await createSignal({
+    setSpining(true);
+
+    await createSignal({
       signal: payload,
     })
       .then((res: any) => {
-        setData([
-          {
-            ...res?.data,
-            code: payload.code,
-            action_date: moment().format('DD/MM/YYYY'),
-          },
-          ...data,
-        ]);
+        setSpining(true);
         notification.success({
           message: 'Tạo khuyến nghị thành công',
         });
+        getSignal();
+        setOpenDrawer(false);
+        setSpining(false);
 
         return true;
       })
       .catch(error => {
+        setSpining(false);
         console.log('create signal error: ', error);
         notification.error({
           message: 'Có lỗi xảy ra!',
@@ -508,6 +516,7 @@ const Recommendations: React.FC = () => {
 
         return false;
       });
+    setSpining(false);
   };
 
   const handleUpdateSignal = async (payload: any) => {
@@ -561,29 +570,29 @@ const Recommendations: React.FC = () => {
     })
       .then(res => {
         console.log('res: ', res);
-        const new_data = [...data];
+        // const new_data = [...data];
 
-        if (approve) {
-          new_data.map((item: any) => {
-            if (signal_ids.includes(item.id)) {
-              item.is_approved = true;
+        // if (approve) {
+        //   new_data.map((item: any) => {
+        //     if (signal_ids.includes(item.id)) {
+        //       item.is_approved = true;
 
-              return item;
-            }
+        //       return item;
+        //     }
 
-            return item;
-          });
-          setData(new_data);
-        } else {
-          const filter = new_data.filter((item: any) => {
-            console.log(item);
+        //     return item;
+        //   });
+        //   setData(new_data);
+        // } else {
+        //   const filter = new_data.filter((item: any) => {
+        //     console.log(item);
 
-            return !signal_ids.includes(item.id);
-          });
+        //     return !signal_ids.includes(item.id);
+        //   });
 
-          setData(filter);
-        }
-
+        //   setData(filter);
+        // }
+        getSignal();
         notification.success({
           message: `${approve ? 'Duyệt' : 'Từ chối'} thành công`,
         });
@@ -598,6 +607,11 @@ const Recommendations: React.FC = () => {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    if (loading) setDataExcel([]);
+  }, [loading]);
+
 
   return (
     <div className="aaa">
@@ -725,6 +739,13 @@ const Recommendations: React.FC = () => {
                   end_date: '',
                   start_date: '',
                 });
+                setTableParams({
+                  ...tableParams,
+                  pagination: {
+                    ...tableParams.pagination,
+                    current: 1,
+                  },
+                });
               }}
             >
               Reset bộ lọc
@@ -794,13 +815,18 @@ const Recommendations: React.FC = () => {
         rowSelection={{
           type: 'checkbox',
           onChange: (value: any) => {
-            console.log(value);
+            console.log('value___________________rowSelection', value);
             setSelectedRow(value);
           },
         }}
         style={{ height: 'auto' }}
       />
-      <CreateSingalDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} onSubmit={handleCreateSignal} />
+      <CreateSingalDrawer
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        onSubmit={handleCreateSignal}
+        spining={spining}
+      />
       <UpdateSingalDrawer
         open={openUpdateDrawer}
         onClose={() => setOpenUpdateDrawer(false)}

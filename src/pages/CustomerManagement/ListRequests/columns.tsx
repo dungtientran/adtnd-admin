@@ -112,7 +112,7 @@ export const Column = (
       ),
     },
     {
-      title: 'Action',
+      title: '',
       dataIndex: 'action',
       width: '8%',
       render: (_, record) => (

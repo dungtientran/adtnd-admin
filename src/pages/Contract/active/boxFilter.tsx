@@ -12,9 +12,10 @@ const { Option } = Select;
 interface IBoxFilter {
   setQueryFilter: (query: string) => void;
   handelResetFilter: () => void;
+  handleSetPageOnFilter: () => void;
 }
 
-const BoxFilter = ({ setQueryFilter, handelResetFilter }: IBoxFilter) => {
+const BoxFilter = ({ setQueryFilter, handelResetFilter, handleSetPageOnFilter }: IBoxFilter) => {
   const [queryObj, setQueryObj] = useState<any>({
     start_date: '',
     end_date: '',
@@ -63,6 +64,7 @@ const BoxFilter = ({ setQueryFilter, handelResetFilter }: IBoxFilter) => {
     const querystring = qs.stringify(queryObj);
 
     setQueryFilter(querystring);
+    handleSetPageOnFilter();
   };
 
   // useEffect(() => {
