@@ -390,7 +390,7 @@ function GroupTablePage() {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '10px' }}>
         <Typography style={{ marginTop: '10px' }}>Có tất cả {tableParams.pagination?.total} kết quả</Typography>
-        <ExportExcel columns={columns} dataSource={dataExcel} />
+        <ExportExcel columns={columns} dataSource={dataExcel} title='Danh sách nhóm khách hàng'/>
       </div>
       <div className="table_member">
         <Table

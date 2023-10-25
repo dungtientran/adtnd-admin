@@ -78,6 +78,7 @@ const BlockContract: React.FC = () => {
   });
 
   const getRandomuserParams = (params: TableParams) => ({
+    status: 'done',
     size: params.pagination?.pageSize,
     page: params.pagination?.current,
     subscriptions: params.filters?.subscription_product?.join(','),
@@ -139,7 +140,7 @@ const BlockContract: React.FC = () => {
           end_date: item?.end_date,
           initial_value: item?.initial_value,
           expected_end_value: item?.expected_end_value,
-          commission: item?.commission,
+          commission: item?.contract_commission?.fila_commission,
           status: 'Đã thanh lý',
           profit_percent: item?.profit_percent,
         };
@@ -156,7 +157,12 @@ const BlockContract: React.FC = () => {
 
   const getListDataExcel = async (limit: number) => {
     try {
-      const res = await getListContract(`page=1&size=${limit}`, queryFilter, qs.stringify(searchText), sort);
+      const res = await getListContract(
+        `status=done&page=1&size=${limit}`,
+        queryFilter,
+        qs.stringify(searchText),
+        sort,
+      );
 
       if (res?.code === 200) {
         const dataExcel = res?.data?.rows;
@@ -174,14 +180,13 @@ const BlockContract: React.FC = () => {
             end_date: item?.end_date,
             initial_value: item?.initial_value,
             expected_end_value: item?.expected_end_value,
-            commission: item?.commission,
+            commission: item?.contract_commission?.fila_commission,
             status: item?.status === 'pending' ? 'Đang có hiệu lực' : 'Đã thanh lý',
             profit_percent: item?.profit_percent,
           };
         });
 
         setDataExcel(columnsExcel);
-
       } else {
         message.error('Có lỗi từ server');
       }
@@ -210,13 +215,14 @@ const BlockContract: React.FC = () => {
   return (
     <div className="aaa">
       <HeadTitle title="Hợp đồng đã thanh lý" />
-    
+
       <BoxFilter setQueryFilter={setQueryFilter} handelResetFilter={handelResetFilter} />
       <Result
         total={data?.data?.count}
         columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete, setOpenModel)}
         dataSource={dataExcel}
-        title="Danh sách hợp đồng Vip"
+        title="Danh sách hợp đồng Vip (hết hiệu lực)"
+        totalCommission={10000000000}
       />
       <div className="table_contract">
         <Table
@@ -238,12 +244,12 @@ const BlockContract: React.FC = () => {
         bodyStyle={{ paddingBottom: 80 }}
       >
         {/* <Spin spinning={update.isLoading}> */}
-        <CreateContract 
-        setUpdateDataSp={setUpdateDataSp}
-         initForm={customerSelect}
+        <CreateContract
+          setUpdateDataSp={setUpdateDataSp}
+          initForm={customerSelect}
           setNewContract={setNewContract}
           loading={!customerSelect ? isLoading : update.isLoading}
-           />
+        />
         {/* </Spin> */}
       </Drawer>
       <MyModal

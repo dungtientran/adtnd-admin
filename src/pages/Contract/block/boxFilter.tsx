@@ -135,7 +135,7 @@ const BoxFilter = ({ setQueryFilter, handelResetFilter }: IBoxFilter) => {
         </Space>
         <Space>
           <div style={{ width: '130px' }}>
-            <Text strong>Lợi nhuận dự kiến: (Chưa có query)  </Text>
+            <Text strong>Lợi nhuận: (Chưa có query)  </Text>
           </div>
           <Space>
             <InputNumber
@@ -169,7 +169,7 @@ const BoxFilter = ({ setQueryFilter, handelResetFilter }: IBoxFilter) => {
         </Space>
         <Space>
           <div style={{ width: '130px' }}>
-            <Text strong>Hoa hồng tạm tính (Fila): (Chưa có query) </Text>
+            <Text strong>Hoa hồng (Fila): (Chưa có query) </Text>
           </div>
           <Space>
             <InputNumber

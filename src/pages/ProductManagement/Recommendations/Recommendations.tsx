@@ -474,6 +474,7 @@ const Recommendations: React.FC = () => {
   useEffect(() => {
     getSignal();
   }, [JSON.stringify(tableParams), filterQuery, codeFilter, sortedInfo]);
+
   useEffect(() => {
     if (count) getSignalDataExcel(count);
   }, [count]);
@@ -856,8 +857,10 @@ const Recommendations: React.FC = () => {
         </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-        <Typography>Có tất cả {count} kết quả</Typography>
-        <ExportExcel columns={columns} dataSource={dataExcel} />
+        <Typography>
+          Có tất cả <Typography.Text strong>{count}</Typography.Text> kết quả
+        </Typography>
+        <ExportExcel columns={columns} dataSource={dataExcel} title="Danh sách khuyến nghị" />
       </div>
       <Table
         columns={columns}

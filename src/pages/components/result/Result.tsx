@@ -11,9 +11,18 @@ interface IResult {
   dataSource?: any;
   isButtonExcel?: boolean;
   title?: string;
+  totalCommission?: number;
 }
 
-const Result: React.FC<IResult> = ({ searchText, total, columns, dataSource, isButtonExcel = true , title}) => {
+const Result: React.FC<IResult> = ({
+  searchText,
+  total,
+  columns,
+  dataSource,
+  isButtonExcel = true,
+  title,
+  totalCommission,
+}) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '10px 0' }}>
       <div style={{ height: '22px' }}>
@@ -31,7 +40,16 @@ const Result: React.FC<IResult> = ({ searchText, total, columns, dataSource, isB
           ''
         )}
       </div>
-      {isButtonExcel && <ExportExcel columns={columns} dataSource={dataSource} title={title} />}
+      {isButtonExcel && (
+        <div>
+          {totalCommission && (
+            <Text style={{ marginRight: '30px' }}>
+              Tổng hoa hồng: <Text strong>{totalCommission?.toLocaleString()}</Text>
+            </Text>
+          )}
+          <ExportExcel columns={columns} dataSource={dataSource} title={title} />
+        </div>
+      )}
     </div>
   );
 };

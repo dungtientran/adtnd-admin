@@ -774,7 +774,7 @@ const Recommendations: React.FC = () => {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
         <Typography>Có tất cả {count} kết quả</Typography>
-        <ExportExcel columns={columns} dataSource={dataExcel} />
+        <ExportExcel columns={columns} dataSource={dataExcel} title="Danh sách duyệt khuyến nghị" />
       </div>
       <Table
         columns={columns}

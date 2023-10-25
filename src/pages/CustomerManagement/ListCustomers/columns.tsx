@@ -8,6 +8,7 @@ import { Avatar, Button, Input, Popconfirm, Space, Typography } from 'antd';
 import { useRef, useState } from 'react';
 
 import user from '@/assets/logo/user.png';
+import { UseMutationResult } from '@tanstack/react-query';
 
 
 const { Text, Link } = Typography;
@@ -64,11 +65,13 @@ export const ColumnSearchProps = (
 
 export const Column = (
   setSearchQuery: (query: string) => void,
-  setTextQuery: (text: string) => void,
   setOpenDrawer: (isOpen: boolean) => void,
   setCustomerSelect: (customer: any) => void,
-  setCustomerId: (id: string) => void,
+  useCustomer: () => {
+    deleteSale: UseMutationResult<any, unknown, any, unknown>;
+  }
 ) => {
+  const {deleteSale} = useCustomer();
   const columns: ColumnsType<ColumnListCustomerType> = [
     {
       title: 'Mã',
@@ -142,7 +145,7 @@ export const Column = (
           {record.sale_name ? (
             <Space direction="vertical">
               <Text strong>{record.sale_name}</Text>
-              <Popconfirm title="Chắc chắn" onConfirm={() => setCustomerId(record.id)}>
+              <Popconfirm title="Chắc chắn" onConfirm={() => deleteSale.mutate(record.id)}>
                 <Link>Xóa</Link>
               </Popconfirm>
             </Space>

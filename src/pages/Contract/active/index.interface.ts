@@ -3,6 +3,12 @@ import type { FilterValue } from 'antd/es/table/interface';
 
 export interface DataType {
   commission: string;
+  contract_commission: {
+    sales_commission: number;
+    manager_commission: number;
+    director_commission: number;
+    fila_commission: number;
+  };
   contract_no: string;
   created_at: string;
   customer_id: string;

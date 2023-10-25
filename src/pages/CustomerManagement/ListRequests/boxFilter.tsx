@@ -1,20 +1,25 @@
 import type { RadioChangeEvent } from 'antd';
 import type { DatePickerProps, RangePickerProps } from 'antd/es/date-picker';
 
-import { Button, DatePicker, InputNumber, Radio, Select, Space, Typography } from 'antd';
+import { Button, DatePicker, Radio, Select, Space, Typography } from 'antd';
 import qs from 'qs';
-import React, { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
-const { Option } = Select;
 
 interface IBoxFilter {
   setQueryFilter: (query: string) => void;
+  setSearchText: (obj: object) => void;
 }
 
-const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
-  const [queryObj, setQueryObj] = useState({});
+const BoxFilter = ({ setQueryFilter, setSearchText }: IBoxFilter) => {
+  const [selectedDates, setSelectedDates] = useState<any>(null);
+  const [queryObj, setQueryObj] = useState({
+    start_date: '',
+    end_date: '',
+    is_contact: null,
+  });
 
   const onChange = (
     value: DatePickerProps['value'] | RangePickerProps['value'],
@@ -26,6 +31,7 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
       start_date: dateString[0],
       end_date: dateString[1],
     }));
+    setSelectedDates(value);
   };
 
   const handleSelectIsContact = (e: RadioChangeEvent) => {
@@ -39,34 +45,50 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
 
   // console.log('queryObj_______________', queryObj);
 
-  useEffect(() => {
-    // console.log(queryObj);
+  const handleSetQueryString = () => {
     const querystring = qs.stringify(queryObj);
 
-    // console.log('querystring_______________', querystring);
     setQueryFilter(querystring);
-  }, [queryObj]);
+  };
+
+  const handleResetFilter = () => {
+    setQueryFilter('');
+    setQueryObj({
+      start_date: '',
+      end_date: '',
+      is_contact: null,
+    });
+    setSelectedDates(null);
+    setSearchText({})
+  };
 
   return (
     <Space
-      direction="horizontal"
+      direction="vertical"
       size="middle"
       style={{ marginBottom: '20px', padding: '1rem', border: '1px solid #ccc', borderRadius: '6px' }}
     >
-      <Space direction="vertical">
-        <Text strong>Lọc theo ngày yêu cầu:</Text>
-        <Space>
-          <RangePicker format="YYYY/MM/DD" onChange={onChange} />
+      <Space size="middle">
+        <Space direction="vertical">
+          <Text strong>Lọc theo ngày yêu cầu:</Text>
+          <Space>
+            <RangePicker format="YYYY/MM/DD" value={selectedDates} onChange={onChange} />
+          </Space>
+        </Space>
+
+        <Space direction="vertical">
+          <Text strong>Tình trạng liên hệ: </Text>
+          <Radio.Group value={queryObj.is_contact} onChange={handleSelectIsContact}>
+            <Radio.Button value={null}>Tất cả</Radio.Button>
+            <Radio.Button value={true}>Đã liên hệ</Radio.Button>
+            <Radio.Button value={false}>Chưa liên hệ</Radio.Button>
+          </Radio.Group>
         </Space>
       </Space>
 
-      <Space direction="vertical">
-        <Text strong>Tình trạng liên hệ: </Text>
-        <Radio.Group defaultValue={''} onChange={handleSelectIsContact}>
-          <Radio.Button value="">Tất cả</Radio.Button>
-          <Radio.Button value={true}>Đã liên hệ</Radio.Button>
-          <Radio.Button value={false}>Chưa liên hệ</Radio.Button>
-        </Radio.Group>
+      <Space>
+        <Button onClick={handleSetQueryString}>Lọc</Button>
+        <Button onClick={handleResetFilter}>Reset bộ lọc</Button>
       </Space>
     </Space>
   );

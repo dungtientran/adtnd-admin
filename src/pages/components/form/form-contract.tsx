@@ -79,8 +79,8 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
       const toDay = new Date();
       const end_date = new Date(initForm?.end_date);
 
-      console.log('end_ddate______________', end_date);
-      console.log('today______________________', toDay);
+      // console.log('end_ddate______________', end_date);
+      // console.log('today______________________', toDay);
       // console.log(end_date > toDay);
 
       const setInitForm = {
