@@ -252,7 +252,6 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
             </Form.Item>
           </Fragment>
         )}
-
         <Form.Item style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '' }}>
           <Spin spinning={initForm ? update.isLoading : create.isLoading}>
             <Button type="primary" htmlType="submit">
