@@ -84,7 +84,7 @@ const Invoicetable: React.FC = () => {
   const columns: ColumnsType<any> = [
     {
       title: 'Mã chứng từ',
-      dataIndex: 'id',
+      dataIndex: 'payment_code',
       width: '10%',
       render: (_: any, record: any) => {
         return (

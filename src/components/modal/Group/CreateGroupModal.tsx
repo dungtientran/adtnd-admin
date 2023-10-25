@@ -2,7 +2,7 @@ import { AutoComplete, Input, InputNumber, Modal, Select, Typography } from 'ant
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { adminSearchUser } from '@/api/user.api';
+import { adminSearchSale, adminSearchUser } from '@/api/user.api';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -37,7 +37,7 @@ function CreateGroupModal({ open, handleOk, handleCancel, data, setData }: Creat
         ...form,
         sale_id: '',
       });
-      const res: any = await adminSearchUser(text);
+      const res: any = await adminSearchSale(text);
 
       console.log('search data', res);
       setCustomerOptions(res.map((item: any) => ({ ...item, value: item.email })));
@@ -148,7 +148,7 @@ function CreateGroupModal({ open, handleOk, handleCancel, data, setData }: Creat
                 style={{ width: '100%' }}
                 defaultValue={form?.sale?.email}
                 options={customerOptions}
-                placeholder={'Nhập email khách hàng'}
+                placeholder={'Nhập email quản lí'}
                 onSearch={e => handleSearchCustomer(e)}
                 onSelect={(e: any) => {
                   const item = customerOptions.find(option => option.value === e);

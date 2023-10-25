@@ -120,7 +120,7 @@ const Recommendations: React.FC = () => {
     } else if (statusFilter == 'new') {
       query += '&is_approve=false';
     } else if (statusFilter == 'open') {
-      query += '&is_approve=true';
+      query += '&is_closed=false';
     }
 
     if (priceRangeFilter.from && priceRangeFilter.to) {
@@ -381,7 +381,7 @@ const Recommendations: React.FC = () => {
           {record?.is_closed ? (
             <Tag color="red">Đóng</Tag>
           ) : record.is_approved ? (
-            <Tag color="geekblue">Đã duyệt</Tag>
+            <Tag color="geekblue">Đang mở</Tag>
           ) : (
             <Tag color="green">Mới</Tag>
           )}
@@ -472,7 +472,7 @@ const Recommendations: React.FC = () => {
       } else if (statusFilter == 'new') {
         query += '&is_approve=false';
       } else if (statusFilter == 'open') {
-        query += '&is_approve=true';
+        query += '&is_closed=false';
       }
 
       setTableParams({

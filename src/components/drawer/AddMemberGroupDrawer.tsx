@@ -182,7 +182,7 @@ function AddMember({ open, onClose, onSubmit, group_id }: AddMemberProps) {
 
   const columns = [
     {
-      title: 'Ảnh đại diện',
+      title: 'Mã khách hàng',
       dataIndex: 'customer_code',
       width: '8%',
       // render: (_: any, record: any) => (

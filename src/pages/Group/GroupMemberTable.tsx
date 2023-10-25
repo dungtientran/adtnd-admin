@@ -175,29 +175,29 @@ function GroupMemberTable({ group_id }: { group_id: string | undefined }) {
   const columns = [
     {
       title: 'Mã khách hàng',
-      dataIndex: 'avatar_url',
+      dataIndex: 'customer_code',
       width: '8%',
-      render: (_: any, record: any) => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {record?.avatar_url ? (
-            <Avatar
-              src={record.avatar_url}
-              size="large"
-              onClick={() => {
-                // setModalOpen(true), setRecordSelected(record);
-              }}
-            />
-          ) : (
-            <Avatar
-              src={user}
-              size="large"
-              onClick={() => {
-                // setModalOpen(true), setRecordSelected(record);
-              }}
-            />
-          )}
-        </div>
-      ),
+      // render: (_: any, record: any) => (
+      //   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      //     {record?.avatar_url ? (
+      //       <Avatar
+      //         src={record.avatar_url}
+      //         size="large"
+      //         onClick={() => {
+      //           // setModalOpen(true), setRecordSelected(record);
+      //         }}
+      //       />
+      //     ) : (
+      //       <Avatar
+      //         src={user}
+      //         size="large"
+      //         onClick={() => {
+      //           // setModalOpen(true), setRecordSelected(record);
+      //         }}
+      //       />
+      //     )}
+      //   </div>
+      // ),
     },
     {
       title: 'Tên khách hàng',

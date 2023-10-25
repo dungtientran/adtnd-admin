@@ -10,3 +10,5 @@ export const adminGetUser = (email: string) => {
 }
 export const adminSearchUser = (search_text: string) =>
     axiosInstance.get<any>(`/admin/customer/search?searchText=${search_text}`).then((data) => data);
+export const adminSearchSale = (search_text: string) =>
+    axiosInstance.get<any>(`/admin/sale/search?searchText=${search_text}`).then((data) => data.data);

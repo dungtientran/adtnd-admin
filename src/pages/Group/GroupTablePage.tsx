@@ -27,6 +27,7 @@ interface TableParams {
 function GroupTablePage() {
   const subscriptions = useSelector(state => state.subsciptions.subscriptions);
 
+  const [loading,setLoading] = useState(false)
   const [data, setData] = useState<any>();
   const [dataExcel, setDataExcel] = useState([]);
 
@@ -52,6 +53,7 @@ function GroupTablePage() {
 
   // --------------
   const getData = async () => {
+    setLoading(true);
     await getGroupList(tableParams.pagination, '', filterQuery)
       .then((data: any) => {
         // console.log("data________________", data);
@@ -79,6 +81,8 @@ function GroupTablePage() {
       })
       .catch(error => {
         console.log(error);
+      }).finally(()=>{
+        setLoading(false);
       });
   };
 
@@ -286,6 +290,13 @@ function GroupTablePage() {
       }
 
       setFilterQuery(query);
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          current:1
+        }
+      })
     }
   }, [nameSearch, subsciptionFilter, saleSearch]);
   useEffect(() => {
@@ -305,7 +316,6 @@ function GroupTablePage() {
                 ...form,
               };
             }
-
             return item;
           });
 
@@ -330,10 +340,8 @@ function GroupTablePage() {
         .then((res: any) => {
           if (res.code == 200) {
             const new_data = [res.data, ...data];
-
             setData(new_data);
           }
-
           notification.success({
             message: 'Tạo thành công!',
           });
@@ -394,6 +402,7 @@ function GroupTablePage() {
       </div>
       <div className="table_member">
         <Table
+          loading={loading}
           columns={columns}
           rowKey={record => record.id}
           dataSource={data}
