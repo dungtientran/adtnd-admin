@@ -234,7 +234,7 @@ const Support = () => {
 
   const columns = [
     {
-      title: 'STT',
+      title: 'Thứ tự hiển thị',
       dataIndex: 'order',
       width: '10%',
       editable: true,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { SignalModel } from '@/interface/signal';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
@@ -6,11 +7,15 @@ import { BorderOuterOutlined, MenuOutlined, StarFilled, UploadOutlined } from '@
 import { Button, DatePicker, Dropdown, notification, Table, Typography } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { approveInvoice, createInvoice, getInvoice } from '@/api/invoice';
+import { addTag } from '@/stores/tags-view.store';
 
+import Result from '../components/result/Result';
 import { getColumnSearchProps } from '../components/Table/SearchInTable';
+import BoxFilter from './boxFilter';
 
 interface TableParams {
   pagination?: TablePaginationConfig;
@@ -23,6 +28,9 @@ const Invoicetable: React.FC = () => {
   const [data, setData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [period, setPeriod] = useState('');
+
+  const [sort, setSort] = useState<string>('');
+
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
@@ -34,6 +42,7 @@ const Invoicetable: React.FC = () => {
 
   // search
   const [staffCode, setStaffCodeSearch] = useState(null);
+  const [paymentCode, setPaymentCode] = useState(null);
   const [name, setNameSearch] = useState(null);
   const [email, setEmailSearch] = useState(null);
   const [phone, setPhoneSearch] = useState(null);
@@ -47,6 +56,7 @@ const Invoicetable: React.FC = () => {
   const [dateSort, setDateSort] = useState('DESC');
 
   const [filterQuery, setFilterQuery] = useState('');
+  const [filterQueryBox, setFilterQueryBox] = useState('');
 
   const actions = (record: any) => {
     const actionList = [];
@@ -69,7 +79,7 @@ const Invoicetable: React.FC = () => {
   };
 
   const actionsColumn = {
-    title: 'ACTION',
+    title: '',
     width: '10%',
     editable: false,
     render: (_: any, record: any) => (
@@ -80,15 +90,37 @@ const Invoicetable: React.FC = () => {
       </Dropdown>
     ),
   };
+  const dispatch = useDispatch();
+
+  const handelAddTag = (id: string, name: string) => {
+    dispatch(
+      addTag({
+        code: 'con',
+        closable: true,
+        label: {
+          en_US: `${name}`,
+          zh_CN: 'asdas',
+        },
+        path: `/customer-management/customer-group/detail/${id}`,
+      }),
+    );
+  };
 
   const columns: ColumnsType<any> = [
     {
       title: 'Mã chứng từ',
       dataIndex: 'payment_code',
       width: '10%',
+      ...getColumnSearchProps({
+        setFilter: setStaffCodeSearch,
+      }),
       render: (_: any, record: any) => {
         return (
-          <Link to={'/invoice/detail/' + _} style={{ textDecoration: 'none' }}>
+          <Link
+            to={'/invoice/detail/' + record?.id}
+            style={{ textDecoration: 'none' }}
+            onClick={() => handelAddTag(record?.id, record?.payment_code)}
+          >
             {_}
           </Link>
         );
@@ -98,6 +130,7 @@ const Invoicetable: React.FC = () => {
       title: 'Kỳ thanh toán',
       dataIndex: 'payment_period',
       width: '10%',
+      render: (_, record) => <Typography.Text>{moment(record?.payment_period).format('YYYY/MM')}</Typography.Text>
     },
     {
       title: 'Mã KH',
@@ -130,6 +163,7 @@ const Invoicetable: React.FC = () => {
       render: (_: any, record: any) => {
         return parseInt(_).toLocaleString();
       },
+      sorter: true,
     },
     {
       title: 'Hoa hồng tạm tính',
@@ -138,6 +172,7 @@ const Invoicetable: React.FC = () => {
       render: (_: any, record: any) => {
         return parseInt(_).toLocaleString();
       },
+      sorter: true,
     },
     {
       title: 'Tình trạng',
@@ -152,7 +187,7 @@ const Invoicetable: React.FC = () => {
 
   const getData = async () => {
     setLoading(true);
-    await getInvoice(tableParams.pagination, filterQuery)
+    await getInvoice(tableParams.pagination, filterQuery, sort, filterQueryBox)
       .then((data: any) => {
         if (data.code === 200) {
           setTableParams({
@@ -162,7 +197,13 @@ const Invoicetable: React.FC = () => {
               total: data?.data?.count,
             },
           });
-          console.log(data.data);
+          // const columns = data?.data?.rows?.map((item: any) => {
+          //   return {
+          //     ...item,
+          //   };
+          // });
+
+          // console.log('data______________________', data);
           setData(data?.data?.rows);
         }
       })
@@ -222,6 +263,10 @@ const Invoicetable: React.FC = () => {
         query += `&phone=${phone}`;
       }
 
+      if (paymentCode) {
+        query += `&payment_code=${paymentCode}`;
+      }
+
       console.log(query);
       //////////////////
       setTableParams({
@@ -233,13 +278,12 @@ const Invoicetable: React.FC = () => {
       });
       setFilterQuery(query);
     }
-  }, [name, email, phone, staffCode]);
+  }, [name, email, phone, staffCode, paymentCode]);
   useEffect(() => {
     getData();
-  }, [JSON.stringify(tableParams), filterQuery]);
+  }, [JSON.stringify(tableParams), filterQuery, filterQueryBox]);
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    console.log(pagination);
     setTableParams({
       pagination,
       filters,
@@ -248,6 +292,16 @@ const Invoicetable: React.FC = () => {
 
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
       setData([]);
+    }
+
+    if (sorter.order === 'ascend') {
+      const sorte = `${sorter.field}_order=ASC`;
+
+      setSort(sorte);
+    } else if (sorter.order === 'descend') {
+      const sorte = `${sorter.field}_order=DESC`;
+
+      setSort(sorte);
     }
   };
 
@@ -278,6 +332,7 @@ const Invoicetable: React.FC = () => {
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Chứng từ thanh toán</Typography.Title>
       </div>
+      <BoxFilter setQueryFilter={setFilterQueryBox} />
       <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
         <DatePicker
           onChange={(e: any) => {
@@ -296,6 +351,7 @@ const Invoicetable: React.FC = () => {
           Tính toán
         </Button>
       </div>
+      <Result total={tableParams.pagination?.total} isButtonExcel={false} />
       <Table
         columns={columns}
         rowKey={record => record.id}

@@ -232,7 +232,7 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
 
         <Form.Item
           name="sale_name"
-          label="Nhân viên quản lý"
+          label="Mã nhân viên quản lý"
           rules={[{ required: true, message: 'Vui lòng nhập email nhân viên!' }]}
         >
           <AutoComplete

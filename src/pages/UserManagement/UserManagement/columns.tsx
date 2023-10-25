@@ -74,9 +74,9 @@ export const Column = (
   const columns: ColumnsType<DataType> = [
     {
       title: 'Mã nhân viên',
-      dataIndex: 'id',
+      dataIndex: 'staff_code',
       width: '8%',
-      // ...ColumnSearchProps('id', 'mã nhân viên', setSearchQuery),
+      ...ColumnSearchProps('staff_code', 'mã nhân viên', setSearchQuery),
     },
     {
       title: 'Họ tên',

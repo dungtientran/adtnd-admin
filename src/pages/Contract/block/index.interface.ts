@@ -72,6 +72,7 @@ export interface ColumnTyle {
   status: string;
   id: number;
   profit_percent: number;
+  total_commission: number;
 }
 export interface TableParams {
   pagination?: TablePaginationConfig;

@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import type { UseMutationResult } from '@tanstack/react-query';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AutoComplete, Button, Form, Input, InputNumber, Select, Space, Typography } from 'antd';
 import { Fragment, useEffect, useState } from 'react';
@@ -13,6 +15,7 @@ interface ICreateUser {
   setCustomerForm: (newCustomer: any) => void;
   initForm?: any;
   // setSaleCustomer: (sale: any) => void;
+  useSale: () => UseMutationResult<any, unknown, any, unknown>;
 }
 
 const passwordValidator = (value: string): boolean => {
@@ -33,8 +36,10 @@ const prefixSelector = (
   </Form.Item>
 );
 
-const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }) => {
-  const [option, setOption] = useState<{ id: string; value: string; email: string; customer_code: string }[]>([]);
+const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm, useSale }) => {
+  const [option, setOption] = useState<
+    { id: string; value: string; name: string; customer_code: string; email: string }[]
+  >([]);
   const [option2, setOption2] = useState([
     {
       id: 'admin',
@@ -53,17 +58,21 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
       value: 'Nhân viên nghiệp vụ',
     },
   ]);
+  const [saleSelect, setsaleSelect] = useState('');
 
   const userData = useQuery({
     queryKey: ['getListUser'],
     queryFn: () => getListUser(''),
   });
 
+  const setSale = useSale();
+
   useEffect(() => {
     if (userData.data) {
       const newOption2 = userData.data?.map((item: any) => ({
-        value: item?.fullname,
+        value: item?.customer_code,
         id: item?.id,
+        name: item?.fullname,
         email: item?.email,
         customer_code: item?.customer_code,
       }));
@@ -71,6 +80,18 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
       setOption(newOption2);
     }
   }, [userData.data]);
+
+  useEffect(() => {
+    if (saleSelect) {
+      const sale_id_select = option.find(item => item.value === saleSelect)?.name;
+
+      console.log(sale_id_select);
+      form.setFieldsValue({
+        sale_id: sale_id_select,
+      });
+    }
+  }, [saleSelect]);
+
   // const { data, isLoading, isError } = useQuery({
   //   queryKey: ['getSaleList'],
   //   queryFn: () => getSaleList(),
@@ -106,7 +127,30 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
       phone_number: `+84${values?.phone_number}`,
     };
 
-    console.log('Received values of form: ', values);
+    const customer_id = option.find(item => item.value === saleSelect)?.id;
+    const email = option.find(item => item.value === saleSelect)?.email;
+    const name = option.find(item => item.value === saleSelect)?.name;
+
+    const new_Sale = {
+      role_id: values?.role_id,
+      password: values?.password,
+      level: values?.level || 1,
+      customer: {
+        id: customer_id,
+        email: email,
+        fullname: name,
+        nav: null,
+        phone_number: '123456789',
+        avatar_url: '',
+      },
+    };
+
+
+
+    
+    setSale.mutate(new_Sale);
+
+    console.log('Received values of form: ', new_Sale);
     const sale_id = option2.find(item => item.value === values.role_id)?.id;
 
     // console.log('sale_id_______________', sale_id);
@@ -137,18 +181,22 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
         </Form.Item> */}
         <Form.Item
           name="fullname"
-          label="Tên khách hàng"
+          label="Mã khách hàng"
           rules={[{ required: true, message: 'Không đc bỏ trống !', whitespace: true }]}
         >
           <AutoComplete
             style={{ width: '100%' }}
             options={option}
-            placeholder="Nhập email nhân viên hỗ trợ"
+            placeholder="Nhập mã khách hàng"
             filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             size="large"
-            // onChange={value => setNameSelect(value)}
+            onChange={value => setsaleSelect(value)}
             disabled={initForm}
           />
+        </Form.Item>
+
+        <Form.Item name="sale_id" label="Mã nhân viên quản lý">
+          <Input disabled />
         </Form.Item>
 
         <Form.Item
@@ -165,6 +213,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm }
             disabled={initForm}
           />
         </Form.Item>
+
         <Form.Item name="level" label="Level">
           <InputNumber defaultValue={1} min={1} />
         </Form.Item>

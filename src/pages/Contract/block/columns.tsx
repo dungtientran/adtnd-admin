@@ -150,14 +150,14 @@ export const Column = (
       title: 'Hoa hồng  (Fila)',
       dataIndex: 'commission',
       width: '10%',
-      render: (_, record) => <Text>{record?.commission?.toLocaleString()} %</Text>,
+      render: (_, record) => <Text>{record?.commission?.toLocaleString()}</Text>,
       sorter: true,
     },
     {
       title: 'Tổng hoa hồng (Fila)',
-      dataIndex: 'commission',
+      dataIndex: 'total_commission',
       width: '12%',
-      render: (_, record) => <Text>000000</Text>,
+      render: (_, record) => <Text>{record?.total_commission?.toLocaleString()}</Text>,
     },
     {
       title: 'Tình trạng',

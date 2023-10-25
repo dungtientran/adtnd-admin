@@ -34,9 +34,9 @@ const TransactionHistory = () => {
   const [idDelete, setIdDelete] = useState<string>('');
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListTransactionHistory', tableParams, queryFilter, searchText],
+    queryKey: ['getListTransactionHistory', tableParams, queryFilter, searchText, sort],
     queryFn: () =>
-      getListTransactionHistory(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText)),
+      getListTransactionHistory(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText), sort),
   });
 
   const getRandomuserParams = (params: TableParams) => ({
@@ -56,15 +56,15 @@ const TransactionHistory = () => {
       // setData([]);
     }
 
-    // if (sorter.order === 'ascend') {
-    //   const sorte = `${sorter.field}_order=ASC`;
+    if (sorter.order === 'ascend') {
+      const sorte = `${sorter.field}_order=ASC`;
 
-    //   setSort(sorte);
-    // } else if (sorter.order === 'descend') {
-    //   const sorte = `${sorter.field}_order=DESC`;
+      setSort(sorte);
+    } else if (sorter.order === 'descend') {
+      const sorte = `${sorter.field}_order=DESC`;
 
-    //   setSort(sorte);
-    // }
+      setSort(sorte);
+    }
   };
 
   useEffect(() => {
@@ -80,7 +80,7 @@ const TransactionHistory = () => {
         const b = {
           id: item.id,
           amount: item?.amount,
-          customer_id: item?.customer_id,
+          customer_code: item?.customer?.customer_code,
           created_at: item?.created_at,
           description: item?.description,
           name: item?.customer?.fullname,
