@@ -316,6 +316,8 @@ const Recommendations: React.FC = () => {
       width: '8%',
       sorter: true,
 
+
+      
       render: (_, record) => {
         if (record?.is_closed) {
           return <Tag color="red">Đóng</Tag>;
