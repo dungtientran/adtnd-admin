@@ -9,12 +9,14 @@ export interface InitDataType {
   description: string;
   status: string;
   subscription_plan_id: string;
+  customer_code: string;
   customer: {
     avatar_url: string | null;
     email: string;
     fullname: string;
     id: string;
     phone_number: string;
+    customer_code: string;
   };
   subscription_plan: {
     subscription_product: {

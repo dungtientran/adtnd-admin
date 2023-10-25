@@ -221,6 +221,7 @@ const ListCustomers: React.FC = () => {
         queryFilter={queryFilter}
         searchText={qs.stringify(searchText)}
         clearFilter={handleClearFilter}
+        setTableParams={setTableParams}
       />
       <Result
         total={data?.data?.count}

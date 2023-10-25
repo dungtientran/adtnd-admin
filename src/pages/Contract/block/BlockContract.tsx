@@ -143,6 +143,11 @@ const BlockContract: React.FC = () => {
           commission: item?.contract_commission?.fila_commission,
           status: 'Đã thanh lý',
           profit_percent: item?.profit_percent,
+          total_commission:
+            item?.contract_commission?.director_commission +
+            item?.contract_commission?.fila_commission +
+            item?.contract_commission?.manager_commission +
+            item?.contract_commission?.sales_commission,
         };
       });
 
@@ -183,6 +188,11 @@ const BlockContract: React.FC = () => {
             commission: item?.contract_commission?.fila_commission,
             status: item?.status === 'pending' ? 'Đang có hiệu lực' : 'Đã thanh lý',
             profit_percent: item?.profit_percent,
+            total_commission:
+              item?.contract_commission?.director_commission +
+              item?.contract_commission?.fila_commission +
+              item?.contract_commission?.manager_commission +
+              item?.contract_commission?.sales_commission,
           };
         });
 
@@ -222,7 +232,7 @@ const BlockContract: React.FC = () => {
         columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete, setOpenModel)}
         dataSource={dataExcel}
         title="Danh sách hợp đồng Vip (hết hiệu lực)"
-        totalCommission={10000000000}
+        totalCommission={data?.total}
       />
       <div className="table_contract">
         <Table

@@ -52,7 +52,7 @@ const BoxGreeting: React.FC<IBoxGreeting> = ({ descriptions, title, useUpdateGre
   // console.log('Data_________________', data);
   // console.log('dataEdit__________________', dataEdit);
   // console.log('isEdit___________________', isEdit);
-  console.log('isEditing____________________', isEditing);
+  // console.log('isEditing____________________', isEditing);
 
   return (
     <Row justify="center" style={{ marginTop: '20px' }}>

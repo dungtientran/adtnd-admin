@@ -22,6 +22,8 @@ const BoxFilter = ({ setQueryFilter, handelResetFilter }: IBoxFilter) => {
     initial_value_to: '',
     profit_percent_from: '',
     profit_percent_to: '',
+    fila_commission_from: '',
+    fila_commission_to: '',
   });
   const [statusContrac, setStatusContract] = useState<string>('');
   const [selectedDates, setSelectedDates] = useState<any>(null);
@@ -57,17 +59,23 @@ const BoxFilter = ({ setQueryFilter, handelResetFilter }: IBoxFilter) => {
     setSelectedDates(null);
   };
 
-  useEffect(() => {
-    if (queryObj) {
-      // console.log(queryObj);
-      const querystring = qs.stringify(queryObj);
+  const handleFilter = () => {
+    const querystring = qs.stringify(queryObj);
 
-      // console.log('querystring_______________', querystring);
-      setQueryFilter(querystring);
-    } else {
-      setQueryFilter('');
-    }
-  }, [queryObj]);
+    setQueryFilter(querystring);
+  };
+
+  // useEffect(() => {
+  //   if (queryObj) {
+  //     // console.log(queryObj);
+  //     const querystring = qs.stringify(queryObj);
+
+  //     // console.log('querystring_______________', querystring);
+  //     setQueryFilter(querystring);
+  //   } else {
+  //     setQueryFilter('');
+  //   }
+  // }, [queryObj]);
 
   // console.log(queryObj);
 
@@ -135,7 +143,7 @@ const BoxFilter = ({ setQueryFilter, handelResetFilter }: IBoxFilter) => {
         </Space>
         <Space>
           <div style={{ width: '130px' }}>
-            <Text strong>Lợi nhuận: (Chưa có query)  </Text>
+            <Text strong>Lợi nhuận: </Text>
           </div>
           <Space>
             <InputNumber
@@ -169,19 +177,31 @@ const BoxFilter = ({ setQueryFilter, handelResetFilter }: IBoxFilter) => {
         </Space>
         <Space>
           <div style={{ width: '130px' }}>
-            <Text strong>Hoa hồng (Fila): (Chưa có query) </Text>
+            <Text strong>Hoa hồng(Fila): </Text>
           </div>
           <Space>
             <InputNumber
               addonBefore={<Text>Từ</Text>}
-              // onChange={value => setNav_Low(value as number)}
+              value={queryObj?.fila_commission_from}
+              onChange={value =>
+                setQueryObj((prev: any) => ({
+                  ...prev,
+                  fila_commission_from: value,
+                }))
+              }
               style={{ width: '160px' }}
               min={0}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
             <InputNumber
               addonBefore={<Text>Đến</Text>}
-              // onChange={value => setNav_Hight(value as number)}
+              value={queryObj?.fila_commission_to}
+              onChange={value =>
+                setQueryObj((prev: any) => ({
+                  ...prev,
+                  fila_commission_to: value,
+                }))
+              }
               style={{ width: '160px' }}
               min={0}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -189,7 +209,10 @@ const BoxFilter = ({ setQueryFilter, handelResetFilter }: IBoxFilter) => {
           </Space>
         </Space>
       </Space>
-      <Button onClick={handleResetFilter}>Reset bộ lọc</Button>
+      <Space>
+        <Button onClick={handleFilter}>Lọc</Button>
+        <Button onClick={handleResetFilter}>Reset bộ lọc</Button>
+      </Space>
     </Space>
   );
 };

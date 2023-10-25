@@ -16,7 +16,7 @@ import Result from '@/pages/components/result/Result';
 import { Column } from './columns';
 
 const { getCustomerSupport, updateCustomerSupport, deleteCustomerSupport } = listCustomerApi;
-const { getListUser } = listUserApi;
+const { getListUser, createSale } = listUserApi;
 
 const UserManagement: React.FC = () => {
   const queryClient = useQueryClient();
@@ -74,6 +74,21 @@ const UserManagement: React.FC = () => {
 
   const onClose = () => {
     setOpen(false);
+  };
+
+
+  const useSale = () => {
+    const create = useMutation(createSale, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListCustomer']);
+        message.success('Tạo thành công');
+      },
+      onError: _ => {
+        message.error('Tạo thất bại thất bại');
+      },
+    });
+
+    return create;
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -157,7 +172,7 @@ const UserManagement: React.FC = () => {
         />
       </div>
       <Drawer title="Tạo mới quản trị viên" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
-        <EditUserManagement setCustomerForm={setUpdateDataSp} initForm={customerSelect} />
+        <EditUserManagement setCustomerForm={setUpdateDataSp} initForm={customerSelect} useSale={useSale}/>
       </Drawer>
     </div>
   );

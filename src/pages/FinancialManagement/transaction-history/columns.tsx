@@ -82,8 +82,8 @@ export const Column = (
     {
       title: 'Mã khách hàng',
       // sorter: true,
-      dataIndex: 'customer_id',
-      // width: '15%',
+      dataIndex: 'customer_code',
+      width: '8%',
       ...ColumnSearchProps('customer_id', 'tên khách hàng', setSearchQuery),
     },
     {
@@ -134,6 +134,7 @@ export const Column = (
       title: 'Số tiền',
       dataIndex: 'amount',
       width: '8%',
+      sorter: true,
       render: (_, record) => <Text>{record?.amount ? record.amount?.toLocaleString() : 0} VND</Text>,
     },
   ];

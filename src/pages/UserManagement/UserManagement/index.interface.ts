@@ -14,6 +14,7 @@ export interface DataType {
     id: string;
     name: string;
   };
+  staff_code: string;
 }
 
 export interface TableParams {
