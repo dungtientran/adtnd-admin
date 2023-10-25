@@ -112,9 +112,9 @@ const Recommendations: React.FC = () => {
     to: null,
   });
   //enum 2: dài hạn,1: ngắn hạn
-  const [typeFilter, setTypeFilter] = useState(null);
+  const [typeFilter, setTypeFilter] = useState('');
   //enum ['closed', 'new', 'open']
-  const [statusFilter, setStatusFilter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('');
 
   const [filterQuery, setFilterQuery] = useState('');
 
@@ -133,9 +133,9 @@ const Recommendations: React.FC = () => {
     }
 
     if (typeFilter) {
-      if (typeFilter == 1) {
+      if (typeFilter === "1") {
         query += '&is_long_term=false';
-      } else if (typeFilter == 2) {
+      } else if (typeFilter === "2") {
         query += '&is_long_term=true';
       }
     }
@@ -162,33 +162,31 @@ const Recommendations: React.FC = () => {
   };
 
   useEffect(() => {
-    if (statusFilter != null || typeFilter != null) {
-      let query = '';
+    let query = '';
 
-      if (typeFilter == 1) {
-        query += '&is_long_term=false';
-      } else if (typeFilter == 2) {
-        query += '&is_long_term=true';
-      }
-      //////////////////
-
-      if (statusFilter == 'closed') {
-        query += '&is_closed=true';
-      } else if (statusFilter == 'new') {
-        query += '&is_approve=false';
-      } else if (statusFilter == 'open') {
-        query += '&is_approve=true';
-      }
-
-      setTableParams({
-        ...tableParams,
-        pagination: {
-          ...tableParams.pagination,
-          current: 1,
-        },
-      });
-      setFilterQuery(query);
+    if (typeFilter === '1') {
+      query += '&is_long_term=false';
+    } else if (typeFilter === '2') {
+      query += '&is_long_term=true';
     }
+    //////////////////
+
+    if (statusFilter == 'closed') {
+      query += '&is_closed=true';
+    } else if (statusFilter == 'new') {
+      query += '&is_approve=false'; 
+    } else if (statusFilter == 'open') {
+      query += '&is_approve=true';
+    }
+
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
+    setFilterQuery(query);
   }, [statusFilter, typeFilter]);
 
   const actions = (record: any) => {
@@ -342,16 +340,9 @@ const Recommendations: React.FC = () => {
       title: 'Tình trạng',
       dataIndex: 'status',
       width: '10%',
-      render: (is_closed: string, record: any) => (
-        <>
-          {is_closed ? (
-            <Tag color="red">Đóng</Tag>
-          ) : record.is_approved ? (
-            <Tag color="geekblue">Đã duyệt</Tag>
-          ) : (
-            <Tag color="green">Mới</Tag>
-          )}
-        </>
+      render: (_, record: any) => (
+        // <{<Tag color="geekblue">Đã duyệt</Tag> : <Tag color="green">Mới</Tag>
+        <Tag color={record?.status === 'Đã duyệt' ? 'geekblue' : 'green'}>{record?.status}</Tag>
       ),
     },
     actionsColumn,
@@ -380,7 +371,7 @@ const Recommendations: React.FC = () => {
               target_sell_price_2: item?.target_sell_price_2,
               target_sell_price_3: item?.target_sell_price_3,
               target_stop_loss: item?.target_stop_loss,
-              status: item?.is_closed ? 'Đóng' : item?.is_approved ? 'Đã duyệt' : 'Mới',
+              status: item?.is_approved ? 'Đã duyệt' : 'Mới',
               is_closed: item?.is_closed,
             };
 
@@ -621,9 +612,9 @@ const Recommendations: React.FC = () => {
                 Loại:
               </Typography>
               <Radio.Group value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
-                <Radio.Button value={null}>Tất cả</Radio.Button>
-                <Radio.Button value={1}>Ngắn hạn</Radio.Button>
-                <Radio.Button value={2}>Dài hạn</Radio.Button>
+                <Radio.Button value={''}>Tất cả</Radio.Button>
+                <Radio.Button value={'1'}>Ngắn hạn</Radio.Button>
+                <Radio.Button value={'2'}>Dài hạn</Radio.Button>
               </Radio.Group>
             </div>
           </Col>
@@ -634,7 +625,7 @@ const Recommendations: React.FC = () => {
                 Tình trạng:
               </Typography>
               <Radio.Group value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-                <Radio.Button value={null}>Tất cả</Radio.Button>
+                <Radio.Button value={''}>Tất cả</Radio.Button>
                 <Radio.Button value={'new'}>Chưa duyệt </Radio.Button>
                 <Radio.Button value={'open'}>Đã duyệt</Radio.Button>
                 {/* <Radio.Button value={'closed'}>Đã đóng</Radio.Button> */}
@@ -723,8 +714,8 @@ const Recommendations: React.FC = () => {
               onClick={() => {
                 setCodeFilter('');
                 setFilterQuery('');
-                setTypeFilter(null);
-                setStatusFilter(null);
+                setTypeFilter('');
+                setStatusFilter('');
                 setSelectedDates(null);
                 setPriceRangeFilter({
                   from: null,

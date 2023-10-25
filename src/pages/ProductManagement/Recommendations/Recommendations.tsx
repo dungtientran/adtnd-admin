@@ -282,6 +282,19 @@ const Recommendations: React.FC = () => {
       sorter: true,
     },
     {
+      title: 'Giá đóng',
+      dataIndex: 'current_value',
+      width: '6%',
+      render: (_, record) => {
+        if (record?.is_closed) {
+          return <Tag color="red">Đóng</Tag>;
+        } else {
+          return <Typography.Text>{record?.current_value}</Typography.Text>;
+        }
+      },
+      sorter: true,
+    },
+    {
       title: 'Lợi nhuận hiện tại',
       dataIndex: 'current_profit',
       width: '8%',
@@ -303,6 +316,8 @@ const Recommendations: React.FC = () => {
       width: '8%',
       sorter: true,
 
+
+      
       render: (_, record) => {
         if (record?.is_closed) {
           return <Tag color="red">Đóng</Tag>;
