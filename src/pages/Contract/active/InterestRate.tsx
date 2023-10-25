@@ -19,6 +19,7 @@ import Result from '@/pages/components/result/Result';
 import BoxFilter from './boxFilter';
 import { Column } from './columns';
 import DetailsContract from './DetailsContract';
+const { getSaleList, getListUser } = listCustomerApi;
 
 const { getListContract, createContract, updateContract } = listContractApi;
 
@@ -76,7 +77,15 @@ const InterestRate: React.FC = () => {
       message.error('Tạo hợp đồng thất bại');
     },
   });
+  const saleData = useQuery({
+    queryKey: ['getSaleList'],
+    queryFn: () => getSaleList(),
+  });
 
+  const userData = useQuery({
+    queryKey: ['getListUser'],
+    queryFn: () => getListUser(''),
+  });
   const getRandomuserParams = (params: TableParams) => ({
     status: 'pending',
     size: params.pagination?.pageSize,
@@ -114,6 +123,23 @@ const InterestRate: React.FC = () => {
     setQueryFilter('');
     setSearchText('');
     setSort('');
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
+  };
+
+  const handleSetPageOnFilter = () => {
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
   };
 
   useEffect(() => {
@@ -152,9 +178,6 @@ const InterestRate: React.FC = () => {
 
       getListDataExcel(data?.data?.count);
 
-      // console.log('newArrData_____________________', newArrData);
-      // console.log(getDataExcep.data);
-
       setListCustomerSp(columndata);
     }
   }, [data]);
@@ -162,7 +185,7 @@ const InterestRate: React.FC = () => {
   const getListDataExcel = async (limit: number) => {
     try {
       const res = await getListContract(
-        `status=pendding&page=1&size=${limit}`,
+        `status=pending&page=1&size=${limit}`,
         queryFilter,
         qs.stringify(searchText),
         sort,
@@ -217,6 +240,9 @@ const InterestRate: React.FC = () => {
       create.mutate();
     }
   }, [newContract]);
+  useEffect(() => {
+    if (isLoading) setDataExcel([]);
+  }, [isLoading]);
 
   // console.log('customerSelect_______________________', customerSelect);
   // console.log("sort______________________", sort);
@@ -236,7 +262,11 @@ const InterestRate: React.FC = () => {
           <PlusOutlined /> Thêm hợp đồng
         </Button>
       </div>
-      <BoxFilter setQueryFilter={setQueryFilter} handelResetFilter={handelResetFilter} />
+      <BoxFilter
+        setQueryFilter={setQueryFilter}
+        handelResetFilter={handelResetFilter}
+        handleSetPageOnFilter={handleSetPageOnFilter}
+      />
       <Result
         total={data?.data?.count}
         columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete, setOpenModel)}
@@ -267,7 +297,9 @@ const InterestRate: React.FC = () => {
           setUpdateDataSp={setUpdateDataSp}
           initForm={customerSelect}
           setNewContract={setNewContract}
-          loading={!customerSelect ? isLoading : update.isLoading}
+          loading={!customerSelect ? create.isLoading : update.isLoading}
+          saleData={saleData.data}
+          useData={userData.data}
         />
         {/* </Spin> */}
       </Drawer>

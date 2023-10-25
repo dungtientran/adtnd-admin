@@ -71,12 +71,31 @@ export const getSignalList = (
   searchText?: string,
   filter?: string,
   dateSort?: string,
+  isApprove?: string,
 ): Promise<any> => {
   return axiosInstance
     .get<any>(
       `/signal/admin/signal_list?${params}${searchText ? `&searchText=${searchText}` : ''}${
         filter ? filter : ''
-      }&${dateSort}`,
+      }&${dateSort}&is_approve=${isApprove || ''}`,
+    )
+    .then(data => data)
+    .catch(error => {
+      throw error;
+    });
+};
+
+export const getSignalListPageApprove = (
+  params: string,
+  searchText?: string,
+  filter?: string,
+  dateSort?: string,
+): Promise<any> => {
+  return axiosInstance
+    .get<any>(
+      `/signal/admin/signal_list?${params}${searchText ? `&searchText=${searchText}` : ''}${
+        filter ? filter : ''
+      }&${dateSort}&is_closed=true`,
     )
     .then(data => data)
     .catch(error => {

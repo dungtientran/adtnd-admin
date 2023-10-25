@@ -120,7 +120,6 @@ export const Column = (
       //   { text: 'Premium', value: 'premium' },
       // ],
       // render: (_, record) => <Text>{record.subscription?.subscription_product?.name}</Text>,
-
     },
     {
       title: 'NAV',
@@ -128,7 +127,7 @@ export const Column = (
       width: '8%',
       sorter: true,
 
-      render: (_, record) => <Text>{record?.nav?.toLocaleString()}</Text>,
+      render: (_, record) => <Text>{record?.nav?  record?.nav?.toLocaleString() : 0}</Text>,
     },
     {
       title: 'Số ngày còn lại',

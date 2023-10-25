@@ -7,7 +7,6 @@ import { Button, Drawer, message, Table } from 'antd';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 
-import { listCustomerApi } from '@/api/ttd_list_customer';
 import { listUserApi } from '@/api/ttd_user_management';
 import EditUserManagement from '@/pages/components/form/form-edit-user-manage';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
@@ -15,8 +14,7 @@ import Result from '@/pages/components/result/Result';
 
 import { Column } from './columns';
 
-const { getCustomerSupport, updateCustomerSupport, deleteCustomerSupport } = listCustomerApi;
-const { getListUser, createSale } = listUserApi;
+const { getListUser, createSale, updateSale } = listUserApi;
 
 const UserManagement: React.FC = () => {
   const queryClient = useQueryClient();
@@ -34,36 +32,11 @@ const UserManagement: React.FC = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const [listCustomerSp, setListCustomerSp] = useState([]);
   const [queryFilter, setQueryFilter] = useState<string>('');
-  const [updateDataSp, setUpdateDataSp] = useState<any>();
   const [customerSelect, setCustomerSelect] = useState<any>();
-  const [idDelete, setIdDelete] = useState<string>('');
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['getListUser', queryFilter, searchText, tableParams],
     queryFn: () => getListUser(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText)),
-  });
-  const update = useMutation({
-    mutationFn: _ => updateCustomerSupport(customerSelect?.id as string, updateDataSp),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListCustomer']);
-      message.success('Update thành công');
-      setUpdateDataSp(undefined);
-      setOpen(false);
-    },
-    onError: _ => {
-      message.error('Update thất bại');
-    },
-  });
-  const deleteRequest = useMutation({
-    mutationFn: _ => deleteCustomerSupport(idDelete),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListCustomer']);
-      message.success('Xóa thành công');
-      setUpdateDataSp(undefined);
-      setOpen(false);
-    },
-    onError: _ => {
-      message.error('Xóa thất bại');
-    },
   });
 
   const getRandomuserParams = (params: TableParams) => ({
@@ -76,19 +49,29 @@ const UserManagement: React.FC = () => {
     setOpen(false);
   };
 
-
   const useSale = () => {
     const create = useMutation(createSale, {
       onSuccess: () => {
         queryClient.invalidateQueries(['getListCustomer']);
         message.success('Tạo thành công');
+        setOpen(false);
       },
-      onError: _ => {
-        message.error('Tạo thất bại thất bại');
+      onError: (err: any) => {
+        message.error(`${err?.message}` || 'Tạo thất bại');
+      },
+    });
+    const update = useMutation(updateSale, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListCustomer']);
+        message.success('Update thành công');
+        setOpen(false);
+      },
+      onError: (err: any) => {
+        message.error(`${err?.message}` || 'Update thất bại');
       },
     });
 
-    return create;
+    return { create, update };
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -126,20 +109,6 @@ const UserManagement: React.FC = () => {
     }
   }, [data]);
 
-  useEffect(() => {
-    if (updateDataSp) {
-      update.mutate();
-    }
-  }, [updateDataSp]);
-
-  useEffect(() => {
-    if (idDelete) {
-      deleteRequest.mutate();
-    }
-  }, [idDelete]);
-  // console.log('data_______________________', data);
-  // console.log('tableParams_______________________', tableParams);
-
   return (
     <div className="aaa">
       <HeadTitle title="Danh sách quản trị viên" />
@@ -153,15 +122,10 @@ const UserManagement: React.FC = () => {
           Tạo quản trị viên mới
         </Button>
       </div>
-      <Result
-        total={data?.data?.count}
-        searchText={searchedColumn}
-        columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
-        dataSource={listCustomerSp}
-      />
+      <Result total={data?.data?.count} searchText={searchedColumn} isButtonExcel={false} />
       <div className="table_user">
         <Table
-          columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
+          columns={Column(setSearchText, setOpen, setCustomerSelect)}
           rowKey={record => record.id}
           dataSource={listCustomerSp}
           pagination={tableParams.pagination}
@@ -171,8 +135,14 @@ const UserManagement: React.FC = () => {
           style={{ height: 'auto' }}
         />
       </div>
-      <Drawer title="Tạo mới quản trị viên" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
-        <EditUserManagement setCustomerForm={setUpdateDataSp} initForm={customerSelect} useSale={useSale}/>
+      <Drawer
+        title={!customerSelect ? 'Tạo mới quản trị viên' : 'Update level '}
+        width={360}
+        onClose={onClose}
+        open={open}
+        bodyStyle={{ paddingBottom: 80 }}
+      >
+        <EditUserManagement initForm={customerSelect} useSale={useSale} />
       </Drawer>
     </div>
   );

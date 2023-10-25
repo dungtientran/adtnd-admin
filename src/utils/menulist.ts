@@ -62,7 +62,7 @@ export const menuListHandle: MenuList = [
     ],
   },
   {
-    code: 'khachhang',
+    code: 'customer',
     icon: 'client',
     label: {
       en_US: 'Quản lý khách hàng',
@@ -71,7 +71,7 @@ export const menuListHandle: MenuList = [
     path: '/documentation',
     children: [
       {
-        code: 'service-pack',
+        code: 'recommendations',
         label: {
           en_US: 'Nhóm khách hàng',
           zh_CN: '基本',

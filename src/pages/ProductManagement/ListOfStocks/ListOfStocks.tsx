@@ -101,9 +101,14 @@ const Recommendations: React.FC = () => {
     }
   };
 
-  const handleReset = (clearFilters: () => void) => {
-    clearFilters();
+  const handleReset = () => {
+    setSort('');
     setSearchText('');
+    setTableParams({
+      pagination: {
+        current: 1,
+      },
+    });
   };
 
   const getColumnSearchProps = (dataIndex: DataIndex, title: string): ColumnType<DataType> => ({
@@ -134,39 +139,6 @@ const Recommendations: React.FC = () => {
     },
     render: text => text,
   });
-  // const getColumnSearchSuggestProps = (dataIndex: DataIndex): ColumnType<DataType> => ({
-  //   filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-  //     <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
-  //       <SearchSuggest />
-  //       <Space size="large">
-  //         <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-  //           Reset
-  //         </Button>
-  //         <Button
-  //           type="link"
-  //           size="small"
-  //           onClick={() => {
-  //             close();
-  //           }}
-  //         >
-  //           Đóng
-  //         </Button>
-  //       </Space>
-  //     </div>
-  //   ),
-  //   filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,
-  //   onFilter: (value, record) =>
-  //     record[dataIndex]
-  //       .toString()
-  //       .toLowerCase()
-  //       .includes((value as string).toLowerCase()),
-  //   onFilterDropdownOpenChange: visible => {
-  //     if (visible) {
-  //       setTimeout(() => searchInput.current?.select(), 100);
-  //     }
-  //   },
-  //   render: text => text,
-  // });
 
   const columns: ColumnsType<DataType> = [
     {
@@ -289,16 +261,21 @@ const Recommendations: React.FC = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (isLoading) setExcelData([]);
+  }, [isLoading]);
+
   // console.log(tableParams);
   // console.log('sort______________', sort);
   // console.log('search_____', searchText);
   // console.log('listStock_', listStock);
   // console.log('searchedColumn__________', searchedColumn);
-  console.log('excelData________________', excelData);
+  // console.log('excelData________________', excelData);
 
   return (
     <div className="aaa">
       <HeadTitle title="Danh mục cổ phiếu" />
+      <Button onClick={handleReset}>Reset bộ lọc</Button>
       <Result total={data?.data?.count} columns={columns} dataSource={excelData} title="Danh mục cổ phiếu" />
       <div className="table_stock">
         <Table

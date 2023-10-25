@@ -69,7 +69,6 @@ export const Column = (
   setSearchQuery: (query: string) => void,
   setOpenDrawer: (isOpen: boolean) => void,
   setCustomerSelect: (customer: any) => void,
-  deleteRequest: (id: string) => void,
 ) => {
   const columns: ColumnsType<DataType> = [
     {
@@ -134,7 +133,7 @@ export const Column = (
           >
             <EditOutlined />
           </Button>
-          <Popconfirm title="Chắc chắn xóa" onConfirm={() => deleteRequest(record.id)}>
+          <Popconfirm title="Chắc chắn xóa" onConfirm={() => {}}>
             <Button
               type="primary"
               size="small"

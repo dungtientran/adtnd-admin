@@ -27,6 +27,8 @@ const ListCustomers: React.FC = () => {
     pagination: {
       current: 1,
       pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: ['10', '20', '50'],
     },
   });
   const [sort, setSort] = useState<string>('');
@@ -137,7 +139,7 @@ const ListCustomers: React.FC = () => {
       filters,
       ...sorter,
     });
-    
+
     if (sorter.order === 'ascend') {
       const sorte = `${sorter.field}_order=ASC`;
 
@@ -152,6 +154,14 @@ const ListCustomers: React.FC = () => {
   const handleClearFilter = () => {
     setSearchText({});
     setQuerFilter('');
+    setTableParams({
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: ['10', '20', '50'],
+      },
+    });
   };
 
   useEffect(() => {
@@ -161,8 +171,6 @@ const ListCustomers: React.FC = () => {
         pagination: {
           ...tableParams.pagination,
           total: data?.data?.count,
-          showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50'],
         },
       });
       const columns = data?.data?.rows?.map((item: DataType) => {
@@ -208,6 +216,10 @@ const ListCustomers: React.FC = () => {
 
   // console.log('excelData_____________', dataExcel);
 
+  useEffect(() => {
+    if (isLoading) setDataExcel([]);
+  }, [isLoading]);
+
   return (
     <div className="aaa">
       <HeadTitle title="Danh sách khách hàng" />
@@ -218,8 +230,6 @@ const ListCustomers: React.FC = () => {
       </div>
       <BoxFilterListCustomer
         setQueryFiter={setQuerFilter}
-        queryFilter={queryFilter}
-        searchText={qs.stringify(searchText)}
         clearFilter={handleClearFilter}
         setTableParams={setTableParams}
       />

@@ -2,23 +2,20 @@
 import type { TableParams } from '@/pages/CustomerManagement/ListCustomers/index.interface';
 import type { Dispatch, SetStateAction} from 'react';
 
-import { Button, Divider, InputNumber, Radio, Select, Space, Typography } from 'antd';
-import { divide } from 'lodash';
+import { Button, InputNumber, Radio, Select, Space, Typography } from 'antd';
 import qs from 'qs';
-import { Fragment, useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const { Text } = Typography;
 const { Option } = Select;
 
 interface IBoxFilterListCustomer {
   setQueryFiter: (query: string) => void;
-  queryFilter: string;
-  searchText: string;
   clearFilter: () => void;
   setTableParams:  Dispatch<SetStateAction<TableParams>>
 }
 
-const BoxFilterListCustomer = ({ setQueryFiter, clearFilter, queryFilter, searchText, setTableParams }: IBoxFilterListCustomer) => {
+const BoxFilterListCustomer = ({ setQueryFiter, clearFilter,setTableParams }: IBoxFilterListCustomer) => {
   const [daysRemaining, setDaysRemaining] = useState<number | undefined>(undefined);
   const [day_remaining_type, setDay_remaining_type] = useState<string >('less');
   const [nav_low, setNav_Low] = useState<number | undefined>(undefined);
@@ -48,7 +45,6 @@ const BoxFilterListCustomer = ({ setQueryFiter, clearFilter, queryFilter, search
     })
   };
 
-  // console.log("searchtext____________box", searchText);
 
   return (
     <Space

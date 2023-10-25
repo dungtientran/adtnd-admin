@@ -1,26 +1,38 @@
-import type { RadioChangeEvent } from 'antd';
 import type { DatePickerProps, RangePickerProps } from 'antd/es/date-picker';
 
-import { Button, DatePicker, InputNumber, Radio, Select, Space, Typography } from 'antd';
+import { Button, DatePicker, InputNumber, Space, Typography } from 'antd';
 import qs from 'qs';
-import React, { Fragment, useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
-const { Option } = Select;
 
 interface IBoxFilter {
   setQueryFilter: (query: string) => void;
+  handleSetPageOnFilter: () => void;
+  handleResetFilters: () => void;
 }
 
-const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
-  const [queryObj, setQueryObj] = useState({});
+const BoxFilter = ({ setQueryFilter, handleSetPageOnFilter, handleResetFilters }: IBoxFilter) => {
+  const [selectedDate, setSelectedDate] = useState<any>(null);
+  const [queryObj, setQueryObj] = useState<{
+    start_date: string;
+    end_date: string;
+    amount_min: string | number;
+    amount_max: string | number;
+  }>({
+    start_date: '',
+    end_date: '',
+    amount_min: '',
+    amount_max: '',
+  });
 
   const onChange = (
     value: DatePickerProps['value'] | RangePickerProps['value'],
     dateString: [string, string] | string,
   ) => {
     // console.log('Formatted Selected Time: ', dateString);
+    setSelectedDate(value);
     setQueryObj(prev => ({
       ...prev,
       start_date: dateString[0],
@@ -28,11 +40,25 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
     }));
   };
 
-  useEffect(() => {
+  const handleFilter = () => {
+    handleSetPageOnFilter();
     const querystring = qs.stringify(queryObj);
 
     setQueryFilter(querystring);
-  }, [queryObj]);
+  };
+
+  const handleResetFilter = () => {
+    handleSetPageOnFilter();
+    handleResetFilters();
+    setQueryFilter('');
+    setQueryObj({
+      start_date: '',
+      end_date: '',
+      amount_min: '',
+      amount_max: '',
+    });
+    setSelectedDate(null);
+  };
 
   return (
     <Space
@@ -53,7 +79,7 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
           <Text strong>Ngày giao dịch:</Text>
         </div>
         <Space>
-          <RangePicker format="YYYY/MM/DD" onChange={onChange} />
+          <RangePicker format="YYYY/MM/DD" onChange={onChange} value={selectedDate} />
         </Space>
       </Space>
 
@@ -64,10 +90,11 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
         <Space>
           <InputNumber
             addonBefore={<Text>Từ</Text>}
+            value={queryObj?.amount_min}
             onChange={value =>
               setQueryObj(prev => ({
                 ...prev,
-                amount_min: value,
+                amount_min: value as string,
               }))
             }
             style={{ width: '200px' }}
@@ -77,10 +104,11 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
 
           <InputNumber
             addonBefore={<Text>Đến</Text>}
+            value={queryObj?.amount_max}
             onChange={value =>
               setQueryObj(prev => ({
                 ...prev,
-                amount_max: value,
+                amount_max: value as string,
               }))
             }
             style={{ width: '200px' }}
@@ -91,8 +119,8 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
       </Space>
 
       <Space>
-        <Button>Lọc</Button>
-        <Button>Reset bộ lọc</Button>
+        <Button onClick={handleFilter}>Lọc</Button>
+        <Button onClick={handleResetFilter}>Reset bộ lọc</Button>
       </Space>
     </Space>
   );

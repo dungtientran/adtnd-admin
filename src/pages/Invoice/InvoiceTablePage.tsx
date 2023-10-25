@@ -327,6 +327,11 @@ const Invoicetable: React.FC = () => {
     }
   };
 
+  const handleResetFilter = () => {
+    setFilterQuery('');
+    setFilterQueryBox('');
+  }
+
   return (
     <div className="aaa">
       <div style={{ textAlign: 'center' }}>
@@ -351,6 +356,7 @@ const Invoicetable: React.FC = () => {
           Tính toán
         </Button>
       </div>
+      {/* <Button onClick={handleResetFilter}>Reset bộ lọc</Button> */}
       <Result total={tableParams.pagination?.total} isButtonExcel={false} />
       <Table
         columns={columns}

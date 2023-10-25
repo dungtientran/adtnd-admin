@@ -82,9 +82,9 @@ const Recommendations: React.FC = () => {
   });
 
   //enum true: dài hạn,false: ngắn hạn
-  const [typeFilter, setTypeFilter] = useState(null);
+  const [typeFilter, setTypeFilter] = useState('');
   //enum ['closed', 'new', 'open']
-  const [statusFilter, setStatusFilter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState(null);
   const [codeFilter, setCodeFilter] = useState<string>('');
   const [dateSort, setDateSort] = useState('');
@@ -107,9 +107,9 @@ const Recommendations: React.FC = () => {
 
     // ////////////////////
     if (typeFilter) {
-      if (typeFilter == 1) {
+      if (typeFilter === '1') {
         query += '&is_long_term=false';
-      } else if (typeFilter == 2) {
+      } else if (typeFilter === '2') {
         query += '&is_long_term=true';
       }
     }
@@ -206,7 +206,7 @@ const Recommendations: React.FC = () => {
   const columns: ColumnsType<any> = [
     {
       title: 'Ngày tạo',
-      dataIndex: 'action_date',
+      dataIndex: '',
       width: '8%',
       // sorter: () => {
       //   if (dateSort == 'DESC') {
@@ -246,7 +246,7 @@ const Recommendations: React.FC = () => {
     {
       title: 'Giá mua',
       dataIndex: 'target_buy_price',
-      width: '8%',
+      width: '6%',
     },
     {
       title: 'Giá chốt lời 1',
@@ -335,7 +335,7 @@ const Recommendations: React.FC = () => {
     {
       title: 'Lợi nhuận khi đóng',
       dataIndex: 'closed_profit',
-      width: '10%',
+      width: '8%',
       sorter: true,
 
       render: (_, record) => {
@@ -345,7 +345,7 @@ const Recommendations: React.FC = () => {
       },
     },
     {
-      title: 'Lợi nhuận (%)',
+      title: '(%) Lợi nhuận ',
       dataIndex: 'closed_profit_percentage',
       width: '10%',
       sorter: true,
@@ -390,7 +390,7 @@ const Recommendations: React.FC = () => {
 
   const getSignal = async () => {
     setLoading(true);
-    await getSignalList(qs.stringify(getRandomuserParams(tableParams)), codeFilter, filterQuery, sortedInfo)
+    await getSignalList(qs.stringify(getRandomuserParams(tableParams)), codeFilter, filterQuery, sortedInfo, 'true')
       .then(data => {
         if (data.code === 200) {
           setTableParams({
@@ -425,7 +425,7 @@ const Recommendations: React.FC = () => {
 
   const getSignalDataExcel = async (limit: string) => {
     setLoading(true);
-    await getSignalList(`page=1&size=${limit}`, codeFilter, filterQuery, sortedInfo)
+    await getSignalList(`page=1&size=${limit}`, codeFilter, filterQuery, sortedInfo, 'true')
       .then(data => {
         if (data.code === 200) {
           const columns = data?.data?.rows?.map((item: any) => {
@@ -453,9 +453,9 @@ const Recommendations: React.FC = () => {
     if (statusFilter != null || typeFilter != null) {
       let query = '';
 
-      if (typeFilter == 1) {
+      if (typeFilter === '1') {
         query += '&is_long_term=false';
-      } else if (typeFilter == 2) {
+      } else if (typeFilter === '2') {
         query += '&is_long_term=true';
       }
       //////////////////
@@ -469,7 +469,7 @@ const Recommendations: React.FC = () => {
       } else if (statusFilter == 'new') {
         query += '&is_approve=false';
       } else if (statusFilter == 'open') {
-        query += '&is_approve=true';
+        query += '&is_closed=false';
       }
 
       setTableParams({
@@ -658,8 +658,8 @@ const Recommendations: React.FC = () => {
 
     setFilterQuery('');
     setCodeFilter('');
-    setTypeFilter(null);
-    setStatusFilter(null);
+    setTypeFilter('');
+    setStatusFilter('');
     setSelectedDates(null);
     setDateSort('DESC');
     setPriceRangeFilter({
@@ -680,11 +680,6 @@ const Recommendations: React.FC = () => {
     });
   };
 
-  // console.log('dât____________________', data);
-  // console.log('dateSort_____________', dateSort);
-  // console.log('table param__________________', tableParams);
-
-  // console.log('getRandomuserParams_____________', getRandomuserParams(tableParams));
   return (
     <div className="aaa">
       <div style={{ textAlign: 'center' }}>
@@ -702,9 +697,9 @@ const Recommendations: React.FC = () => {
                   Loại:{' '}
                 </Typography>
                 <Radio.Group value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
-                  <Radio.Button value={null}>Tất cả</Radio.Button>
-                  <Radio.Button value={1}>Ngắn hạn</Radio.Button>
-                  <Radio.Button value={2}>Dài hạn</Radio.Button>
+                  <Radio.Button value={''}>Tất cả</Radio.Button>
+                  <Radio.Button value={'1'}>Ngắn hạn</Radio.Button>
+                  <Radio.Button value={'2'}>Dài hạn</Radio.Button>
                 </Radio.Group>
               </div>
             </Col>
@@ -714,7 +709,7 @@ const Recommendations: React.FC = () => {
                   Tình trạng:
                 </Typography>
                 <Radio.Group value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-                  <Radio.Button value={null}>Tất cả</Radio.Button>
+                  <Radio.Button value={''}>Tất cả</Radio.Button>
                   <Radio.Button value={'open'}>Đang mở</Radio.Button>
                   <Radio.Button value={'closed'}>Đã đóng</Radio.Button>
                 </Radio.Group>

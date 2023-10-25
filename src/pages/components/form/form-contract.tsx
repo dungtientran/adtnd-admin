@@ -5,6 +5,7 @@ import type { RangePickerProps } from 'antd/es/date-picker';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AutoComplete, Button, DatePicker, Form, Input, InputNumber, Select, Spin, Switch } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
+import dayjs from 'dayjs';
 import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
 
@@ -12,7 +13,6 @@ import { listCustomerApi } from '@/api/ttd_list_customer';
 
 const { Option } = Select;
 
-const { getSaleList, getListUser } = listCustomerApi;
 const { RangePicker } = DatePicker;
 
 interface IEditRequest {
@@ -20,13 +20,22 @@ interface IEditRequest {
   initForm?: any;
   setNewContract: (data: any) => void;
   loading: boolean;
+  saleData: any;
+  useData: any;
 }
 
 const rangeConfig = {
   rules: [{ type: 'array' as const, required: true, message: 'Không được bỏ trống!' }],
 };
 
-const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, setNewContract, loading }) => {
+const CreateContract: React.FC<IEditRequest> = ({
+  setUpdateDataSp,
+  initForm,
+  setNewContract,
+  loading,
+  saleData,
+  useData,
+}) => {
   const [option, setOption] = useState<{ id: string; value: string; fullname: string }[]>([]);
   const [option2, setOption2] = useState<{ id: string; value: string; email: string; fullname: string }[]>([]);
   const [nameSelect, setNameSelect] = useState('');
@@ -35,35 +44,27 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
   const [isDisable, setIsDisable] = useState<boolean>(true);
   const [percentProfit, setpercentProfit] = useState(0);
   const [init, setInit] = useState<number | undefined>(undefined);
+  const [saleList, setSaleList] = useState([]);
+  const [isSwith, setIsSwith] = useState(false);
 
   const [days, setDays] = useState({
     start_date: '',
     end_date: '',
   });
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['getSaleList'],
-    queryFn: () => getSaleList(),
-  });
-
-  const userData = useQuery({
-    queryKey: ['getListUser'],
-    queryFn: () => getListUser(''),
-  });
 
   useEffect(() => {
-    if (data) {
-      const newOption = data?.data?.rows.map((item: any) => ({
-        value: item?.email,
+    if (saleData) {
+      const newOption = saleData?.data?.rows?.map((item: any) => ({
+        value: item?.staff_code,
         id: item?.id,
         fullname: item?.fullname,
       }));
 
       setOption(newOption);
-      // console.log('_______________________________', newOption);
     }
 
-    if (userData.data) {
-      const newOption2 = userData.data?.map((item: any) => ({
+    if (useData) {
+      const newOption2 = useData?.map((item: any) => ({
         value: item?.customer_code,
         id: item?.id,
         email: item?.email,
@@ -72,28 +73,28 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
 
       setOption2(newOption2);
     }
-  }, [data, userData.data]);
+  }, [saleData, useData]);
 
   useEffect(() => {
     if (initForm) {
+      // console.log('initForm_______________', initForm);
+      setIsSwith(true);
       const toDay = new Date();
       const end_date = new Date(initForm?.end_date);
-
-      // console.log('end_ddate______________', end_date);
-      // console.log('today______________________', toDay);
-      // console.log(end_date > toDay);
 
       const setInitForm = {
         ...initForm,
         fullname: initForm?.name,
         email: initForm?.email,
-        sale_name: option.find(item => item?.fullname === initForm?.name_sale)?.value,
+        sale_name: initForm?.name_sale,
         customer_id: option2.find(item => item?.fullname === initForm?.name)?.value,
-        sale_id: option.find(item => item?.fullname === initForm?.name_sale)?.id,
+        sale_id: initForm?.staff_code,
         // time_contract: [moment('2023-08-26'), moment('2023-08-29')],
         status: end_date > toDay,
+        time_contract: [dayjs(`${initForm?.start_date}`), dayjs(`${initForm?.end_date}`)],
       };
 
+      setInit(initForm?.initial_value);
       form.setFieldsValue(setInitForm);
     } else {
       form.resetFields();
@@ -102,8 +103,8 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
 
   useEffect(() => {
     if (nameSelect) {
-      const emailSelect = option2.find(item => item.value === nameSelect)?.email;
-      const name = option2.find(item => item.value === nameSelect)?.fullname;
+      const emailSelect = option2?.find(item => item.value === nameSelect)?.email;
+      const name = option2?.find(item => item.value === nameSelect)?.fullname;
 
       form.setFieldsValue({
         email: emailSelect,
@@ -112,10 +113,10 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
     }
 
     if (saleSelect) {
-      const sale_id_select = option.find(item => item.value === saleSelect)?.id;
+      const sale_id_select = option?.find(item => item.value === saleSelect)?.fullname;
 
       form.setFieldsValue({
-        sale_id: sale_id_select,
+        sale_name: sale_id_select,
       });
     }
   }, [nameSelect, saleSelect]);
@@ -125,25 +126,37 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
   const onFinish = (values: any) => {
     const rangeValue = values['time_contract'];
     const timeSelect = [rangeValue[0].format('YYYY-MM-DD'), rangeValue[1].format('YYYY-MM-DD')];
+
     // console.log('values______________', values);
 
     // console.log("timeSelect________________", timeSelect);
 
     const customer_id = option2.find(item => item.value === values?.customer_id)?.id;
+    const sale_id = option.find(item => item.value === values?.sale_id)?.id;
 
     const newValues = {
       ...values,
       ...days,
       customer_id,
+      sale_id,
     };
 
+    const updateValues = {
+      ...values,
+      customer_id,
+      start_date: values?.time_contract?.[0],
+      end_date: values?.time_contract?.[1],
+      sale_id,
+    };
+
+    // console.log('time___________', values?.time_contract);
     // console.log("day______________________", days);
     // console.log("new value______________________", newValues);
 
     if (!initForm) {
       setNewContract(newValues);
     } else {
-      setUpdateDataSp(newValues);
+      setUpdateDataSp(updateValues);
     }
   };
 
@@ -171,9 +184,8 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
   };
 
   const handleOnchange = (value: number) => {
-    // console.log('value_________________', value);
-
     if (init) {
+      console.log('value_________________', value);
       const percent = value / init - 1;
 
       setpercentProfit(percent);
@@ -182,9 +194,6 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
       });
     }
   };
-
-  // console.log('init form_____________', initForm);
-  // console.log('percentProfit_______________________', percentProfit);
 
   return (
     <Fragment>
@@ -199,20 +208,32 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
         scrollToFirstError
         // initialValues={initValue}
       >
-        <Form.Item
-          name="customer_id"
-          label="Mã khách hàng"
-          rules={[{ required: true, message: 'Không đc bỏ trống !', whitespace: true }]}
-        >
-          <AutoComplete
-            style={{ width: '100%' }}
-            options={option2}
-            placeholder="Nhập mã khách hàng"
-            filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
-            size="large"
-            onChange={value => setNameSelect(value)}
-          />
-        </Form.Item>
+        {!initForm ? (
+          <Form.Item
+            name="customer_id"
+            label="Mã khách hàng"
+            rules={[{ required: true, message: 'Không đc bỏ trống !', whitespace: true }]}
+          >
+            <AutoComplete
+              style={{ width: '100%' }}
+              options={option2}
+              placeholder="Nhập mã khách hàng"
+              filterOption={(inputValue, option) =>
+                option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+              }
+              size="large"
+              onChange={value => setNameSelect(value)}
+            />
+          </Form.Item>
+        ) : (
+          <Form.Item
+            name="customer_code"
+            label="Mã khách hàng"
+            rules={[{ required: true, message: 'Không đc bỏ trống !', whitespace: true }]}
+          >
+            <Input disabled />
+          </Form.Item>
+        )}
 
         <Form.Item name="fullname" label="Tên khách hàng">
           <Input disabled />
@@ -226,26 +247,34 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
           <Input />
         </Form.Item> */}
 
-        <Form.Item name="email" label="Email">
-          <Input disabled />
-        </Form.Item>
+        {!initForm ? (
+          <Form.Item
+            name="sale_id"
+            label="Mã nhân viên quản lý"
+            rules={[{ required: true, message: 'Vui lòng nhập email nhân viên!' }]}
+          >
+            <AutoComplete
+              style={{ width: '100%' }}
+              options={option}
+              placeholder="Nhập mã nhân viên quản lý"
+              filterOption={(inputValue, option) =>
+                option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+              }
+              size="large"
+              onChange={value => setsaleSelect(value)}
+            />
+          </Form.Item>
+        ) : (
+          <Form.Item
+            name="sale_id"
+            label="Mã nhân viên quản lý"
+            rules={[{ required: true, message: 'Vui lòng nhập email nhân viên!' }]}
+          >
+            <Input disabled />
+          </Form.Item>
+        )}
 
-        <Form.Item
-          name="sale_name"
-          label="Mã nhân viên quản lý"
-          rules={[{ required: true, message: 'Vui lòng nhập email nhân viên!' }]}
-        >
-          <AutoComplete
-            style={{ width: '100%' }}
-            options={option}
-            placeholder="Nhập email nhân viên quản lý"
-            filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
-            size="large"
-            onChange={value => setsaleSelect(value)}
-          />
-        </Form.Item>
-
-        <Form.Item name="sale_id" label="Mã nhân viên quản lý">
+        <Form.Item name="sale_name" label="Tên nhân viên quản lý">
           <Input disabled />
         </Form.Item>
 
@@ -253,7 +282,7 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
           <Input />
         </Form.Item>
 
-        <Form.Item name="time_contract" label="Thời gian hợp đồng" {...rangeConfig}>
+        <Form.Item name="time_contract" label="Thời gian hợp đồng">
           <RangePicker format="YYYY/MM/DD" onChange={onChange} />
         </Form.Item>
 
@@ -317,9 +346,12 @@ const CreateContract: React.FC<IEditRequest> = ({ setUpdateDataSp, initForm, set
             // value={percentProfit}
           />
         </Form.Item>
-        <Form.Item name="status" label="Tình trạng hợp đồng" valuePropName="checked">
-          <Switch unCheckedChildren="Thanh lý" checkedChildren="Còn hiệu lực" />
-        </Form.Item>
+        {isSwith && (
+          <Form.Item name="status" label="Tình trạng hợp đồng" valuePropName="checked">
+            <Switch unCheckedChildren="Thanh lý" checkedChildren="Còn hiệu lực" />
+          </Form.Item>
+        )}
+
         {/* <Form.Item
           name="commission"
           label="% lợi nhuận dự kiến"

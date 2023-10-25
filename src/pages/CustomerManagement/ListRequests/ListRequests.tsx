@@ -37,6 +37,8 @@ const ListRequests: React.FC = () => {
   const [updateDataSp, setUpdateDataSp] = useState<any>();
   const [customerSelect, setCustomerSelect] = useState<any>();
   const [idDelete, setIdDelete] = useState<string>('');
+  const [dataExcel, setDataExcel] = useState([]);
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['getListCustomer', tableParams, queryFilter, searchText],
     queryFn: () =>
@@ -99,6 +101,34 @@ const ListRequests: React.FC = () => {
     // }
   };
 
+  const handleSetPageOnFilter = () => {
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
+  };
+
+  const getExcelData = async (limit: string) => {
+    try {
+      const res = await getCustomerSupport(` page=1&size=${limit}`, qs.stringify(searchText), queryFilter);
+
+      if (res?.code === 200) {
+      
+        // console.log('columns__________________', columns);
+
+        setDataExcel(res?.data?.rows);
+      } else {
+        message.warning('Lỗi khi xuất dữ liệu');
+      }
+    } catch (error) {
+      console.log(error);
+      message.error('Lỗi server');
+    }
+  };
+
   useEffect(() => {
     if (data) {
       setTableParams({
@@ -108,6 +138,7 @@ const ListRequests: React.FC = () => {
           total: data?.data?.count,
         },
       });
+      getExcelData(data?.data?.count);
       setListCustomerSp(data?.data?.rows);
     }
   }, [data]);
@@ -127,11 +158,15 @@ const ListRequests: React.FC = () => {
   return (
     <div className="aaa">
       <HeadTitle title="Danh sách yêu cầu hỗ trợ" />
-      <BoxFilter setQueryFilter={setQueryFilter} setSearchText={setSearchText} />
+      <BoxFilter
+        setQueryFilter={setQueryFilter}
+        setSearchText={setSearchText}
+        handleSetPageOnFilter={handleSetPageOnFilter}
+      />
       <Result
         total={data?.data?.count}
         searchText={searchedColumn}
-        dataSource={listCustomerSp}
+        dataSource={dataExcel}
         columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
         title="Danh sách yêu cầu hỗ trợ"
       />
