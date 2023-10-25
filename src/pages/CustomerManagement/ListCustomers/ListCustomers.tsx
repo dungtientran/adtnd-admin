@@ -5,7 +5,7 @@ import './index.less';
 
 import { PlusOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Drawer, message, Table } from 'antd';
+import { Button, Drawer, message, notification, Table } from 'antd';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 
@@ -34,7 +34,6 @@ const ListCustomers: React.FC = () => {
   const [queryFilter, setQuerFilter] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const [listCustomer, setListCustomer] = useState([]);
-  const [newCustomer, setNewCustomer] = useState<any>();
   const [sale, setSale] = useState<any>();
 
   const [customerSelect, setCustomerSelect] = useState<any>();
@@ -87,45 +86,41 @@ const ListCustomers: React.FC = () => {
     page: params.pagination?.current,
     subscriptions: params.filters?.subscription_product?.join(','),
   });
-  const createNewCustomer = useMutation({
-    mutationFn: _ => createCustomer(newCustomer),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListCustomer']);
-      message.success('Tạo người dùng mới thành công');
-      setNewCustomer(undefined);
-      setOpen(false);
-    },
-    onError: _ => {
-      message.error('Tạo người dùng mới thất bại');
-      console.log(createNewCustomer.error);
-    },
-  });
-  const addSaleUser = useMutation({
-    mutationFn: _ => addSaleCustomer(sale),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListCustomer']);
-      message.success('Thêm nhân viên hỗ trợ thành công');
-      setSale(undefined);
-      setOpen(false);
-    },
-    onError: data => {
-      message.error('Thêm nhân viên hỗ trợ thất bại');
-      console.log('eror________', data);
-    },
-  });
-  const remoteSaleUser = useMutation({
-    mutationFn: _ => removeSaleCustomer(customer_id),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListCustomer']);
-      message.success('Xóa nhân viên hỗ trợ thành công');
-      setSale(undefined);
-      setOpen(false);
-    },
-    onError: data => {
-      message.error('Xóa nhân viên hỗ trợ thất bại');
-      console.log('eror________', data);
-    },
-  });
+
+  const useCustomer = () => {
+    const create = useMutation(createCustomer, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListCustomer']);
+        message.success('Tạo người dùng mới thành công');
+        setOpen(false);
+      },
+      onError: (err: any) => {
+        message.error(err?.message || 'Tạo mới thất bại');
+      },
+    });
+    const update = useMutation(addSaleCustomer, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListCustomer']);
+        message.success('Thêm nhân viên hỗ trợ thành công');
+        setOpen(false);
+      },
+      onError: (err: any) => {
+        message.error(err?.message || 'Thêm nhân viên hỗ trợ thất bại');
+      },
+    });
+    const deleteSale = useMutation(removeSaleCustomer, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListCustomer']);
+        message.success('Xóa nhân viên hỗ trợ thành công');
+        setOpen(false);
+      },
+      onError: (err: any) => {
+        message.error(err?.message || 'Xóa nhân viên hỗ trợ thất bại');
+      },
+    });
+
+    return { create, update, deleteSale };
+  };
 
   const showDrawer = () => {
     setCustomerSelect(undefined);
@@ -142,12 +137,7 @@ const ListCustomers: React.FC = () => {
       filters,
       ...sorter,
     });
-    // console.log('filters__________________', filters);
-
-    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      // setData([]);
-    }
-
+    
     if (sorter.order === 'ascend') {
       const sorte = `${sorter.field}_order=ASC`;
 
@@ -172,7 +162,7 @@ const ListCustomers: React.FC = () => {
           ...tableParams.pagination,
           total: data?.data?.count,
           showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50', '100'],
+          pageSizeOptions: ['10', '20', '50'],
         },
       });
       const columns = data?.data?.rows?.map((item: DataType) => {
@@ -216,22 +206,6 @@ const ListCustomers: React.FC = () => {
     }
   }, [data]);
 
-  useEffect(() => {
-    if (newCustomer) {
-      createNewCustomer.mutate();
-    }
-  }, [newCustomer]);
-  useEffect(() => {
-    if (sale) {
-      addSaleUser.mutate();
-    }
-  }, [sale]);
-  useEffect(() => {
-    if (customer_id) {
-      remoteSaleUser.mutate();
-    }
-  }, [customer_id]);
-
   // console.log('excelData_____________', dataExcel);
 
   return (
@@ -251,12 +225,13 @@ const ListCustomers: React.FC = () => {
       <Result
         total={data?.data?.count}
         searchText={searchedColumn}
-        columns={Column(setSearchText, setSearchedColumn, setOpen, setCustomerSelect, setCustomer_id)}
+        columns={Column(setSearchText, setOpen, setCustomerSelect, useCustomer)}
         dataSource={dataExcel}
+        title="Danh sách khách hàng"
       />
       <div className="table_list_customer">
         <Table
-          columns={Column(setSearchText, setSearchedColumn, setOpen, setCustomerSelect, setCustomer_id)}
+          columns={Column(setSearchText, setOpen, setCustomerSelect, useCustomer)}
           rowKey={record => record.id}
           dataSource={listCustomer}
           pagination={tableParams.pagination}
@@ -272,7 +247,7 @@ const ListCustomers: React.FC = () => {
         open={open}
         bodyStyle={{ paddingBottom: 80 }}
       >
-        <CreateUser setCustomerForm={setNewCustomer} initForm={customerSelect} setSaleCustomer={setSale} />
+        <CreateUser initForm={customerSelect} setSaleCustomer={setSale} useCustomer={useCustomer} />
       </Drawer>
     </div>
   );

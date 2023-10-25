@@ -47,7 +47,7 @@ const InterestRate: React.FC = () => {
   const [idDelete, setIdDelete] = useState<string>('');
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListContract', tableParams, queryFilter, searchText, sort],
+    queryKey: ['getListContractDone', tableParams, queryFilter, searchText, sort],
     queryFn: () =>
       getListContract(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText), sort),
   });
@@ -55,7 +55,7 @@ const InterestRate: React.FC = () => {
   const update = useMutation({
     mutationFn: _ => updateContract(updateDataSp?.contract_no as string, updateDataSp),
     onSuccess: _ => {
-      queryClient.invalidateQueries(['getListContract']);
+      queryClient.invalidateQueries(['getListContractDone']);
       message.success('Update thành công');
       setUpdateDataSp(undefined);
       setOpen(false);
@@ -67,7 +67,7 @@ const InterestRate: React.FC = () => {
   const create = useMutation({
     mutationFn: _ => createContract(newContract),
     onSuccess: _ => {
-      queryClient.invalidateQueries(['getListContract']);
+      queryClient.invalidateQueries(['getListContractDone']);
       message.success('Tạo hợp đồng thành công');
       setNewContract(undefined);
       setOpen(false);
@@ -78,6 +78,7 @@ const InterestRate: React.FC = () => {
   });
 
   const getRandomuserParams = (params: TableParams) => ({
+    status: 'pending',
     size: params.pagination?.pageSize,
     page: params.pagination?.current,
     subscriptions: params.filters?.subscription_product?.join(','),
@@ -138,7 +139,7 @@ const InterestRate: React.FC = () => {
           end_date: item?.end_date,
           initial_value: item?.initial_value,
           expected_end_value: item?.expected_end_value,
-          commission: item?.commission,
+          commission: item?.contract_commission?.fila_commission,
           status: item?.status === 'pending' ? 'Đang có hiệu lực' : 'Đã thanh lý',
           profit_percent: item?.profit_percent,
         };
@@ -155,7 +156,12 @@ const InterestRate: React.FC = () => {
 
   const getListDataExcel = async (limit: number) => {
     try {
-      const res = await getListContract(`page=1&size=${limit}`, queryFilter, qs.stringify(searchText), sort);
+      const res = await getListContract(
+        `status=pendding&page=1&size=${limit}`,
+        queryFilter,
+        qs.stringify(searchText),
+        sort,
+      );
 
       if (res?.code === 200) {
         const dataExcel = res?.data?.rows;
@@ -173,7 +179,7 @@ const InterestRate: React.FC = () => {
             end_date: item?.end_date,
             initial_value: item?.initial_value,
             expected_end_value: item?.expected_end_value,
-            commission: item?.commission,
+            commission: item?.contract_commission?.fila_commission,
             status: item?.status === 'pending' ? 'Đang có hiệu lực' : 'Đã thanh lý',
             profit_percent: item?.profit_percent,
           };
@@ -225,7 +231,7 @@ const InterestRate: React.FC = () => {
         total={data?.data?.count}
         columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete, setOpenModel)}
         dataSource={dataExcel}
-        title="Danh sách hợp đồng Vip"
+        title="Danh sách hợp đồng Vip (còn hiệu lực)"
       />
       <div className="table_contract">
         <Table

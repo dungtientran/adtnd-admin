@@ -49,7 +49,10 @@ const BoxFilterListCustomer = ({ setQueryFiter, clearFilter, queryFilter, search
     >
       <Space direction="vertical">
         <Space>
+          <div style={{width: '130px'}}>
+
           <Text strong>Lọc theo Nav:</Text>
+          </div>
           <Space style={{ width: '100%' }}>
             <InputNumber
               addonBefore={
@@ -80,7 +83,10 @@ const BoxFilterListCustomer = ({ setQueryFiter, clearFilter, queryFilter, search
         </Space>
       </Space>
       <Space>
+      <div style={{width: '130px'}}>
+
         <Text strong>Thời gian còn lại:</Text>
+</div>
         <InputNumber
           addonBefore={selectBefore}
           addonAfter={<Text>Ngày</Text>}
@@ -96,7 +102,10 @@ const BoxFilterListCustomer = ({ setQueryFiter, clearFilter, queryFilter, search
         </div> */}
       </Space>
       <Space>
+      <div style={{width: '130px'}}>
+
         <Text strong>Nhân viên chăm sóc: </Text>
+</div>
         <Radio.Group
           value={careby}
           onChange={(e) => setCareby(e.target.value)}

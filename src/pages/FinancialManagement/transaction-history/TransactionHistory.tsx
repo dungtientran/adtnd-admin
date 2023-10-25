@@ -112,6 +112,7 @@ const TransactionHistory = () => {
         searchText={searchedColumn}
         columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}
         dataSource={listCustomerSp}
+        title="Lịch sử giao dịch"
       />
       <Table
         columns={Column(setSearchText, setOpen, setCustomerSelect, setIdDelete)}

@@ -36,7 +36,7 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
 
   return (
     <Space
-      direction="horizontal"
+      direction="vertical"
       size="large"
       style={{
         marginBottom: '20px',
@@ -48,50 +48,51 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
     >
       {/* <Text strong>Lọc theo:</Text> */}
 
-      <Space direction="vertical">
-        <Text strong>Ngày giao dịch:</Text>
+      <Space>
+        <div style={{ width: '120px' }}>
+          <Text strong>Ngày giao dịch:</Text>
+        </div>
         <Space>
           <RangePicker format="YYYY/MM/DD" onChange={onChange} />
         </Space>
       </Space>
 
-      <Space direction="vertical">
-        <Text strong>Số tiền giao dịch: </Text>
-        <Space direction="vertical">
+      <Space>
+        <div style={{ width: '120px' }}>
+          <Text strong>Số tiền giao dịch: </Text>
+        </div>
+        <Space>
           <InputNumber
-            addonBefore={
-              <div style={{ width: '30px' }}>
-                <Text>Từ</Text>
-              </div>
-            }
+            addonBefore={<Text>Từ</Text>}
             onChange={value =>
               setQueryObj(prev => ({
                 ...prev,
                 amount_min: value,
               }))
             }
-            style={{ width: '320px' }}
+            style={{ width: '200px' }}
             min={0}
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
 
           <InputNumber
-            addonBefore={
-              <div style={{ width: '30px' }}>
-                <Text>Đến</Text>
-              </div>
-            }
+            addonBefore={<Text>Đến</Text>}
             onChange={value =>
               setQueryObj(prev => ({
                 ...prev,
                 amount_max: value,
               }))
             }
-            style={{ width: '320px' }}
+            style={{ width: '200px' }}
             min={0}
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
         </Space>
+      </Space>
+
+      <Space>
+        <Button>Lọc</Button>
+        <Button>Reset bộ lọc</Button>
       </Space>
     </Space>
   );

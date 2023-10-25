@@ -1,14 +1,7 @@
 import type { TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue } from 'antd/es/table/interface';
 
-import {
-  CheckOutlined,
-  CloseOutlined,
-  DeleteOutlined,
-  EditOutlined,
-  PlusOutlined,
-  UploadOutlined,
-} from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Avatar,
@@ -20,13 +13,11 @@ import {
   message,
   Popconfirm,
   Radio,
-  Segmented,
   Space,
   Switch,
   Table,
   Tag,
   Typography,
-  Upload,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 
@@ -101,11 +92,12 @@ const Support = () => {
 
   const handleChange = (info: any) => {
     if (checkImageType(info.file)) {
-      setFileList(info.fileList);
+      // setFileList(info.fileList);
       const formData = new FormData();
 
       formData.append('file', info.file);
       formData.append('upload_preset', 'qfxfgji7');
+
       setLogoUrl(formData);
     }
   };
@@ -126,18 +118,9 @@ const Support = () => {
       <td {...restProps}>
         {editing ? (
           dataIndex === 'icon_url' ? (
-            <Upload
-              action=""
-              listType="picture"
-              maxCount={1}
-              accept="image/png, image/gif, image/jpeg"
-              onChange={handleChange}
-              beforeUpload={_ => {
-                return false;
-              }}
-            >
-              <Button icon={<UploadOutlined />}>Upload (Max: 1)</Button>
-            </Upload>
+            <Form.Item name={dataIndex} style={{ margin: 0 }}>
+              <MyUpLoad setUrlLogo={setLogoUrl} />
+            </Form.Item>
           ) : dataIndex === 'is_actived' ? (
             <Form.Item name={dataIndex} style={{ margin: 0 }} valuePropName="checked">
               <Switch unCheckedChildren="Vô hiệu hóa" checkedChildren="Hiệu lực" />
@@ -182,6 +165,7 @@ const Support = () => {
       message.error('Update thất bại');
     },
   });
+
   const create = useMutation({
     mutationFn: _ => createSocial(newInteres),
     onSuccess: _ => {
@@ -227,7 +211,6 @@ const Support = () => {
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
- 
     setTableParams({
       pagination,
       filters,
@@ -252,14 +235,16 @@ const Support = () => {
   const columns = [
     {
       title: 'STT',
-      dataIndex: 'id',
+      dataIndex: 'order',
       width: '10%',
+      editable: true,
+
     },
     {
       title: 'Icon',
       dataIndex: 'icon_url',
       width: '10%',
-      // editable: true,
+      editable: true,
       render: (_: any, record: any) => <Avatar size="large" src={record?.icon_url} alt={record?.title} />,
     },
     {
@@ -421,7 +406,7 @@ const Support = () => {
             Reset bộ lọc
             </Button> */}
         </Space>
-        {/* <Result total={data?.data?.count} isButtonExcel={false} /> */}
+        <Result total={listSocial?.length} isButtonExcel={false} />
         <Table
           components={{
             body: {

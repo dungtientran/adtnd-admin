@@ -4,7 +4,7 @@ import * as ExcelJS from 'exceljs';
 interface IExportExcel {
   dataSource?: any;
   columns?: any;
-  title?: string
+  title?: string;
 }
 
 const ExportExcel: React.FC<IExportExcel> = ({ columns, dataSource, title }) => {
@@ -41,7 +41,7 @@ const ExportExcel: React.FC<IExportExcel> = ({ columns, dataSource, title }) => 
   };
 
   return (
-    <Button type="primary" onClick={exportToExcel}>
+    <Button type="primary" onClick={exportToExcel} disabled={dataSource && dataSource?.length > 0 ? false : true}>
       Xuất Excel
     </Button>
   );

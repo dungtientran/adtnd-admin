@@ -56,6 +56,7 @@ const Recommendations: React.FC = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
   const [listStock, setListStock] = useState([]);
+  const [excelData, setExcelData] = useState([]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['getListStock', tableParams, sort, searchText],
@@ -263,6 +264,16 @@ const Recommendations: React.FC = () => {
     setUrlLogo('');
   };
 
+  const getExcelData = async (limit: string) => {
+    try {
+      const res = await getStockList(`page=1&size=${limit}`, sort, searchText);
+
+      setExcelData(res?.data?.rows);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (data) {
       setTableParams({
@@ -272,6 +283,8 @@ const Recommendations: React.FC = () => {
           total: data?.data?.count,
         },
       });
+
+      getExcelData(data?.data?.count);
       setListStock(data?.data?.rows);
     }
   }, [data]);
@@ -281,10 +294,12 @@ const Recommendations: React.FC = () => {
   // console.log('search_____', searchText);
   // console.log('listStock_', listStock);
   // console.log('searchedColumn__________', searchedColumn);
+  console.log('excelData________________', excelData);
+
   return (
     <div className="aaa">
       <HeadTitle title="Danh mục cổ phiếu" />
-      <Result total={data?.data?.count} columns={columns} dataSource={listStock} />
+      <Result total={data?.data?.count} columns={columns} dataSource={excelData} title="Danh mục cổ phiếu" />
       <div className="table_stock">
         <Table
           columns={columns}

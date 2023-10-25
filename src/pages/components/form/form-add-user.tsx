@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import type { UseMutationResult } from '@tanstack/react-query';
+
 import './index.less';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -12,9 +14,12 @@ const { getSaleList } = listCustomerApi;
 const { Option } = Select;
 
 interface ICreateUser {
-  setCustomerForm: (newCustomer: any) => void;
   initForm?: any;
   setSaleCustomer: (sale: any) => void;
+  useCustomer: () => {
+    create: UseMutationResult<any, unknown, any, unknown>;
+    update: UseMutationResult<any, unknown, any, unknown>;
+  };
 }
 
 const passwordValidator = (value: string): boolean => {
@@ -35,14 +40,19 @@ const prefixSelector = (
   </Form.Item>
 );
 
-const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleCustomer }) => {
+const CreateUser: React.FC<ICreateUser> = ({ initForm, setSaleCustomer, useCustomer }) => {
   const [isDisable, setIsisDisable] = useState(false);
   const [option, setOption] = useState<{ id: string; value: string }[]>([]);
+  const { create, update } = useCustomer();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['getSaleList'],
     queryFn: () => getSaleList(),
   });
+
+  const handleUpdate = (newData: any) => {
+    create.mutate(newData);
+  };
 
   useEffect(() => {
     if (data) {
@@ -72,19 +82,19 @@ const CreateUser: React.FC<ICreateUser> = ({ setCustomerForm, initForm, setSaleC
       phone_number: `+84${values?.phone_number}`,
     };
 
-    // console.log('Received values of form: ', newCustomer);
-
-    setCustomerForm(newCustomer);
+    handleUpdate(newCustomer);
   };
 
   const handleAddSale = (values: any) => {
     // console.log('sale__________', values);
     const sale_id = option.find(item => item.value === values.sale)?.id;
 
-    setSaleCustomer({
+    const saleForm = {
       customer_id: initForm?.id,
       sale_id,
-    });
+    };
+
+    update.mutate(saleForm);
   };
 
   // console.log('initform______________', initForm);
