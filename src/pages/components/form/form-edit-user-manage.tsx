@@ -145,6 +145,9 @@ const EditUserManagement: React.FC<ICreateUser> = ({ setCustomerForm, initForm, 
       },
     };
 
+
+
+    
     setSale.mutate(new_Sale);
 
     console.log('Received values of form: ', new_Sale);
