@@ -346,7 +346,7 @@ const CreateContract: React.FC<IEditRequest> = ({
             // value={percentProfit}
           />
         </Form.Item>
-        {isSwith && (
+        {initForm && (
           <Form.Item name="status" label="Tình trạng hợp đồng" valuePropName="checked">
             <Switch unCheckedChildren="Thanh lý" checkedChildren="Còn hiệu lực" />
           </Form.Item>

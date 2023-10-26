@@ -254,12 +254,13 @@ const BlockContract: React.FC = () => {
         bodyStyle={{ paddingBottom: 80 }}
       >
         {/* <Spin spinning={update.isLoading}> */}
-        <CreateContract
+        {/* <CreateContract
           setUpdateDataSp={setUpdateDataSp}
           initForm={customerSelect}
-          setNewContract={setNewContract}
           loading={!customerSelect ? isLoading : update.isLoading}
-        />
+          saleData={ad}
+          useData={}
+        /> */}
         {/* </Spin> */}
       </Drawer>
       <MyModal

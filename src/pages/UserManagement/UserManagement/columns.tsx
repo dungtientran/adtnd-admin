@@ -133,7 +133,7 @@ export const Column = (
           >
             <EditOutlined />
           </Button>
-          <Popconfirm title="Chắc chắn xóa" onConfirm={() => {}}>
+          {/* <Popconfirm title="Chắc chắn xóa" onConfirm={() => {}}>
             <Button
               type="primary"
               size="small"
@@ -143,7 +143,7 @@ export const Column = (
             >
               <DeleteOutlined />
             </Button>
-          </Popconfirm>
+          </Popconfirm> */}
         </Space>
       ),
     },
