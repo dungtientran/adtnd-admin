@@ -133,7 +133,7 @@ const CreateContract: React.FC<IEditRequest> = ({
 
     const customer_id = option2.find(item => item.value === values?.customer_id)?.id;
     const sale_id = option.find(item => item.value === values?.sale_id)?.id;
-    const status = values?.status === true ? 'done' : 'pending';
+    const status = !values?.status === true ? 'done' : 'pending';
 
     const newValues = {
       ...values,
