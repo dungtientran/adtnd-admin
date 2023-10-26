@@ -151,11 +151,6 @@ const CreateContract: React.FC<IEditRequest> = ({
       status,
     };
 
-    console.log('update_______________', updateValues);
-    // console.log('time___________', values?.time_contract);
-    // console.log("day______________________", days);
-    // console.log("new value______________________", newValues);
-
     if (!initForm) {
       setNewContract(newValues);
     } else {
