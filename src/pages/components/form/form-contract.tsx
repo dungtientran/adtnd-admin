@@ -133,6 +133,7 @@ const CreateContract: React.FC<IEditRequest> = ({
 
     const customer_id = option2.find(item => item.value === values?.customer_id)?.id;
     const sale_id = option.find(item => item.value === values?.sale_id)?.id;
+    const status = values?.status === true ? 'done' : 'pending';
 
     const newValues = {
       ...values,
@@ -147,8 +148,10 @@ const CreateContract: React.FC<IEditRequest> = ({
       start_date: values?.time_contract?.[0],
       end_date: values?.time_contract?.[1],
       sale_id,
+      status,
     };
 
+    console.log('update_______________', updateValues);
     // console.log('time___________', values?.time_contract);
     // console.log("day______________________", days);
     // console.log("new value______________________", newValues);
@@ -185,7 +188,7 @@ const CreateContract: React.FC<IEditRequest> = ({
 
   const handleOnchange = (value: number) => {
     if (init) {
-      console.log('value_________________', value);
+      // console.log('value_________________', value);
       const percent = value / init - 1;
 
       setpercentProfit(percent);

@@ -151,14 +151,14 @@ export const Column = (
       dataIndex: 'commission',
       width: '10%',
       render: (_, record) => <Text>{record?.commission?.toLocaleString()}</Text>,
-      sorter: true,
+      // sorter: true,
     },
-    {
-      title: 'Tổng hoa hồng tạm tính (Fila)',
-      dataIndex: 'total_commission',
-      width: '12%',
-      render: (_, record) => <Text>{record?.total_commission?.toLocaleString()}</Text>,
-    },
+    // {
+    //   title: 'Tổng hoa hồng tạm tính (Fila)',
+    //   dataIndex: 'total_commission',
+    //   width: '12%',
+    //   render: (_, record) => <Text>{record?.total_commission?.toLocaleString()}</Text>,
+    // },
     {
       title: 'Tình trạng',
       dataIndex: 'status',
