@@ -84,7 +84,7 @@ export const Column = (
       // sorter: true,
       dataIndex: 'customer_code',
       width: '8%',
-      ...ColumnSearchProps('customer_id', 'tên khách hàng', setSearchQuery),
+      ...ColumnSearchProps('customer_code', 'tên khách hàng', setSearchQuery),
     },
     {
       title: 'Tên khách hàng',
@@ -125,9 +125,10 @@ export const Column = (
 
       // width: '8%',
       // filters: [
-      //   { text: 'Trial', value: 'trial' },
-      //   { text: 'Vip', value: 'vip' },
-      //   { text: 'Premium', value: 'premium' },
+      //   { text: 'Premium 12 tháng', value: 'trial' },
+      //   { text: 'Premium 6 tháng', value: 'vip' },
+      //   { text: 'Premium 3 tháng', value: 'premium' },
+      //   { text: 'Premium 1 tháng', value: 'premium' },
       // ],
     },
     {

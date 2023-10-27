@@ -11,7 +11,7 @@ const { Text } = Typography;
 interface IBoxFilter {
   setQueryFilter: (query: string) => void;
   setSearchText: (obj: object) => void;
-  handleSetPageOnFilter: () => void
+  handleSetPageOnFilter: () => void;
 }
 
 const BoxFilter = ({ setQueryFilter, setSearchText, handleSetPageOnFilter }: IBoxFilter) => {
@@ -63,7 +63,6 @@ const BoxFilter = ({ setQueryFilter, setSearchText, handleSetPageOnFilter }: IBo
     setSelectedDates(null);
     setSearchText({});
     handleSetPageOnFilter();
-
   };
 
   return (
@@ -72,21 +71,20 @@ const BoxFilter = ({ setQueryFilter, setSearchText, handleSetPageOnFilter }: IBo
       size="middle"
       style={{ marginBottom: '20px', padding: '1rem', border: '1px solid #ccc', borderRadius: '6px' }}
     >
-      <Space size="middle">
+      <Space direction="vertical">
+        <Text strong>Tình trạng liên hệ: </Text>
+        <Radio.Group value={queryObj.is_contact} onChange={handleSelectIsContact}>
+          <Radio.Button value={null}>Tất cả</Radio.Button>
+          <Radio.Button value={true}>Đã liên hệ</Radio.Button>
+          <Radio.Button value={false}>Chưa liên hệ</Radio.Button>
+        </Radio.Group>
+      </Space>
+      <Space size="middle" direction="vertical">
         <Space direction="vertical">
           <Text strong>Lọc theo ngày yêu cầu:</Text>
           <Space>
             <RangePicker format="YYYY/MM/DD" value={selectedDates} onChange={onChange} />
           </Space>
-        </Space>
-
-        <Space direction="vertical">
-          <Text strong>Tình trạng liên hệ: </Text>
-          <Radio.Group value={queryObj.is_contact} onChange={handleSelectIsContact}>
-            <Radio.Button value={null}>Tất cả</Radio.Button>
-            <Radio.Button value={true}>Đã liên hệ</Radio.Button>
-            <Radio.Button value={false}>Chưa liên hệ</Radio.Button>
-          </Radio.Group>
         </Space>
       </Space>
 

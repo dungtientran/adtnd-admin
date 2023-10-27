@@ -39,6 +39,8 @@ export interface DataType {
   email: string;
   phone_number: string;
   package: string;
+  customer_code: string;
+
 }
 
 export interface TableParams {

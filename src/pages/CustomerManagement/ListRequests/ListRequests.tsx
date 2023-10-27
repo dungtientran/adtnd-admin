@@ -72,7 +72,7 @@ const ListRequests: React.FC = () => {
   const getRandomuserParams = (params: TableParams) => ({
     size: params.pagination?.pageSize,
     page: params.pagination?.current,
-    subscriptions: params.filters?.subscription_product?.join(','),
+    type: params.filters?.type?.join(','),
   });
 
   const onClose = () => {
@@ -80,6 +80,7 @@ const ListRequests: React.FC = () => {
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    // console.log('filters_____________________', filters);
     setTableParams({
       pagination,
       filters,
@@ -116,7 +117,6 @@ const ListRequests: React.FC = () => {
       const res = await getCustomerSupport(` page=1&size=${limit}`, qs.stringify(searchText), queryFilter);
 
       if (res?.code === 200) {
-      
         // console.log('columns__________________', columns);
 
         setDataExcel(res?.data?.rows);

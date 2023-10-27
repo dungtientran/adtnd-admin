@@ -68,15 +68,15 @@ const routeList: RouteObject[] = [
         element: <WrapperRouteComponent element={<ServicePack />} titleId="Gói dịch vụ" />,
       },
       {
-        path: 'product-managament/recommendations',
+        path: 'signal/recommendations',
         element: <WrapperRouteComponent element={<Recommendations />} titleId="Khuyến nghị" />,
       },
       {
-        path: 'signal/create',
+        path: 'signal/create', 
         element: <WrapperRouteComponent element={<CreateSignal />} titleId="Khuyến nghị" />,
       },
       {
-        path: 'signal/create-and-approve',
+        path: '/signal/create-and-approve',
         element: <WrapperRouteComponent element={<ApproveAndCreateSignal />} titleId="Duyệt/ Tạo Khuyến nghị" />,
       },
       // 
@@ -120,7 +120,7 @@ const routeList: RouteObject[] = [
         element: <WrapperRouteComponent element={<UserManagement />} titleId="Danh sách quản trị viên" />,
       },
       {
-        path: '/invoice/list',
+        path: '/transaction/invoice/list',
         element: <WrapperRouteComponent element={<Invoice />} titleId="Danh sách chứng từ thanh toán!" />,
       },
       {

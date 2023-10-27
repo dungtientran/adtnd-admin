@@ -8,7 +8,7 @@ export const menuListHandle: MenuList = [
     path: '/dashboard',
   },
   {
-    code: 'sanpham',
+    code: 'product-managament',
     icon: 'product',
     label: {
       en_US: 'Quản lý sản phẩm',
@@ -35,7 +35,7 @@ export const menuListHandle: MenuList = [
     ],
   },
   {
-    code: 'Khuyennghi',
+    code: 'signal',
     icon: 'notification',
     label: {
       en_US: 'Quản lý khuyến nghị',
@@ -57,12 +57,12 @@ export const menuListHandle: MenuList = [
           en_US: 'Danh sách khuyến nghị',
           zh_CN: '基本',
         },
-        path: '/product-managament/recommendations',
+        path: '/signal/recommendations',
       },
     ],
   },
   {
-    code: 'customer',
+    code: 'customer-management',
     icon: 'client',
     label: {
       en_US: 'Quản lý khách hàng',
@@ -124,7 +124,7 @@ export const menuListHandle: MenuList = [
     ],
   },
   {
-    code: 'hoahong',
+    code: 'interest-rate',
     icon: 'rate',
     label: {
       en_US: 'Quản lý hoa hồng',
@@ -143,7 +143,7 @@ export const menuListHandle: MenuList = [
     ],
   },
   {
-    code: 'tracsaction',
+    code: 'transaction',
     icon: 'finance',
     label: {
       en_US: 'Quản lý tài chính',
@@ -165,12 +165,12 @@ export const menuListHandle: MenuList = [
           en_US: 'Chứng từ thanh toán',
           zh_CN: '基本',
         },
-        path: '/invoice/list',
+        path: '/transaction/invoice/list',
       },
     ],
   },
   {
-    code: 'user',
+    code: 'user-management',
     icon: 'account',
     label: {
       en_US: 'Quản trị người dùng',
@@ -179,7 +179,7 @@ export const menuListHandle: MenuList = [
     path: '/documentation',
     children: [
       {
-        code: 'user-management',
+        code: 'list',
         label: {
           en_US: 'Danh sách quản trị viên',
           zh_CN: '基本',

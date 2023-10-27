@@ -130,7 +130,13 @@ const Invoicetable: React.FC = () => {
       title: 'Kỳ thanh toán',
       dataIndex: 'payment_period',
       width: '10%',
-      render: (_, record) => <Typography.Text>{moment(record?.payment_period).format('YYYY/MM')}</Typography.Text>
+      render: (_, record) => <Typography.Text>{moment(record?.payment_period).format('YYYY/MM')}</Typography.Text>,
+      filters: [
+        // { text: 'Premium 12 tháng', value: 'trial' },
+        // { text: 'Premium 6 tháng', value: 'vip' },
+        // { text: 'Premium 3 tháng', value: 'premium' },
+        // { text: 'Premium 1 tháng', value: 'premium' },
+      ],
     },
     {
       title: 'Mã KH',

@@ -35,7 +35,7 @@ const LayoutPage: FC = () => {
 
   useEffect(() => {
     const code = getFirstPathCode(location.pathname);
-
+    console.log("code__________________", code);
     setOpenkey(code);
     setSelectedKey(location.pathname);
   }, [location.pathname]);

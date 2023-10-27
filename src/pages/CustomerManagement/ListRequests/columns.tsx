@@ -98,9 +98,9 @@ export const Column = (
       dataIndex: 'type',
       width: '8%',
       filters: [
-        { text: 'Tư vấn mở tài khoản', value: 'trial' },
-        { text: 'Tư vẫn đầu tư', value: 'vip' },
-        { text: 'Hỗ trợ', value: 'premium' },
+        { text: 'Tư vấn mở tài khoản', value: 'Tư vấn mở tài khoản' },
+        { text: 'Tư vấn đầu tư', value: 'Tư vấn đầu tư' },
+        { text: 'Hỗ trợ', value: 'Hổ trợ' },
       ],
     },
     {

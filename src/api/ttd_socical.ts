@@ -9,10 +9,10 @@ export const listSocialApi = {
   createSocial(data: any): Promise<any> {
     return axiosInstance.post(`/admin/social/link`, data);
   },
-  updateSocial( id: string, data: any ): Promise<any> {
+  updateSocial(id: string, data: any): Promise<any> {
     return axiosInstance.put(`/admin/social/link/${id}`, data);
   },
-  deleteSocial(data: any, id: string): Promise<any> {
-    return axiosInstance.get(`/admin/social/link/${id}`, data);
+  deleteSocial(id: string): Promise<any> {
+    return axiosInstance.delete(`/admin/social/link/${id}`);
   },
 };

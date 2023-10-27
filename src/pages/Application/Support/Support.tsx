@@ -1,6 +1,8 @@
 import type { TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue } from 'antd/es/table/interface';
 
+import './index.less';
+
 import { CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -65,6 +67,7 @@ const Support = () => {
   const [interestSelect, setInterestSelect] = useState<any>(undefined);
   const [open, setOpen] = useState(false);
   const [newInteres, setNewInterst] = useState<any>();
+  const [idDelete, setIdDelete] = useState<string| number | undefined>(undefined);
 
   const [selectedStatus, setSelectedStatus] = useState('all');
 
@@ -177,6 +180,16 @@ const Support = () => {
       message.error('Tạo thất bại');
     },
   });
+  const deleteSocialHandle = useMutation({
+    mutationFn: _ => deleteSocial(idDelete as string),
+    onSuccess: _ => {
+      queryClient.invalidateQueries(['getListSocial']);
+      message.success('Xóa thành công');
+    },
+    onError: _ => {
+      message.error('Xóa thất bại');
+    },
+  });
 
   const edit = (record: any) => {
     // console.log('record_____________', record);
@@ -238,13 +251,12 @@ const Support = () => {
       dataIndex: 'order',
       width: '10%',
       editable: true,
-
     },
     {
       title: 'Icon',
       dataIndex: 'icon_url',
       width: '10%',
-      editable: true,
+      // editable: true,
       render: (_: any, record: any) => <Avatar size="large" src={record?.icon_url} alt={record?.title} />,
     },
     {
@@ -291,7 +303,7 @@ const Support = () => {
             <Button type="primary" size="small" disabled={editingKey !== ''} onClick={() => edit(record)}>
               <EditOutlined />
             </Button>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+            <Popconfirm title="Sure to cancel?" onConfirm={() => setIdDelete(record?.id)}>
               <Button type="primary" size="small" disabled={editingKey !== ''}>
                 <DeleteOutlined />
               </Button>
@@ -369,6 +381,12 @@ const Support = () => {
       create.mutate();
     }
   }, [newInteres]);
+  
+  useEffect(() => {
+    if (idDelete) {
+      deleteSocialHandle.mutate();
+    }
+  }, [idDelete]);
 
   // console.log('page______________', page);
 
@@ -407,22 +425,24 @@ const Support = () => {
             </Button> */}
         </Space>
         <Result total={listSocial?.length} isButtonExcel={false} />
-        <Table
-          components={{
-            body: {
-              cell: EditableCell,
-            },
-          }}
-          bordered
-          dataSource={listSocial}
-          columns={mergedColumns}
-          rowClassName="editable-row"
-          pagination={tableParams.pagination}
-          onChange={handleTableChange}
-          style={{
-            height: 'auto',
-          }}
-        />
+        <div className="table_support">
+          <Table
+            components={{
+              body: {
+                cell: EditableCell,
+              },
+            }}
+            bordered
+            dataSource={listSocial}
+            columns={mergedColumns}
+            rowClassName="editable-row"
+            pagination={tableParams.pagination}
+            onChange={handleTableChange}
+            style={{
+              height: 'auto',
+            }}
+          />
+        </div>
       </Form>
       <Drawer title="Tạo mới" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
         <CreateSocial setNewInteres={setNewInterst} />
