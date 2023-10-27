@@ -1,269 +1,178 @@
-import { Button, Form, Input, InputNumber, Popconfirm, Radio, Select, Space, Table, Tag, Typography } from 'antd';
-import React, { Fragment, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import type { InputRef } from 'antd';
+import type { ColumnsType, ColumnType, TablePaginationConfig } from 'antd/es/table';
+import type { FilterConfirmProps, FilterValue } from 'antd/es/table/interface';
 
-interface Item {
-  key: React.Key;
+// import './index.less';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Avatar, Button, Input, message, Select, Skeleton, Space, Spin, Table, Tag, Tooltip, Typography } from 'antd';
+import qs from 'qs';
+import { useEffect, useRef, useState } from 'react';
+
+import { apiListStock, apiUpdateLogoStock } from '@/api/stock.api';
+import { listServerPackApi } from '@/api/ttd_server_pack';
+import MyModal from '@/components/basic/modal';
+import MyUpLoad from '@/components/core/upload';
+import HeadTitle from '@/pages/components/head-title/HeadTitle';
+import Result from '@/pages/components/result/Result';
+
+const { getStockList } = apiListStock;
+const { getList } = listServerPackApi;
+
+const LIMIT = Number(import.meta.env.VITE_PAGE_SIZE);
+
+interface DataType {
   id: string;
-  service_pack: string;
+  min_cost: number;
+  name: string;
   description: string;
-  status: string;
+  trial: boolean;
+  trial_duration: number;
 }
 
-interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
-  editing: boolean;
-  dataIndex: string;
-  title: any;
-  inputType: 'number' | 'text';
-  record: Item;
-  index: number;
-  children: React.ReactNode;
+interface TableParams {
+  pagination?: TablePaginationConfig;
+  sortField?: string;
+  sortOrder?: string;
+  filters?: Record<string, FilterValue>;
 }
+type DataIndex = keyof DataType;
 
-const EditableCell: React.FC<EditableCellProps> = ({
-  editing,
-  dataIndex,
-  title,
-  inputType,
-  record,
-  index,
-  children,
-  ...restProps
-}) => {
-  const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-
-  return (
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{ margin: 0 }}
-          rules={[
-            {
-              required: true,
-              message: `Please Input ${title}!`,
-            },
-          ]}
-        >
-          {inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
-};
-
-const ServicePack: React.FC = () => {
-  const [form] = Form.useForm();
-  const [isEdit, setIsEdit] = useState(false);
-  const [isAdd, setIsAdd] = useState(false);
-  const [count, setCount] = useState(4);
-  const [editingKey, setEditingKey] = useState<any>('');
-  const [add1CaiThoi, setAdd1CaiThoi] = useState<boolean>(false);
-  const [isChecked, setIsChecked] = useState(false);
-  const [filterStatus, setFilterStatus] = useState('');
-  const [dataSource, setDataSource] = useState<Item[]>([
-    {
-      id: '1',
-      service_pack: 'Trial',
-      description: 'Gói dùng thử',
-      status: 'Đang hoạt động',
-      key: '1',
+const Recommendations: React.FC = () => {
+  const queryClient = useQueryClient();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [urlLogo, setUrlLogo] = useState<string>('');
+  const [recordSelected, setRecordSelected] = useState<any>({});
+  const [tableParams, setTableParams] = useState<TableParams>({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: [10, 20, 50],
     },
-    {
-      id: '2',
-      service_pack: 'Vip',
-      description: 'Gói Vip',
-      status: 'Đang hoạt động',
-      key: '2',
-    },
-    {
-      id: '3',
-      service_pack: 'Premium',
-      description: 'Gói Premium',
-      status: 'Đang hoạt động',
-      key: '3',
-    },
-  ]);
+  });
+  const [sort, setSort] = useState<string>('');
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef<InputRef>(null);
+  const [listStock, setListStock] = useState([]);
+  const [excelData, setExcelData] = useState([]);
 
-  const handleToggle = () => {
-    setIsChecked(!isChecked);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['getListServerPack', tableParams, sort, searchText],
+    queryFn: () => getList(),
+  });
+  const getRandomuserParams = (params: TableParams) => ({
+    size: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    market: params.filters?.market,
+    // code: searchText || undefined,
+  });
+
+  const handleReset = () => {
+    setSort('');
+    setSearchText('');
+    setTableParams({
+      pagination: {
+        current: 1,
+      },
+    });
   };
 
-  const handleAdd = () => {
-    const newData: Item = {
-      key: count,
-      id: '',
-      service_pack: `Gói ${count}`,
-      description: `Gói ${count}`,
-      status: `Đang hoạt động`,
-    };
+ 
 
-    setAdd1CaiThoi(true);
-    setIsEdit(true);
-    setEditingKey(newData.key);
-    isEditing(newData);
-    setIsAdd(true);
-    setDataSource([newData, ...dataSource]);
-    setCount(count + 1);
-  };
-
-  const isEditing = (record: Item) => record.key === editingKey;
-
-  const edit = (record: any) => {
-    form.setFieldsValue({ service_pack: '', description: '', status: '', ...record });
-    setEditingKey(record.key);
-  };
-
-  const cancel = () => {
-    setEditingKey('');
-    setAdd1CaiThoi(false);
-    setIsEdit(false);
-
-    if (isAdd) {
-      const newData = dataSource.slice(1);
-
-      setDataSource(newData);
-    }
-
-    setIsAdd(false);
-  };
-
-  const save = async (key: any) => {
-    try {
-      const row = (await form.validateFields()) as Item;
-
-      const newData = [...dataSource];
-      const index = newData.findIndex(item => key === item.key);
-
-      if (index > -1) {
-        const item = newData[index];
-
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
-        setDataSource(newData);
-        setEditingKey('');
-      } else {
-        newData.push(row);
-        setDataSource(newData);
-        setEditingKey('');
-      }
-    } catch (errInfo) {
-      console.log('Validate Failed:', errInfo);
-    }
-  };
-
-  const columns = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-    },
+  const columns: ColumnsType<DataType> = [
+    // {
+    //   title: 'ID',
+    //   dataIndex: 'id',
+    //   width: '20%',
+    // },
     {
       title: 'Gói dịch vụ',
-      dataIndex: 'service_pack',
-      width: '30%',
-      editable: isEdit,
+      dataIndex: 'name',
+      width: '20%',
     },
     {
       title: 'Mô tả',
       dataIndex: 'description',
-      editable: true,
+      width: '20%',
     },
     {
       title: 'Tình trạng',
-      dataIndex: 'status',
-      editable: false,
-      render: (_: any, record: Item) => <Tag color="green">{record.status}</Tag>,
+      width: '20%',
+      render: (_, record) => <Tag color='blue'>Đang hoạt động</Tag>
     },
-    // {
-    //   title: '',
-    //   dataIndex: 'action',
-    //   render: (_: any, record: Item) => {
-    //     const editable = isEditing(record);
-
-    //     return editable ? (
-    //       <span>
-    //         <Typography.Link onClick={() => save(record.key)} style={{ marginRight: 8 }}>
-    //           Save
-    //         </Typography.Link>
-    //         <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-    //           <a>Cancel</a>
-    //         </Popconfirm>
-    //       </span>
-    //     ) : (
-    //       <Space>
-    //         {/* <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-    //           Edit
-    //         </Typography.Link> */}
-    //         <Typography.Link type="danger" disabled={editingKey !== ''}>
-    //           Block
-    //         </Typography.Link>
-    //       </Space>
-    //     );
-    //   },
-    // },
+   
   ];
 
-  const mergedColumns = columns.map(col => {
-    if (!col.editable) {
-      return col;
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+
+    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      // setData([]);
     }
 
-    return {
-      ...col,
-      onCell: (record: Item) => ({
-        record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditing(record),
-      }),
-    };
-  });
+    if (sorter.order === 'ascend') {
+      const sorte = `${sorter.field}_order=ASC`;
+
+      setSort(sorte);
+    } else if (sorter.order === 'descend') {
+      const sorte = `${sorter.field}_order=DESC`;
+
+      setSort(sorte);
+    }
+  };
+
+
+
+  useEffect(() => {
+    if (data) {
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          total: data?.data?.count,
+        },
+      });
+
+      setListStock(data?.data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (isLoading) setExcelData([]);
+  }, [isLoading]);
+
+  // console.log(tableParams);
+  // console.log('sort______________', sort);
+  // console.log('search_____', searchText);
+  // console.log('listStock_', listStock);
+  // console.log('searchedColumn__________', searchedColumn);
+  // console.log('excelData________________', excelData);
 
   return (
     <div className="aaa">
-      <div style={{ textAlign: 'center' }}>
-        <Typography.Title level={2}>Gói dịch vụ</Typography.Title>
-      </div>
-      {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px' }}>
-        <Space>
-          <Typography.Text>Trạng thái: </Typography.Text>
-          <Radio.Group
-            defaultValue={''}
-            // onChange={e => setStatusFilter(e.target.value)}
-            // onChange={e => console.log('radio____________', e.target.value)}
-            onChange={handleToggle}
-          >
-            <Radio.Button value="">Tất cả</Radio.Button>
-            <Radio.Button value="open">Đang hoạt động</Radio.Button>
-            <Radio.Button value="closed">Ngừng hoạt động</Radio.Button>
-          </Radio.Group>
-        </Space>
-        <Button disabled={add1CaiThoi} onClick={handleAdd} type="primary">
-          Thêm dịch vụ
-        </Button>
-      </div> */}
-      <Form form={form} component={false}>
+      <HeadTitle title="Gói dịch vụ" />
+      <Result total={data?.data?.count} columns={columns} dataSource={excelData} title="Danh mục cổ phiếu" />
+      <div className="table_stock">
         <Table
-          components={{
-            body: {
-              cell: EditableCell,
-            },
-          }}
-          bordered
-          dataSource={dataSource}
-          columns={mergedColumns}
-          rowClassName="editable-row"
-          pagination={{
-            onChange: cancel,
-          }}
+          columns={columns}
+          rowKey={record => record.id}
+          dataSource={listStock}
+          // pagination={tableParams.pagination}
+          pagination={false}
+          // loading={isLoading}
+          onChange={handleTableChange}
+          scroll={{ x: 'max-content', y: '100%' }}
         />
-      </Form>
+      </div>
     </div>
   );
 };
 
-export default ServicePack;
+export default Recommendations;
