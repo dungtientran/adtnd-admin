@@ -10,6 +10,9 @@ export const listCustomerApi = {
   getListUser(searchText: string): Promise<any> {
     return axiosInstance.get(`/admin/customer/search?searchText=${searchText}`);
   },
+  getListGroup(searchText: string): Promise<any> {
+    return axiosInstance.get(`/admin/group/search?searchText=${searchText}`);
+  },
   getSaleList(): Promise<any> {
     return axiosInstance.get('/admin/sale/list');
   },

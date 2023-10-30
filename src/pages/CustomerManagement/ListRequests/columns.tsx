@@ -100,7 +100,7 @@ export const Column = (
       filters: [
         { text: 'Tư vấn mở tài khoản', value: 'Tư vấn mở tài khoản' },
         { text: 'Tư vấn đầu tư', value: 'Tư vấn đầu tư' },
-        { text: 'Hỗ trợ', value: 'Hổ trợ' },
+        { text: 'Hỗ trợ', value: 'Hỗ trợ' },
       ],
     },
     {

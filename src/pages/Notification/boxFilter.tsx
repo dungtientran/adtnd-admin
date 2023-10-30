@@ -10,10 +10,10 @@ const { Option } = Select;
 
 interface IBoxFilter {
   setQueryFilter: (query: string) => void;
-  resetQuery: () => void;
+  // resetQuery: () => void;
 }
 
-const BoxFilter = ({ setQueryFilter, resetQuery }: IBoxFilter) => {
+const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
   const [queryObj, setQueryObj] = useState<any>({
     status: '',
     period: '',
@@ -61,7 +61,7 @@ const BoxFilter = ({ setQueryFilter, resetQuery }: IBoxFilter) => {
     setStatusContract('');
     setSelectedDates(null);
     setQueryFilter('');
-    resetQuery();
+    // resetQuery();
   };
 
   const handleFilter = () => {
@@ -97,31 +97,18 @@ const BoxFilter = ({ setQueryFilter, resetQuery }: IBoxFilter) => {
         margin: '10px 0',
       }}
     >
-      <Space>
-        <div style={{ width: '100px' }}>
-          <Text strong>Tình trạng: </Text>
-        </div>
-        <Radio.Group
-          value={queryObj?.status}
-          onChange={e =>
-            setQueryObj((prev: any) => ({
-              ...prev,
-
-              status: e.target.value,
-            }))
-          }
-        >
-          <Radio.Button value="">Tất cả</Radio.Button>
-          <Radio.Button value="approve">Đã duyệt</Radio.Button>
-          <Radio.Button value="pending">Chưa duyệt</Radio.Button>
-        </Radio.Group>
+       <Space>
+        <Text strong>Lọc theo ngày tạo:</Text>
+        <Space>
+          <RangePicker value={selectedDates} format="YYYY/MM/DD" onChange={onChange} />
+        </Space>
       </Space>
-      <Space>
+      {/* <Space>
         <div style={{ width: '100px' }}>
           <Text strong>Kỳ thanh toán:</Text>
         </div>
         <DatePicker value={selectedDates} onChange={onChangeSelectedMonth} picker="month" />
-      </Space>
+      </Space> */}
       <Space>
         <Button onClick={handleFilter}>Lọc</Button>
         <Button onClick={handleResetFilter}>Reset bộ lọc</Button>

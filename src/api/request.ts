@@ -8,8 +8,8 @@ import store from '@/stores';
 import { setGlobalState } from '@/stores/global.store';
 // import { history } from '@/routes/history';
 
-const TESTING_URL= 'https://bs9hartqvb.execute-api.us-west-2.amazonaws.com/testing'
-const PROD_URL ='https://yys2edw6d6.execute-api.ap-southeast-1.amazonaws.com/dev'
+const TESTING_URL = 'https://bs9hartqvb.execute-api.us-west-2.amazonaws.com/testing';
+const PROD_URL = 'https://yys2edw6d6.execute-api.ap-southeast-1.amazonaws.com/dev';
 
 export const axiosInstance = axios.create({
   // timeout: 6000,

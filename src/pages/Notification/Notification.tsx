@@ -3,22 +3,26 @@ import type { TableParams } from './index.interface';
 import './index.less';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Drawer, message, Table } from 'antd';
+import { Button, Drawer, message, Modal, Table } from 'antd';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 
-import { listUserApi } from '@/api/ttd_user_management';
-import EditUserManagement from '@/pages/components/form/form-edit-user-manage';
+import { listNotificationApi } from '@/api/ttd_notification';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
 
+import NotificationForm from '../components/form/form-createa-notification';
+import SendNotification from '../components/form/form-send-notification';
 import { Column } from './columns';
+import BoxFilter from './boxFilter';
 
-const { getListUser, createSale, updateSale, delteleSale } = listUserApi;
+const { createNotification, delteleNotification, getListNotification, updateNotification, sendNotification } =
+  listNotificationApi;
 
-const UserManagement: React.FC = () => {
+const Notification: React.FC = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
@@ -33,10 +37,12 @@ const UserManagement: React.FC = () => {
   const [listCustomerSp, setListCustomerSp] = useState([]);
   const [queryFilter, setQueryFilter] = useState<string>('');
   const [customerSelect, setCustomerSelect] = useState<any>();
+  const [idNotification, setIdNotification] = useState<string>('');
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['getListUser', queryFilter, searchText, tableParams],
-    queryFn: () => getListUser(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText)),
+    queryKey: ['getListNotification', queryFilter, searchText, tableParams],
+    queryFn: () =>
+      getListNotification(qs.stringify(getRandomuserParams(tableParams)), queryFilter, qs.stringify(searchText)),
   });
 
   const getRandomuserParams = (params: TableParams) => ({
@@ -45,43 +51,59 @@ const UserManagement: React.FC = () => {
     role: params.filters?.role?.join(','),
   });
 
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const onClose = () => {
     setOpen(false);
   };
 
-  const useSale = () => {
-    const create = useMutation(createSale, {
+  const useNotification = () => {
+    const create = useMutation(createNotification, {
       onSuccess: () => {
-        queryClient.invalidateQueries(['getListCustomer']);
+        queryClient.invalidateQueries(['getListNotification']);
         message.success('Tạo thành công');
         setOpen(false);
+        setCustomerSelect(undefined);
       },
       onError: (err: any) => {
         message.error(`${err?.message}` || 'Tạo thất bại');
       },
     });
-    const update = useMutation(updateSale, {
+    const update = useMutation(updateNotification, {
       onSuccess: () => {
-        queryClient.invalidateQueries(['getListCustomer']);
+        queryClient.invalidateQueries(['getListNotification']);
         message.success('Update thành công');
         setOpen(false);
+        setCustomerSelect(undefined);
       },
       onError: (err: any) => {
         message.error(`${err?.message}` || 'Update thất bại');
       },
     });
-    const deleteSale = useMutation(delteleSale, {
+    const deleteNotification = useMutation(delteleNotification, {
       onSuccess: () => {
-        queryClient.invalidateQueries(['getListCustomer']);
+        queryClient.invalidateQueries(['getListNotification']);
         message.success('Xóa thành công');
         // setOpen(false);
       },
       onError: (err: any) => {
         message.error(`${err?.message}` || 'Xóa thất bại');
       },
-    })
+    });
+    const sendNotificationHandle = useMutation(sendNotification, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListNotification']);
+        message.success('Gửi thành công');
+        setIsModalOpen(false);
+      },
+      onError: (err: any) => {
+        message.error(`${err?.message}` || 'Gửi thất bại');
+      },
+    });
 
-    return { create, update, deleteSale };
+    return { create, update, deleteNotification, sendNotificationHandle };
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -121,7 +143,7 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="aaa">
-      <HeadTitle title="Danh sách quản trị viên" />
+      <HeadTitle title="Thiết lập thông báo" />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Button
           type="primary"
@@ -129,33 +151,46 @@ const UserManagement: React.FC = () => {
             setOpen(true), setCustomerSelect(undefined);
           }}
         >
-          Tạo quản trị viên mới
+          Tạo mới
         </Button>
       </div>
+      <BoxFilter  setQueryFilter={setQueryFilter}/>
       <Result total={data?.data?.count} searchText={searchedColumn} isButtonExcel={false} />
       <div className="table_user">
         <Table
-          columns={Column(setSearchText, setOpen, setCustomerSelect, useSale)}
+          columns={Column(
+            setSearchText,
+            setOpen,
+            setCustomerSelect,
+            useNotification,
+            setIsModalOpen,
+            setIdNotification,
+          )}
           rowKey={record => record.id}
           dataSource={listCustomerSp}
           pagination={tableParams.pagination}
-          // loading={isLoading}
+          loading={isLoading}
           onChange={handleTableChange}
           scroll={{ x: 'max-content', y: '100%' }}
           style={{ height: 'auto' }}
         />
       </div>
       <Drawer
-        title={!customerSelect ? 'Tạo mới quản trị viên' : 'Update level '}
+        title={!customerSelect ? 'Tạo mới thông báo' : 'Chỉnh sửa thông báo '}
         width={360}
         onClose={onClose}
         open={open}
         bodyStyle={{ paddingBottom: 80 }}
       >
-        <EditUserManagement initForm={customerSelect} useSale={useSale} />
+        <NotificationForm initForm={customerSelect} useSale={useNotification} />
       </Drawer>
+      <div className="modal_send_notification">
+        <Modal title="Gửi thông báo" centered open={isModalOpen} onCancel={handleCancel} footer={null}>
+          <SendNotification idNotification={idNotification} useSale={useNotification} />
+        </Modal>
+      </div>
     </div>
   );
 };
 
-export default UserManagement;
+export default Notification;

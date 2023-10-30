@@ -294,6 +294,7 @@ const Invoicetable: React.FC = () => {
       setFilterQuery(query);
     }
   }, [name, email, phone, staffCode, paymentCode]);
+
   useEffect(() => {
     getData();
   }, [JSON.stringify(tableParams), filterQuery, filterQueryBox]);
@@ -352,7 +353,7 @@ const Invoicetable: React.FC = () => {
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Chứng từ thanh toán</Typography.Title>
       </div>
-      <BoxFilter setQueryFilter={setFilterQueryBox} />
+      <BoxFilter setQueryFilter={setFilterQueryBox} resetQuery={handleResetFilter}/>
       <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
         <DatePicker
           onChange={(e: any) => {

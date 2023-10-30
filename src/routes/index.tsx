@@ -40,6 +40,8 @@ const InvoiceDetail = lazy(() => import('@/pages/Invoice/InvoiceDetail'));
 const Greeting = lazy(() => import('@/pages/Application/Greeting/Greeting'));
 const Support = lazy(() => import('@/pages/Application/Support/Support'));
 
+const Notification = lazy(() => import('@/pages/Notification/Notification'));
+
 
 const routeList: RouteObject[] = [
   {
@@ -135,6 +137,10 @@ const routeList: RouteObject[] = [
       {
         path: '/application/support',
         element: <WrapperRouteComponent element={<Support />} titleId="Thiết lập liên kết hỗ trợ" />,
+      },
+      {
+        path: '/notification',
+        element: <WrapperRouteComponent element={<Notification />} titleId="Thiết lập thông báo" />,
       },
       {
         path: '*',

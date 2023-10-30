@@ -10,5 +10,8 @@ export const listUserApi = {
   updateSale(data: any): Promise<any> {
     return axiosInstance.post(`/admin/sale/update_level`, data);
   },
+  delteleSale(id: string): Promise<any> {
+    return axiosInstance.delete(`/admin/sale/remove_account/${id}`);
+  },
   
 };

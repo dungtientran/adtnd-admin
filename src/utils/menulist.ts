@@ -98,7 +98,7 @@ export const menuListHandle: MenuList = [
   },
   {
     code: 'contract',
-    icon: 'rate',
+    icon: 'contract',
     label: {
       en_US: 'Quản lý hợp đồng Vip',
       zh_CN: '文档',
@@ -188,6 +188,7 @@ export const menuListHandle: MenuList = [
       },
     ],
   },
+
   {
     code: 'application',
     icon: 'setting',
@@ -215,5 +216,23 @@ export const menuListHandle: MenuList = [
       },
     ],
   },
- 
+  {
+    code: 'notification',
+    icon: 'send_notification',
+    label: {
+      en_US: 'Quản lý thông báo',
+      zh_CN: '文档',
+    },
+    path: '',
+    children: [
+      {
+        code: 'notification',
+        label: {
+          en_US: 'Thiết lập thông báo',
+          zh_CN: '基本',
+        },
+        path: '/notification',
+      },
+    ],
+  },
 ];

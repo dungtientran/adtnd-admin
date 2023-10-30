@@ -1,4 +1,5 @@
 import type { DataIndex, DataType } from './index.interface';
+import type { UseMutationResult } from '@tanstack/react-query';
 import type { InputRef } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 import type { ColumnsType, FilterConfirmProps } from 'antd/es/table/interface';
@@ -69,7 +70,11 @@ export const Column = (
   setSearchQuery: (query: string) => void,
   setOpenDrawer: (isOpen: boolean) => void,
   setCustomerSelect: (customer: any) => void,
+  useSale: () => {
+    deleteSale: UseMutationResult<any, any, any, unknown>;
+  },
 ) => {
+  const { deleteSale } = useSale();
   const columns: ColumnsType<DataType> = [
     {
       title: 'Mã nhân viên',
@@ -133,7 +138,12 @@ export const Column = (
           >
             <EditOutlined />
           </Button>
-          {/* <Popconfirm title="Chắc chắn xóa" onConfirm={() => {}}>
+          <Popconfirm
+            title="Chắc chắn xóa"
+            onConfirm={() => {
+              deleteSale.mutate(record?.id);
+            }}
+          >
             <Button
               type="primary"
               size="small"
@@ -143,7 +153,7 @@ export const Column = (
             >
               <DeleteOutlined />
             </Button>
-          </Popconfirm> */}
+          </Popconfirm>
         </Space>
       ),
     },
