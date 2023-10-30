@@ -1,9 +1,8 @@
-import type { RadioChangeEvent } from 'antd';
 import type { DatePickerProps, RangePickerProps } from 'antd/es/date-picker';
 
-import { Button, DatePicker, InputNumber, Radio, Select, Space, Typography } from 'antd';
+import { Button, DatePicker, Radio, Select, Space, Typography } from 'antd';
 import qs from 'qs';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
@@ -43,6 +42,10 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
 
   // console.log('queryObj_______________', queryObj);
 
+  const onChangeSelectedMonth: DatePickerProps['onChange'] = (date, dateString) => {
+    console.log('ádddddddddđ', dateString);
+  };
+
   const handleResetFilter = () => {
     setQueryObj(undefined);
     // console.log(123456);
@@ -56,19 +59,19 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
     setQueryFilter(querystring);
   };
 
-  useEffect(() => {
-    if (queryObj) {
-      // console.log(queryObj);
-      const querystring = qs.stringify(queryObj);
+  // useEffect(() => {
+  //   if (queryObj) {
+  //     // console.log(queryObj);
+  //     const querystring = qs.stringify(queryObj);
 
-      // console.log('querystring_______________', querystring);
-      setQueryFilter(querystring);
-    } else {
-      setQueryFilter('');
-    }
-  }, [queryObj]);
+  //     // console.log('querystring_______________', querystring);
+  //     setQueryFilter(querystring);
+  //   } else {
+  //     setQueryFilter('');
+  //   }
+  // }, [queryObj]);
 
-  console.log(queryObj);
+  // console.log(queryObj);
 
   return (
     <Space
@@ -82,7 +85,9 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
       }}
     >
       <Space>
-        <Text strong>Tình trạng: </Text>
+        <div style={{ width: '100px' }}>
+          <Text strong>Tình trạng: </Text>
+        </div>
         <Radio.Group
           value={queryObj?.status}
           onChange={e =>
@@ -95,6 +100,16 @@ const BoxFilter = ({ setQueryFilter }: IBoxFilter) => {
           <Radio.Button value="approve">Đã duyệt</Radio.Button>
           <Radio.Button value="pending">Chưa duyệt</Radio.Button>
         </Radio.Group>
+      </Space>
+      <Space>
+        <div style={{ width: '100px' }}>
+          <Text strong>Kỳ thanh toán:</Text>
+        </div>
+        <DatePicker onChange={onChangeSelectedMonth} picker="month" />
+      </Space>
+      <Space>
+        <Button onClick={handleFilter}>Lọc</Button>
+        <Button onClick={handleResetFilter}>Reset bộ lọc</Button>
       </Space>
     </Space>
   );

@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { SignalModel } from '@/interface/signal';
+import type { RangePickerProps } from 'antd/es/date-picker';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import type { FilterValue, SorterResult } from 'antd/es/table/interface';
+import type { FilterValue } from 'antd/es/table/interface';
 
-import { BorderOuterOutlined, MenuOutlined, StarFilled, UploadOutlined } from '@ant-design/icons';
+import './index.less';
+
+import { MenuOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Dropdown, notification, Table, Typography } from 'antd';
+import dayjs from 'dayjs';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -23,6 +27,11 @@ interface TableParams {
   sortOrder?: string;
   filters?: Record<string, FilterValue>;
 }
+
+const disabledDate: RangePickerProps['disabledDate'] = current => {
+  // Can not select days before today and today
+  return current && current > dayjs().endOf('day');
+};
 
 const Invoicetable: React.FC = () => {
   const [data, setData] = useState<any>([]);
@@ -347,12 +356,13 @@ const Invoicetable: React.FC = () => {
       <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
         <DatePicker
           onChange={(e: any) => {
-            console.log(moment(e.$d).format('YYYY-MM-DD'));
+            // console.log(moment(e.$d).format('YYYY-MM-DD'));
             setPeriod(moment(e.$d).format('YYYY-MM-DD'));
           }}
           picker="month"
           placeholder="Chọn kỳ thanh toán"
           style={{ width: 180 }}
+          disabledDate={disabledDate}
         />
         <Button
           onClick={() => {
@@ -364,16 +374,18 @@ const Invoicetable: React.FC = () => {
       </div>
       {/* <Button onClick={handleResetFilter}>Reset bộ lọc</Button> */}
       <Result total={tableParams.pagination?.total} isButtonExcel={false} />
-      <Table
-        columns={columns}
-        rowKey={record => record.id}
-        dataSource={data}
-        pagination={tableParams.pagination}
-        loading={loading}
-        onChange={handleTableChange}
-        scroll={{ x: 'max-content', y: '100%' }}
-        style={{ height: 'auto' }}
-      />
+      <div className="invoice_table">
+        <Table
+          columns={columns}
+          rowKey={record => record.id}
+          dataSource={data}
+          pagination={tableParams.pagination}
+          loading={loading}
+          onChange={handleTableChange}
+          scroll={{ x: 'max-content', y: '100%' }}
+          style={{ height: 'auto' }}
+        />
+      </div>
     </div>
   );
 };
