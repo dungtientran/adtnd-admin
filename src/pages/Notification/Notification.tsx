@@ -13,8 +13,8 @@ import Result from '@/pages/components/result/Result';
 
 import NotificationForm from '../components/form/form-createa-notification';
 import SendNotification from '../components/form/form-send-notification';
-import { Column } from './columns';
 import BoxFilter from './boxFilter';
+import { Column } from './columns';
 
 const { createNotification, delteleNotification, getListNotification, updateNotification, sendNotification } =
   listNotificationApi;
@@ -128,6 +128,17 @@ const Notification: React.FC = () => {
     // }
   };
 
+  const handleSetPage1 = () => {
+    setTableParams({
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: [10, 20, 50],
+      },
+    });
+  };
+
   useEffect(() => {
     if (data) {
       setTableParams({
@@ -154,7 +165,7 @@ const Notification: React.FC = () => {
           Tạo mới
         </Button>
       </div>
-      <BoxFilter  setQueryFilter={setQueryFilter}/>
+      <BoxFilter setQueryFilter={setQueryFilter} handleSetPage1={handleSetPage1} />
       <Result total={data?.data?.count} searchText={searchedColumn} isButtonExcel={false} />
       <div className="table_user">
         <Table

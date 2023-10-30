@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import { axiosInstance } from './request';
 
 export const listContractApi = {
@@ -14,5 +15,4 @@ export const listContractApi = {
   getUrlIconSocial(formData: any): Promise<any> {
     return axios.post(`https://api.cloudinary.com/v1_1/dbkgkyh4h/image/upload`, formData);
   },
-
 };

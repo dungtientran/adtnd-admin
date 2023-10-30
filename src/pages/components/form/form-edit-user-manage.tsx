@@ -127,6 +127,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
     const updateSale = {
       admin_id: initForm?.id,
       level: values?.level,
+      role_id: sale_id,
     };
 
     if (!initForm) {
@@ -190,7 +191,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
             placeholder="Chức vụ"
             filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             size="large"
-            disabled={initForm}
+            // disabled={initForm}
           />
         </Form.Item>
 

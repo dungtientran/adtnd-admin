@@ -52,7 +52,7 @@ const UserManagement: React.FC = () => {
   const useSale = () => {
     const create = useMutation(createSale, {
       onSuccess: () => {
-        queryClient.invalidateQueries(['getListCustomer']);
+        queryClient.invalidateQueries(['getListUser']);
         message.success('Tạo thành công');
         setOpen(false);
       },
@@ -62,7 +62,7 @@ const UserManagement: React.FC = () => {
     });
     const update = useMutation(updateSale, {
       onSuccess: () => {
-        queryClient.invalidateQueries(['getListCustomer']);
+        queryClient.invalidateQueries(['getListUser']);
         message.success('Update thành công');
         setOpen(false);
       },
@@ -72,14 +72,14 @@ const UserManagement: React.FC = () => {
     });
     const deleteSale = useMutation(delteleSale, {
       onSuccess: () => {
-        queryClient.invalidateQueries(['getListCustomer']);
+        queryClient.invalidateQueries(['getListUser']);
         message.success('Xóa thành công');
         // setOpen(false);
       },
       onError: (err: any) => {
         message.error(`${err?.message}` || 'Xóa thất bại');
       },
-    })
+    });
 
     return { create, update, deleteSale };
   };
@@ -107,6 +107,8 @@ const UserManagement: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!data) return;
+
     if (data) {
       setTableParams({
         ...tableParams,
@@ -139,7 +141,7 @@ const UserManagement: React.FC = () => {
           rowKey={record => record.id}
           dataSource={listCustomerSp}
           pagination={tableParams.pagination}
-          // loading={isLoading}
+          loading={isLoading}
           onChange={handleTableChange}
           scroll={{ x: 'max-content', y: '100%' }}
           style={{ height: 'auto' }}

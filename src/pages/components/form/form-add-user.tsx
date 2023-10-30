@@ -58,7 +58,7 @@ const CreateUser: React.FC<ICreateUser> = ({ initForm, setSaleCustomer, useCusto
     if (data) {
       const newOption = data?.data?.rows.map((item: any) => ({ value: item?.email, id: item?.id }));
 
-      console.log('newOption__________', newOption);
+      // console.log('newOption__________', newOption);
       setOption(newOption);
     }
   }, [data]);
