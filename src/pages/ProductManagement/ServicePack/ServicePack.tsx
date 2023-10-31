@@ -10,7 +10,7 @@ import { Avatar, Button, Input, message, Select, Skeleton, Space, Spin, Table, T
 import qs from 'qs';
 import { useEffect, useRef, useState } from 'react';
 
-import { apiListStock, apiUpdateLogoStock } from '@/api/stock.api';
+import { apiListStock } from '@/api/stock.api';
 import { listServerPackApi } from '@/api/ttd_server_pack';
 import MyModal from '@/components/basic/modal';
 import MyUpLoad from '@/components/core/upload';
@@ -80,8 +80,6 @@ const Recommendations: React.FC = () => {
     });
   };
 
- 
-
   const columns: ColumnsType<DataType> = [
     // {
     //   title: 'ID',
@@ -101,9 +99,8 @@ const Recommendations: React.FC = () => {
     {
       title: 'Tình trạng',
       width: '20%',
-      render: (_, record) => <Tag color='blue'>Đang hoạt động</Tag>
+      render: (_, record) => <Tag color="blue">Đang hoạt động</Tag>,
     },
-   
   ];
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -127,8 +124,6 @@ const Recommendations: React.FC = () => {
       setSort(sorte);
     }
   };
-
-
 
   useEffect(() => {
     if (data) {

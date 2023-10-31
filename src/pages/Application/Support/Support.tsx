@@ -1,9 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue } from 'antd/es/table/interface';
 
 import './index.less';
 
-import { CheckOutlined, CloseOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  CheckOutlined,
+  CloseOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Avatar,
@@ -16,18 +24,22 @@ import {
   Popconfirm,
   Radio,
   Space,
+  Spin,
   Switch,
   Table,
   Tag,
   Typography,
+  Upload,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import { listSocialApi } from '@/api/ttd_socical';
-import MyUpLoad from '@/components/core/upload';
+import MyButton from '@/components/basic/button';
 import CreateSocial from '@/pages/components/form/form-create-social';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
+import { checkImageType } from '@/utils/checkImageType';
+import { getUrlImageUpload } from '@/utils/getUrlImageUpload';
 
 const { createSocial, deleteSocial, getList, updateSocial } = listSocialApi;
 const { Text } = Typography;
@@ -61,18 +73,12 @@ export interface TableParams {
 const Support = () => {
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
-  // const [data, setData] = useState(originData);
   const [listSocial, setListSocial] = useState([]);
   const [editingKey, setEditingKey] = useState<string | number>('');
-  const [interestSelect, setInterestSelect] = useState<any>(undefined);
   const [open, setOpen] = useState(false);
-  const [newInteres, setNewInterst] = useState<any>();
-  const [idDelete, setIdDelete] = useState<string| number | undefined>(undefined);
+  const [spining, setSpining] = useState<boolean>(false);
 
   const [selectedStatus, setSelectedStatus] = useState('all');
-
-  const [logoUrl, setLogoUrl] = useState<any>('');
-  const [fileList, setFileList] = useState<any[]>([]);
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
@@ -83,26 +89,8 @@ const Support = () => {
     },
   });
 
-  const checkImageType = (file: any) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-
-    if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file types!');
-    }
-
-    return isJpgOrPng;
-  };
-
   const handleChange = (info: any) => {
-    if (checkImageType(info.file)) {
-      // setFileList(info.fileList);
-      const formData = new FormData();
-
-      formData.append('file', info.file);
-      formData.append('upload_preset', 'qfxfgji7');
-
-      setLogoUrl(formData);
-    }
+    checkImageType(info.file);
   };
 
   const EditableCell: React.FC<EditableCellProps> = ({
@@ -121,8 +109,20 @@ const Support = () => {
       <td {...restProps}>
         {editing ? (
           dataIndex === 'icon_url' ? (
-            <Form.Item name={dataIndex} style={{ margin: 0 }}>
-              <MyUpLoad setUrlLogo={setLogoUrl} />
+            <Form.Item name="logoUpload" style={{ margin: 0 }}>
+              <Upload
+                action=""
+                listType="picture"
+                maxCount={1}
+                accept="image/png, image/gif, image/jpeg"
+                onChange={handleChange}
+                beforeUpload={_ => {
+                  return false;
+                }}
+                // fileList={[...fileList]}
+              >
+                <MyButton icon={<UploadOutlined />}>Upload (Max: 1)</MyButton>
+              </Upload>
             </Form.Item>
           ) : dataIndex === 'is_actived' ? (
             <Form.Item name={dataIndex} style={{ margin: 0 }} valuePropName="checked">
@@ -156,40 +156,41 @@ const Support = () => {
     queryFn: () => getList(),
   });
 
-  const update = useMutation({
-    mutationFn: _ => updateSocial(interestSelect?.id, interestSelect),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListSocial']);
-      message.success('Update thành công');
-      setEditingKey('');
-      setInterestSelect(undefined);
-    },
-    onError: _ => {
-      message.error('Update thất bại');
-    },
-  });
+  const useSupport = () => {
+    const create = useMutation(createSocial, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListSocial']);
+        message.success('Tạo thành công');
+        setOpen(false);
+      },
+      onError: _ => {
+        message.error('Tạo thất bại');
+      },
+    });
+    const update = useMutation(updateSocial, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListSocial']);
+        message.success('Update thành công');
+        setEditingKey('');
+      },
+      onError: _ => {
+        message.error('Update thất bại');
+      },
+    });
+    const deleteSupport = useMutation(deleteSocial, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListSocial']);
+        message.success('Xóa thành công');
+      },
+      onError: _ => {
+        message.error('Xóa thất bại');
+      },
+    });
 
-  const create = useMutation({
-    mutationFn: _ => createSocial(newInteres),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListSocial']);
-      message.success('Tạo thành công');
-      setOpen(false);
-    },
-    onError: _ => {
-      message.error('Tạo thất bại');
-    },
-  });
-  const deleteSocialHandle = useMutation({
-    mutationFn: _ => deleteSocial(idDelete as string),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListSocial']);
-      message.success('Xóa thành công');
-    },
-    onError: _ => {
-      message.error('Xóa thất bại');
-    },
-  });
+    return { create, update, deleteSupport };
+  };
+
+  const { create, update, deleteSupport } = useSupport();
 
   const edit = (record: any) => {
     // console.log('record_____________', record);
@@ -206,21 +207,29 @@ const Support = () => {
   };
 
   const save = async (record: Item) => {
+    setSpining(true);
     const row = await form.validateFields();
+    let editSubscription;
 
-    // console.log('record_________________save', record);
-    const editSubscription = {
-      ...row,
-      id: record.id,
-    };
+    if (row.logoUpload) {
+      const file = row.logoUpload.file;
+      const icon_url = await getUrlImageUpload('icon-support', file);
 
-    setInterestSelect(editSubscription);
+      editSubscription = {
+        ...row,
+        id: record.id,
+        icon_url,
+      };
+      update.mutate({ id: record.id.toString(), payload: editSubscription });
+    } else {
+      editSubscription = {
+        ...row,
+        id: record.id,
+      };
+      update.mutate({ id: record.id.toString(), payload: editSubscription });
+    }
 
-    // console.log('editSubscription___________', editSubscription);
-
-    // if (interestSelect) {
-    //   update.mutate();
-    // }
+    setSpining(false);
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -256,7 +265,7 @@ const Support = () => {
       title: 'Icon',
       dataIndex: 'icon_url',
       width: '10%',
-      // editable: true,
+      editable: true,
       render: (_: any, record: any) => <Avatar size="large" src={record?.icon_url} alt={record?.title} />,
     },
     {
@@ -289,9 +298,11 @@ const Support = () => {
 
         return editable ? (
           <Space>
-            <Button size="small" type="dashed" onClick={() => save(record)} style={{ marginRight: 8 }}>
-              <CheckOutlined />
-            </Button>
+            <Spin spinning={spining}>
+              <Button size="small" type="dashed" onClick={() => save(record)} style={{ marginRight: 8 }}>
+                <CheckOutlined />
+              </Button>
+            </Spin>
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
               <Button size="small" type="dashed">
                 <CloseOutlined />
@@ -303,7 +314,7 @@ const Support = () => {
             <Button type="primary" size="small" disabled={editingKey !== ''} onClick={() => edit(record)}>
               <EditOutlined />
             </Button>
-            <Popconfirm title="Sure to cancel?" onConfirm={() => setIdDelete(record?.id)}>
+            <Popconfirm title="Sure to cancel?" onConfirm={() => deleteSupport.mutate(record.id.toString())}>
               <Button type="primary" size="small" disabled={editingKey !== ''}>
                 <DeleteOutlined />
               </Button>
@@ -331,29 +342,9 @@ const Support = () => {
     };
   });
 
-  // const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-  //   setTableParams({
-  //     pagination,
-  //     filters,
-  //     ...sorter,
-  //   });
-
-  //   if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-  //     // setData([]);
-  //   }
-
-  //   // if (sorter.order === 'ascend') {
-  //   //   const sorte = `${sorter.field}_order=ASC`;
-
-  //   //   setSort(sorte);
-  //   // } else if (sorter.order === 'descend') {
-  //   //   const sorte = `${sorter.field}_order=DESC`;
-
-  //   //   setSort(sorte);
-  //   // }
-  // };
-
   useEffect(() => {
+    if (!data) return;
+
     if (data) {
       setListSocial(data?.data);
       const filterSocials = data?.data?.filter((item: Item) => {
@@ -369,24 +360,6 @@ const Support = () => {
       setListSocial(filterSocials);
     }
   }, [data, selectedStatus]);
-
-  useEffect(() => {
-    if (interestSelect) {
-      update.mutate();
-    }
-  }, [interestSelect]);
-
-  useEffect(() => {
-    if (newInteres) {
-      create.mutate();
-    }
-  }, [newInteres]);
-  
-  useEffect(() => {
-    if (idDelete) {
-      deleteSocialHandle.mutate();
-    }
-  }, [idDelete]);
 
   // console.log('page______________', page);
 
@@ -445,7 +418,7 @@ const Support = () => {
         </div>
       </Form>
       <Drawer title="Tạo mới" width={360} onClose={onClose} open={open} bodyStyle={{ paddingBottom: 80 }}>
-        <CreateSocial setNewInteres={setNewInterst} />
+        <CreateSocial create={create} />
       </Drawer>
     </div>
   );

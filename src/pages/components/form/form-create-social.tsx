@@ -1,54 +1,46 @@
-import { AutoComplete, Button, Form, Input, InputNumber, message, Select, Spin } from 'antd';
+import type { UseMutationResult } from '@tanstack/react-query';
+
+import { UploadOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Spin, Upload } from 'antd';
 import { Fragment, useState } from 'react';
 
-import { listContractApi } from '@/api/ttd_contract';
-
-const { getUrlIconSocial } = listContractApi;
-
-import MyUpLoad from '@/components/core/upload';
+import MyButton from '@/components/basic/button';
+import { checkImageType } from '@/utils/checkImageType';
+import { getUrlImageUpload } from '@/utils/getUrlImageUpload';
 
 interface ICreateInterest {
-  setNewInteres: (data: any) => void;
+  create: UseMutationResult<any, unknown, any, unknown>
 }
 
-const CreateSocial = ({ setNewInteres }: ICreateInterest) => {
+const CreateSocial = ({ create }: ICreateInterest) => {
   const [form] = Form.useForm();
-  const [logoUrl, setLogoUrl] = useState<string>('');
+  const [files, setFiles] = useState<any>(undefined);
   const [loading, setLoading] = useState(false);
 
+  const handleChange = (info: any) => {
+    if (checkImageType(info.file)) {
+      setFiles(info.file);
+    }
+  };
+
   const onFinish = async (values: any) => {
+    setLoading(true);
+
     try {
-      setLoading(true);
-      let icon_url = '';
-
-      if (logoUrl) {
-        const res = await getUrlIconSocial(logoUrl);
-
-        if (res?.status === 200) {
-          icon_url = res?.data?.url;
-        } else {
-          message.warning('Lỗi khi upload ảnh');
-        }
-      }
+      const icon_url = await getUrlImageUpload('icon-support', files);
 
       const newInteres = {
         ...values,
         icon_url,
       };
 
-      setNewInteres(newInteres);
-      
+      create.mutate(newInteres);
     } catch (error) {
       console.log(error);
     }
 
     setLoading(false);
-
-    // // console.log('Received values of form: ', newInteres);
-    // setNewInteres(newInteres);
   };
-
-  // console.log('logoUrl______________', logoUrl);
 
   return (
     <Fragment>
@@ -69,13 +61,29 @@ const CreateSocial = ({ setNewInteres }: ICreateInterest) => {
           <Input />
         </Form.Item>
 
-        <Form.Item name="icon_url" label="Icon:">
-          <MyUpLoad setUrlLogo={setLogoUrl} />
+        <Form.Item name="icon_url" label="Icon:" rules={[{ required: true, message: 'Không được bỏ trống!' }]}>
+          <Upload
+            action=""
+            listType="picture"
+            maxCount={1}
+            accept="image/png, image/gif, image/jpeg"
+            onChange={handleChange}
+            beforeUpload={_ => {
+              return false;
+            }}
+            // fileList={[...fileList]}
+          >
+            <MyButton icon={<UploadOutlined />}>Upload (Max: 1)</MyButton>
+          </Upload>
         </Form.Item>
 
         <Form.Item style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px' }}>
           <Spin spinning={loading}>
-            <Button type="primary" htmlType="submit">
+            <Button
+              type="primary"
+              htmlType="submit"
+              //  disabled={files ? true : false}
+            >
               Tạo
             </Button>
           </Spin>

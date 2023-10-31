@@ -1,142 +1,61 @@
+import type { UseMutationResult } from '@tanstack/react-query';
+
 import { UploadOutlined } from '@ant-design/icons';
-import { Avatar, Button, Image, message, Space, Typography, Upload } from 'antd';
-import axios from 'axios';
-import { Fragment, useEffect, useState } from 'react';
-
-import { listUploadApi } from '@/api/ttd_upload.api';
-
-const { getPresignUrLGet, getPresignUrLPut , updateLogoStock} = listUploadApi;
+import { Button, Image, message, Space, Spin, Typography, Upload } from 'antd';
+import { Fragment, useState } from 'react';
 
 import MyButton from '@/components/basic/button';
+import { checkImageType } from '@/utils/checkImageType';
+import { getUrlImageUpload } from '@/utils/getUrlImageUpload';
 
 interface IMyUpload {
-  setUrlLogo: (url: any) => void;
   record?: any;
   isTitle?: boolean;
+  useStock: () => UseMutationResult<
+    any,
+    any,
+    {
+      logo_url: string;
+      stock_id: string;
+    },
+    unknown
+  >;
 }
 
-const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record, isTitle = true }) => {
-  const [fileList, setFileList] = useState<any[]>([]);
+const MyUpLoad: React.FC<IMyUpload> = ({ record, isTitle = true, useStock }) => {
   const [files, setFiles] = useState<any>();
+  const [spining, setSpining] = useState<boolean>(false);
 
-  const checkImageType = (file: any) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-
-    if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file types!');
-    }
-
-    return isJpgOrPng;
-  };
+  const updateLogo = useStock();
 
   const handleChange = (info: any) => {
     if (checkImageType(info.file)) {
-      setFileList(info.fileList);
       setFiles(info.file);
-      const formData = new FormData();
-
-      formData.append('file', info.file);
-      formData.append('upload_preset', 'qfxfgji7');
-      setUrlLogo(formData);
     }
   };
-
-  const IMAGE_BUCKET = 'fila-stock-icon';
-
-  // const handleUpload = async (info: any) => {
-  //   console.log('info___________________', info.file);
-
-  //   if (checkImageType(info.file)) {
-  //     setFileList(info.fileList);
-
-  //     const formData = new FormData();
-
-  //     formData.append('file', info.file);
-  //     formData.append('upload_preset', 'qfxfgji7');
-
-  //     // try {
-  //     //   console.log('adsdadas');
-
-  //     //   const payload = {
-  //     //     Bucket: `${IMAGE_BUCKET}/${record?.code}`,
-  //     //     Key: files?.name,
-  //     //     ContentType: files?.type,
-  //     //   };
-  //     //   const resPresignUrLPut = await getPresignUrLPut(payload);
-
-  //     //   console.log('resPresignUrLPut____________________', resPresignUrLPut);
-
-  //     //   // const response = await axios.post(`https://api.cloudinary.com/v1_1/dbkgkyh4h/image/upload`, formData);
-
-  //     //   // if (response.status === 200) {
-  //     //   //   // console.log('Upload successful:', response);
-  //     //   //   setUrlLogo(response.data.url);
-  //     //   // }
-  //     // } catch (error) {
-  //     //   //   console.error('Error uploading:', error);
-  //     // }
-  //   }
-
-  //   return false;
-  // };
 
   const handleSubmit = async () => {
-    // setLoading(true);
-    const payload = {
-      Bucket: `${IMAGE_BUCKET}/${record?.code}`,
-      Key: files.name,
-      ContentType: files.type,
-    };
+    setSpining(true);
 
     try {
-      const res = await getPresignUrLPut(payload);
+      const logo_url = await getUrlImageUpload(record?.code, files);
 
-      // console.log('res_________________', res);
-      const url = res?.url;
-
-      console.log('url_________________', url);
-
-      const options = {
-        headers: {
-          'Content-Type': files.type,
-        },
+      const dataUpload = {
+        logo_url,
+        stock_id: record?.id,
       };
 
-       const resFix = await axios.put(url, files, options);
-
-      console.log("resFix______________", resFix);
-
-      const res2 = await getPresignUrLGet(payload);
-
-      // console.log('res 2 ______________________', res2);
-      const res3 = await updateLogoStock(res2.url, record?.id);
-
-      console.log("res3___________________________", res3);
-      // console.log(res3);
-      // setLoading(false);
-      // setUpdateData({
-      //   ...data,
-      //   logo_url: res2?.data?.url || '',
-      // });
-      // notificationController.success({
-      //   message: 'Cập nhật logo thành công!',
-      // });
+      updateLogo.mutate(dataUpload);
     } catch (error: any) {
       console.log(error);
+      message.error('Upload image thất bại!');
     }
+
+    setSpining(false);
   };
 
-  useEffect(() => {
-    if (fileList.length === 0) {
-      setUrlLogo('');
-    }
-  }, [fileList]);
-
-  // console.log('isTitle_______________', isTitle);
-  // console.log(files);
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
       {record?.logo_url && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
           <Typography.Text type="success">Logo hiện tại: </Typography.Text>
@@ -174,8 +93,14 @@ const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record, isTitle = true }) =
           <MyButton icon={<UploadOutlined />}>Upload (Max: 1)</MyButton>
         </Space>
       </Upload>
-      <Button onClick={handleSubmit}>Upload</Button>
-    </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+        <Spin spinning={spining}>
+          <Button type="primary" onClick={handleSubmit}>
+            Upload
+          </Button>
+        </Spin>
+      </div>
+    </Space>
   );
 };
 

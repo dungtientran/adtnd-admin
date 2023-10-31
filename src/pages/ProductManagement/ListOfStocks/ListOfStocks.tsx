@@ -11,13 +11,13 @@ import { Avatar, Button, Input, message, Select, Skeleton, Space, Spin, Table, T
 import qs from 'qs';
 import { useEffect, useRef, useState } from 'react';
 
-import { apiListStock, apiUpdateLogoStock } from '@/api/stock.api';
+import { apiListStock } from '@/api/stock.api';
 import MyModal from '@/components/basic/modal';
 import MyUpLoad from '@/components/core/upload';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
 
-const { getStockList } = apiListStock;
+const { getStockList, updateLogoStock } = apiListStock;
 
 const LIMIT = Number(import.meta.env.VITE_PAGE_SIZE);
 
@@ -68,18 +68,21 @@ const Recommendations: React.FC = () => {
     market: params.filters?.market,
     // code: searchText || undefined,
   });
-  const updateLogo = useMutation({
-    mutationFn: _ => apiUpdateLogoStock(recordSelected?.id, urlLogo),
-    onSuccess: _ => {
-      queryClient.invalidateQueries(['getListStock']);
-      setModalOpen(false);
-      message.success('Update logo thành công');
-      setUrlLogo('');
-    },
-    onError: _ => {
-      message.error('Update logo thất bại');
-    },
-  });
+
+  const useStock = () => {
+    const updateLogo = useMutation(updateLogoStock, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListStock']);
+        message.success('Update logo thành công');
+        setModalOpen(false);
+      },
+      onError: (err: any) => {
+        message.error(`${err?.message}` || 'Update logo thất bại');
+      },
+    });
+
+    return updateLogo;
+  };
 
   const handleSearch = (selectedKeys: string, confirm: (param?: FilterConfirmProps) => void, dataIndex: DataIndex) => {
     // confirm();
@@ -231,11 +234,6 @@ const Recommendations: React.FC = () => {
     }
   };
 
-  const handleUpdateLogo = async () => {
-    updateLogo.mutate();
-    setUrlLogo('');
-  };
-
   const getExcelData = async (limit: string) => {
     try {
       const res = await getStockList(`page=1&size=${limit}`, sort, searchText);
@@ -247,6 +245,8 @@ const Recommendations: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!data) return;
+
     if (data) {
       setTableParams({
         ...tableParams,
@@ -265,13 +265,6 @@ const Recommendations: React.FC = () => {
     if (isLoading) setExcelData([]);
   }, [isLoading]);
 
-  // console.log(tableParams);
-  // console.log('sort______________', sort);
-  // console.log('search_____', searchText);
-  // console.log('listStock_', listStock);
-  // console.log('searchedColumn__________', searchedColumn);
-  // console.log('excelData________________', excelData);
-
   return (
     <div className="aaa">
       <HeadTitle title="Danh mục cổ phiếu" />
@@ -288,17 +281,8 @@ const Recommendations: React.FC = () => {
           scroll={{ x: 'max-content', y: '100%' }}
         />
       </div>
-      <MyModal
-        title="Cập nhật logo"
-        centered
-        open={modalOpen}
-        onOk={handleUpdateLogo}
-        onCancel={() => setModalOpen(false)}
-        okButtonProps={{ disabled: !urlLogo && true }}
-      >
-        <Spin spinning={updateLogo.isLoading}>
-          <MyUpLoad setUrlLogo={setUrlLogo} record={recordSelected} />
-        </Spin>
+      <MyModal title="Cập nhật logo" centered open={modalOpen} onCancel={() => setModalOpen(false)} footer={null}>
+        <MyUpLoad record={recordSelected} useStock={useStock} />
       </MyModal>
     </div>
   );
