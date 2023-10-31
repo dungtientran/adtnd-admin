@@ -1,7 +1,11 @@
 import { UploadOutlined } from '@ant-design/icons';
-import { Avatar, Image, message, Space, Typography, Upload } from 'antd';
+import { Avatar, Button, Image, message, Space, Typography, Upload } from 'antd';
 import axios from 'axios';
 import { Fragment, useEffect, useState } from 'react';
+
+import { listUploadApi } from '@/api/ttd_upload.api';
+
+const { getPresignUrLGet, getPresignUrLPut , updateLogoStock} = listUploadApi;
 
 import MyButton from '@/components/basic/button';
 
@@ -13,6 +17,7 @@ interface IMyUpload {
 
 const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record, isTitle = true }) => {
   const [fileList, setFileList] = useState<any[]>([]);
+  const [files, setFiles] = useState<any>();
 
   const checkImageType = (file: any) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -27,6 +32,7 @@ const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record, isTitle = true }) =
   const handleChange = (info: any) => {
     if (checkImageType(info.file)) {
       setFileList(info.fileList);
+      setFiles(info.file);
       const formData = new FormData();
 
       formData.append('file', info.file);
@@ -35,27 +41,89 @@ const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record, isTitle = true }) =
     }
   };
 
-  const handleUpload = async (info: any) => {
-    if (checkImageType(info.file)) {
-      setFileList(info.fileList);
-      const formData = new FormData();
+  const IMAGE_BUCKET = 'fila-stock-icon';
 
-      formData.append('file', info.file);
-      formData.append('upload_preset', 'qfxfgji7');
+  // const handleUpload = async (info: any) => {
+  //   console.log('info___________________', info.file);
 
-      try {
-        const response = await axios.post(`https://api.cloudinary.com/v1_1/dbkgkyh4h/image/upload`, formData);
+  //   if (checkImageType(info.file)) {
+  //     setFileList(info.fileList);
 
-        if (response.status === 200) {
-          // console.log('Upload successful:', response);
-          setUrlLogo(response.data.url);
-        }
-      } catch (error) {
-        //   console.error('Error uploading:', error);
-      }
+  //     const formData = new FormData();
+
+  //     formData.append('file', info.file);
+  //     formData.append('upload_preset', 'qfxfgji7');
+
+  //     // try {
+  //     //   console.log('adsdadas');
+
+  //     //   const payload = {
+  //     //     Bucket: `${IMAGE_BUCKET}/${record?.code}`,
+  //     //     Key: files?.name,
+  //     //     ContentType: files?.type,
+  //     //   };
+  //     //   const resPresignUrLPut = await getPresignUrLPut(payload);
+
+  //     //   console.log('resPresignUrLPut____________________', resPresignUrLPut);
+
+  //     //   // const response = await axios.post(`https://api.cloudinary.com/v1_1/dbkgkyh4h/image/upload`, formData);
+
+  //     //   // if (response.status === 200) {
+  //     //   //   // console.log('Upload successful:', response);
+  //     //   //   setUrlLogo(response.data.url);
+  //     //   // }
+  //     // } catch (error) {
+  //     //   //   console.error('Error uploading:', error);
+  //     // }
+  //   }
+
+  //   return false;
+  // };
+
+  const handleSubmit = async () => {
+    // setLoading(true);
+    const payload = {
+      Bucket: `${IMAGE_BUCKET}/${record?.code}`,
+      Key: files.name,
+      ContentType: files.type,
+    };
+
+    try {
+      const res = await getPresignUrLPut(payload);
+
+      // console.log('res_________________', res);
+      const url = res?.url;
+
+      console.log('url_________________', url);
+
+      const options = {
+        headers: {
+          'Content-Type': files.type,
+        },
+      };
+
+       const resFix = await axios.put(url, files, options);
+
+      console.log("resFix______________", resFix);
+
+      const res2 = await getPresignUrLGet(payload);
+
+      // console.log('res 2 ______________________', res2);
+      const res3 = await updateLogoStock(res2.url, record?.id);
+
+      console.log("res3___________________________", res3);
+      // console.log(res3);
+      // setLoading(false);
+      // setUpdateData({
+      //   ...data,
+      //   logo_url: res2?.data?.url || '',
+      // });
+      // notificationController.success({
+      //   message: 'Cập nhật logo thành công!',
+      // });
+    } catch (error: any) {
+      console.log(error);
     }
-
-    return false;
   };
 
   useEffect(() => {
@@ -64,7 +132,8 @@ const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record, isTitle = true }) =
     }
   }, [fileList]);
 
-  console.log('isTitle_______________', isTitle);
+  // console.log('isTitle_______________', isTitle);
+  // console.log(files);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -105,6 +174,7 @@ const MyUpLoad: React.FC<IMyUpload> = ({ setUrlLogo, record, isTitle = true }) =
           <MyButton icon={<UploadOutlined />}>Upload (Max: 1)</MyButton>
         </Space>
       </Upload>
+      <Button onClick={handleSubmit}>Upload</Button>
     </div>
   );
 };

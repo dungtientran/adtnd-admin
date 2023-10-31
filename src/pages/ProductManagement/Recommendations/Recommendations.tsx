@@ -206,7 +206,7 @@ const Recommendations: React.FC = () => {
   const columns: ColumnsType<any> = [
     {
       title: 'Ngày tạo',
-      dataIndex: '',
+      dataIndex: 'date',
       width: '8%',
       // sorter: () => {
       //   if (dateSort == 'DESC') {
@@ -276,7 +276,11 @@ const Recommendations: React.FC = () => {
         if (record?.is_closed) {
           return <Tag color="red">Đóng</Tag>;
         } else {
-          return <Typography.Text>{record?.current_value}</Typography.Text>;
+          return (
+            <Typography.Text>
+              {record?.current_value ? record?.current_value : <Tag color="#3b5999"></Tag>}
+            </Typography.Text>
+          );
         }
       },
       sorter: true,
@@ -285,13 +289,9 @@ const Recommendations: React.FC = () => {
       title: 'Giá đóng',
       dataIndex: 'closed_price',
       width: '6%',
-      render: (_, record) => {
-        if (record?.is_closed) {
-          return <Tag color="red">Đóng</Tag>;
-        } else {
-          return <Typography.Text>{record?.closed_price}</Typography.Text>;
-        }
-      },
+      render: (_, record) => (
+        <Typography.Text>{record?.closed_price ? record?.closed_price : <Tag color="#3b5999"></Tag>}</Typography.Text>
+      ),
       sorter: true,
     },
     {
@@ -330,7 +330,9 @@ const Recommendations: React.FC = () => {
       title: 'Ngày đóng',
       dataIndex: 'closed_date',
       width: '8%',
-      // render: (_, record) => <Typography.Text>{record?.closed_date ? record?.closed_date : 'Abc'}</Typography.Text>,
+      render: (_, record) => (
+        <Typography.Text>{record?.closed_date ? record?.closed_date : <Tag color="#3b5999"></Tag>}</Typography.Text>
+      ),
     },
     {
       title: 'Lợi nhuận khi đóng',
@@ -874,7 +876,7 @@ const Recommendations: React.FC = () => {
         rowKey={record => record.id}
         dataSource={data}
         pagination={tableParams.pagination}
-        // loading={loading}
+        loading={loading}
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: '100%' }}
         rowSelection={{

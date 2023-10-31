@@ -4,7 +4,7 @@ import type { FilterValue } from 'antd/es/table/interface';
 import './index.less';
 
 import { MenuOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Dropdown, notification, Table, Typography } from 'antd';
+import { Button, Checkbox, Dropdown, notification, Table, Tag, Typography } from 'antd';
 import { PaginationConfig } from 'antd/es/pagination';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,7 +27,7 @@ interface TableParams {
 function GroupTablePage() {
   const subscriptions = useSelector(state => state.subsciptions.subscriptions);
 
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [dataExcel, setDataExcel] = useState([]);
 
@@ -81,7 +81,8 @@ function GroupTablePage() {
       })
       .catch(error => {
         console.log(error);
-      }).finally(()=>{
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
@@ -147,14 +148,12 @@ function GroupTablePage() {
     actionList.push({
       key: '1',
       label: (
-        <Link to={`/customer-management/customer-group/detail/${record.id}`} className="text-left">
-          <Typography
-            onClick={() => {
-              console.log(record.id);
-            }}
-          >
-            Xem chi tiết
-          </Typography>
+        <Link
+          to={`/customer-management/customer-group/detail/${record.id}`}
+          className="text-left"
+          onClick={() => handelAddTag(record.id, record.name)}
+        >
+          <Typography>Xem chi tiết</Typography>
         </Link>
       ),
     });
@@ -230,7 +229,9 @@ function GroupTablePage() {
       dataIndex: 'service_pack',
       // dataType: 'text',
       width: '20%',
-      // render: (text: string, record: any) => <Typography className="text-center">{text}</Typography>,
+      render: (text: string, record: any) => (
+        <Typography className="text-center">{text ? text : <Tag></Tag>}</Typography>
+      ),
       filterDropdown: () => {
         return (
           <div>
@@ -260,7 +261,9 @@ function GroupTablePage() {
       dataIndex: 'sale_email',
       // dataType: 'text',
       width: '30%',
-      // render: (text: string, record: any) => <Typography className="text-center">{text}</Typography>,
+      render: (text: string, record: any) => (
+        <Typography className="text-center">{text ? text : <Tag></Tag>}</Typography>
+      ),
       ...getColumnSearchProps({
         setFilter: setSaleSearch,
       }),
@@ -269,6 +272,9 @@ function GroupTablePage() {
       title: 'Mô tả',
       dataIndex: 'description',
       width: '20%',
+      render: (text: string, record: any) => (
+        <Typography className="text-center">{text ? text : <Tag></Tag>}</Typography>
+      ),
     },
     actionsColumn,
   ];
@@ -294,9 +300,9 @@ function GroupTablePage() {
         ...tableParams,
         pagination: {
           ...tableParams.pagination,
-          current:1
-        }
-      })
+          current: 1,
+        },
+      });
     }
   }, [nameSearch, subsciptionFilter, saleSearch]);
   useEffect(() => {
@@ -316,6 +322,7 @@ function GroupTablePage() {
                 ...form,
               };
             }
+
             return item;
           });
 
@@ -340,8 +347,10 @@ function GroupTablePage() {
         .then((res: any) => {
           if (res.code == 200) {
             const new_data = [res.data, ...data];
+
             setData(new_data);
           }
+
           notification.success({
             message: 'Tạo thành công!',
           });
@@ -398,7 +407,7 @@ function GroupTablePage() {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '10px' }}>
         <Typography style={{ marginTop: '10px' }}>Có tất cả {tableParams.pagination?.total} kết quả</Typography>
-        <ExportExcel columns={columns} dataSource={dataExcel} title='Danh sách nhóm khách hàng'/>
+        <ExportExcel columns={columns} dataSource={dataExcel} title="Danh sách nhóm khách hàng" />
       </div>
       <div className="table_member">
         <Table

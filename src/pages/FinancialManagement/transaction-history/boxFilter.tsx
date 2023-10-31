@@ -79,7 +79,7 @@ const BoxFilter = ({ setQueryFilter, handleSetPageOnFilter, handleResetFilters }
           <Text strong>Ngày giao dịch:</Text>
         </div>
         <Space>
-          <RangePicker format="YYYY/MM/DD" onChange={onChange} value={selectedDate} />
+          <RangePicker format="YYYY/MM/DD" onChange={onChange} value={selectedDate} style={{ width: '328px' }} />
         </Space>
       </Space>
 
@@ -97,7 +97,7 @@ const BoxFilter = ({ setQueryFilter, handleSetPageOnFilter, handleResetFilters }
                 amount_min: value as string,
               }))
             }
-            style={{ width: '200px' }}
+            style={{ width: '160px' }}
             min={0}
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />
@@ -111,7 +111,7 @@ const BoxFilter = ({ setQueryFilter, handleSetPageOnFilter, handleResetFilters }
                 amount_max: value as string,
               }))
             }
-            style={{ width: '200px' }}
+            style={{ width: '160px' }}
             min={0}
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           />

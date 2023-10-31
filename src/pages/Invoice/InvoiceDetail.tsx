@@ -1,222 +1,109 @@
-import type { SignalModel } from '@/interface/signal';
-import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import type { FilterValue, SorterResult } from 'antd/es/table/interface';
+import type { TablePaginationConfig } from 'antd/es/table';
+import type { FilterValue } from 'antd/es/table/interface';
 
-import { BorderOuterOutlined, MenuOutlined, StarFilled, UploadOutlined } from '@ant-design/icons';
-import {
-    Avatar,
-    Button,
-    Col,
-    DatePicker,
-    Dropdown,
-    InputNumber,
-    notification,
-    Popconfirm,
-    Radio,
-    Row,
-    Select,
-    Slider,
-    Space,
-    Table,
-    Tag,
-    Typography,
-    Upload,
-} from 'antd';
-import axios from 'axios';
-import moment from 'moment';
-import qs from 'qs';
+import { Space, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { getInvoice, getInvoiceDetail } from '@/api/invoice';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+
+import { getInvoiceDetail } from '@/api/invoice';
+
 import CommissionTable from './CommissionTable';
-import InvoiceTable from './InvoiceTablePage';
 import ContractTable from './ContractTable';
 
+const { Text } = Typography;
 
 interface TableParams {
-    pagination?: TablePaginationConfig;
-    sortField?: string;
-    sortOrder?: string;
-    filters?: Record<string, FilterValue>;
+  pagination?: TablePaginationConfig;
+  sortField?: string;
+  sortOrder?: string;
+  filters?: Record<string, FilterValue>;
 }
 
-
 const Recommendations: React.FC = () => {
-    const param = useParams()
-    const id = param.id
-    const [data, setData] = useState<any>([]);
-    const [loading, setLoading] = useState(false);
+  const param = useParams();
+  const id = param.id;
+  const [data, setData] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
 
-
-    const [tableParams, setTableParams] = useState<TableParams>({
-        pagination: {
-            current: 1,
-            pageSize: 10,
-        },
-    });
-
-    const [filterQuery, setFilterQuery] = useState('');
-
-    const actions = (record: any) => {
-        const actionList = [];
-
-        if (record.is_approved && !record.is_closed) {
-            actionList.push({
-                key: '5',
-                label: (
-                    <Typography
-                        onClick={() => {
-                            console.log(record);
-
-                        }}
-                    >
-                        {'Đóng'}
-                    </Typography>
-                ),
-                danger: true,
-            });
+  const getData = async () => {
+    setLoading(true);
+    await getInvoiceDetail(id)
+      .then((data: any) => {
+        if (data.code === 200) {
+          setData(data.data);
         }
-        return actionList;
-    };
+      })
+      .catch(error => {
+        console.log(error);
+      });
 
-    const actionsColumn = {
-        title: 'ACTION',
-        width: '10%',
-        editable: false,
-        render: (_: any, record: any) => (
-            <Dropdown menu={{ items: actions(record) }} arrow placement="bottom">
-                <Button type="ghost" size="small" shape="circle">
-                    <MenuOutlined />
-                </Button>
-            </Dropdown>
-        ),
-    };
+    setLoading(false);
+  };
 
-    const columns: ColumnsType<any> = [
-        {
-            title: 'Mã chứng từ',
-            dataIndex: 'payment_code',
-            width: '10%',
-            render: (_: any, record: any) => {
-                return <Link to={'/invoice/detail/' + _} style={{ textDecoration: 'none' }}>{_}</Link>
-            }
-        },
-        {
-            title: 'Kỳ thanh toán',
-            dataIndex: 'payment_period',
-            width: '10%',
-        },
-        {
-            title: 'Mã KH',
-            dataIndex: ['sale', 'staff_code'],
-            width: '8%',
-        },
-        {
-            title: 'Email',
-            dataIndex: ['sale', 'email'],
-            width: '15%',
-        },
-        {
-            title: 'Hoa hồng thanh toán trong kỳ',
-            dataIndex: 'commission_in_period',
-            width: '12%',
-            render: (_: any, record: any) => {
-                return parseInt(_).toLocaleString()
-            }
-        },
-        {
-            title: 'Hoa hồng tạm tính',
-            dataIndex: 'commission_provisional',
-            width: '10%',
-            render: (_: any, record: any) => {
-                return parseInt(_).toLocaleString()
-            }
-        },
-        {
-            title: 'Tình trạng',
-            dataIndex: 'status',
-            width: '10%',
-            render: (_: any, record: any) => {
-                return _ == 'pending' ? 'Chưa duyệt' : 'Đã duyệt'
-            }
-        },
-        actionsColumn,
-    ];
+  useEffect(() => {
+    getData();
+  }, [id]);
 
-    const getData = async () => {
-        setLoading(true);
-        await getInvoiceDetail(id)
-            .then((data: any) => {
-                if (data.code === 200) {
-                    setData(data.data)
-                }
-            })
-            .catch(error => {
-                console.log(error);
-            });
+  const getTotalContractValue = () => {
+    return data?.contract?.reduce((accumulator: any, currentValue: any) => {
+      return accumulator + parseInt(currentValue?.contract_commission?.sales_commission);
+    }, 0);
+  };
 
-        setLoading(false);
-    };
+  const getTotalCommissionValue = () => {
+    return data?.commission?.reduce((accumulator: any, currentValue: any) => {
+      return accumulator + parseInt(currentValue?.amount);
+    }, 0);
+  };
 
-    useEffect(() => {
-        getData();
-    }, [id]);
+  return (
+    <div className="aaa">
+      <div style={{ textAlign: 'center' }}>
+        <Typography.Title level={2}>Bảng chi tiết hoa hồng</Typography.Title>
+      </div>
+      <Space direction="vertical">
+        <Space>
+          <Text strong>Kỳ thanh toán: </Text>
+          <Text>{data?.invoice?.payment_period}</Text>
+        </Space>
+        <Space>
+          <Text strong>Mã khách hàng: </Text>
+          <Text>{data?.invoice?.sale?.staff_code}</Text>
+        </Space>
+        <Space>
+          <Text strong>Tên khách hàng: </Text>
+          <Text>{data?.invoice?.sale?.fullname}</Text>
+        </Space>
+        <Space>
+          <Text strong>SĐT: </Text>
+          <Text>{data?.invoice?.sale?.phone_number}</Text>
+        </Space>
+        <Space>
+          <Text strong>Email: </Text>
+          <Text>{data?.invoice?.sale?.email}</Text>
+        </Space>
+      </Space>
+      <div>
+        <Typography.Title level={3} style={{ textAlign: 'center' }}>
+          Gói Premium
+        </Typography.Title>
+        <Typography.Title level={5} style={{ textAlign: 'center' }}>
+          Tổng cộng : {getTotalCommissionValue()?.toLocaleString()}
+        </Typography.Title>
+        <CommissionTable data={data?.commission} />
+      </div>
 
-    const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-        console.log(pagination);
-        setTableParams({
-            pagination,
-            filters,
-            ...sorter,
-        });
-
-        if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-            setData([]);
-        }
-    };
-
-    const getTotalContractValue = () => {
-        return data?.contract?.reduce((accumulator: any, currentValue : any) => {
-            return accumulator + parseInt(currentValue?.contract_commission?.sales_commission) 
-        }, 0)
-    }
-
-    const getTotalCommissionValue = () => {
-        return data?.commission?.reduce((accumulator: any, currentValue : any) => {
-            return accumulator + parseInt(currentValue?.amount) 
-        }, 0)
-    }
-    return (
-        <div className="aaa">
-            <div style={{ textAlign: 'center' }}>
-                <Typography.Title level={2}>Bảng chi tiết hoa hồng</Typography.Title>
-            </div>
-            <div>
-                <p><span style={{ fontWeight: '600' }}>Kì thanh toán :</span> {data?.invoice?.payment_period}</p>
-                <p><span style={{ fontWeight: '600' }}>Mã khách hàng :</span> {data?.invoice?.sale?.staff_code}</p>
-                <p><span style={{ fontWeight: '600' }}>Tên khách hàng :</span> {data?.invoice?.sale?.fullname}</p>
-                <p><span style={{ fontWeight: '600' }}>SĐT :</span> {data?.invoice?.sale?.phone_number}</p>
-                <p><span style={{ fontWeight: '600' }}>Email :</span> {data?.invoice?.sale?.email}</p>
-            </div>
-            <div>
-                <Typography.Title level={3} style={{ textAlign: 'center' }}>Gói Premium</Typography.Title>
-                <Typography.Title level={5} style={{ textAlign: 'center' }}>
-                    Tổng cộng : {getTotalCommissionValue()?.toLocaleString()}
-                </Typography.Title>
-                <CommissionTable data={data?.commission} />
-            </div>
-
-            <div>
-                <Typography.Title level={3} style={{ textAlign: 'center' }}>Hoa hồng tạm tính</Typography.Title>
-                <Typography.Title level={5} style={{ textAlign: 'center' }}>
-                    Tổng cộng : {getTotalContractValue()?.toLocaleString()}
-                </Typography.Title>
-                <ContractTable data={data?.contract} />
-            </div>
-
-        </div>
-    );
+      <div>
+        <Typography.Title level={3} style={{ textAlign: 'center' }}>
+          Hoa hồng tạm tính
+        </Typography.Title>
+        <Typography.Title level={5} style={{ textAlign: 'center' }}>
+          Tổng cộng : {getTotalContractValue()?.toLocaleString()}
+        </Typography.Title>
+        <ContractTable data={data?.contract} />
+      </div>
+    </div>
+  );
 };
 
 export default Recommendations;

@@ -383,6 +383,7 @@ const Recommendations: React.FC = () => {
               target_stop_loss: item?.target_stop_loss,
               status: item?.is_approved ? 'Đã duyệt' : 'Mới',
               is_closed: item?.is_closed,
+              is_approved: item?.is_approved,
             };
 
             return column;
@@ -416,6 +417,7 @@ const Recommendations: React.FC = () => {
               target_stop_loss: item?.target_stop_loss,
               status: item?.is_approved ? 'Đã duyệt' : 'Mới',
               is_closed: item?.is_closed,
+              is_approved: item?.is_approved,
             };
 
             return column;
@@ -460,13 +462,18 @@ const Recommendations: React.FC = () => {
   const checkIsNewSignal = () => {
     const filter = data.filter((item: any) => selectedRow.includes(item.id)) || [];
 
-    const bool = filter.every((item: any) => item.is_approved == false);
+    console.log('data______________________', data);
+    // console.log('checkIsNewSignal______________________', selectedRow);
+    console.log('filter______________________selectedRow', filter);
 
-    console.log('check ', bool);
+    const bool = filter.every((item: any) => item?.is_approved === false);
+
+    console.log('check______________________bool', bool);
 
     return bool;
   };
 
+  // console.log("check_________selectrow", selectedRow.includes("7d92e2a2-9c2f-4436-a355-26993a564b7b"));
   const handleDeleteSignal = (id: string) => {
     if (loading) return;
     setLoading(true);
@@ -611,7 +618,6 @@ const Recommendations: React.FC = () => {
   useEffect(() => {
     if (loading) setDataExcel([]);
   }, [loading]);
-
 
   return (
     <div className="aaa">

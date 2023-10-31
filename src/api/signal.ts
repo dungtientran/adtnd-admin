@@ -95,7 +95,7 @@ export const getSignalListPageApprove = (
     .get<any>(
       `/signal/admin/signal_list?${params}${searchText ? `&searchText=${searchText}` : ''}${
         filter ? filter : ''
-      }&${dateSort}`,
+      }&date_order=${dateSort}`, 
     )
     .then(data => data)
     .catch(error => {
