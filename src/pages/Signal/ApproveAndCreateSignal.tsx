@@ -373,7 +373,7 @@ const Recommendations: React.FC = () => {
           const columns = data?.data?.rows?.map((item: any) => {
             const column = {
               id: item?.id,
-              date: item?.action_date,
+              date: moment(item?.created_at).format('YYYY/MM/DD'),
               code: item?.code,
               is_long_term: item?.is_long_term ? 'Dài hạn' : 'Ngắn hạn',
               target_buy_price: item?.target_buy_price,
@@ -407,7 +407,7 @@ const Recommendations: React.FC = () => {
         if (data.code === 200) {
           const columns = data?.data?.rows?.map((item: any) => {
             const column = {
-              date: item?.action_date,
+              date: moment(item?.created_at).format('YYYY/MM/DD'),
               code: item?.code,
               is_long_term: item?.is_long_term ? 'Dài hạn' : 'Ngắn hạn',
               target_buy_price: item?.target_buy_price,

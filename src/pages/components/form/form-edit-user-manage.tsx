@@ -125,7 +125,8 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
       },
     };
     const updateSale = {
-      admin_id: initForm?.id,
+      // admin_id: initForm?.id,
+      sale_id: initForm?.id,
       level: values?.level,
       role_id: sale_id,
     };
@@ -196,7 +197,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
         </Form.Item>
 
         <Form.Item name="level" label="Level">
-          <InputNumber defaultValue={1} min={1} />
+          <InputNumber defaultValue={1} min={1} max={4} />
         </Form.Item>
 
         {!initForm && (

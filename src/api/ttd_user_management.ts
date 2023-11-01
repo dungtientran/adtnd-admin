@@ -8,7 +8,7 @@ export const listUserApi = {
     return axiosInstance.post(`/admin/create_admin_user`, data);
   },
   updateSale(data: any): Promise<any> {
-    return axiosInstance.post(`/admin/sale/update_level`, data);
+    return axiosInstance.put(`/admin/update-sale`, data);
   },
   delteleSale(id: string): Promise<any> {
     return axiosInstance.delete(`/admin/sale/remove_account/${id}`);

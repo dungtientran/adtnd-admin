@@ -219,7 +219,7 @@ const Recommendations: React.FC = () => {
       // },
       // sortDirections: ['ascend', 'descend'],
       sorter: true,
-      render: (_, record) => <Typography.Text>{record?.action_date}</Typography.Text>,
+      // render: (_, record) => <Typography.Text>{record?.action_date}</Typography.Text>,
     },
     {
       title: 'Mã CK',
@@ -406,7 +406,7 @@ const Recommendations: React.FC = () => {
           const columns = data?.data?.rows?.map((item: any) => {
             const column = {
               ...item,
-              date: item?.action_date,
+              date: moment(item?.created_at).format('YYYY/MM/DD'),
               long_term: item?.is_long_term ? 'Dài hạn' : 'Ngắn hạn',
               status: item?.is_closed ? 'Đóng' : item?.is_approved ? 'Đã duyệt' : 'Mới',
             };
@@ -433,7 +433,7 @@ const Recommendations: React.FC = () => {
           const columns = data?.data?.rows?.map((item: any) => {
             const column = {
               ...item,
-              date: item?.action_date,
+              date: moment(item?.created_at).format('YYYY/MM/DD'),
               long_term: item?.is_long_term ? 'Dài hạn' : 'Ngắn hạn',
               status: item?.is_closed ? 'Đóng' : item?.is_approved ? 'Đã duyệt' : 'Mới',
             };
