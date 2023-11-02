@@ -1,7 +1,7 @@
 import type { TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue } from 'antd/es/table/interface';
 
-import { Space, Typography } from 'antd';
+import { Skeleton, Space, Spin, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -57,7 +57,7 @@ const Recommendations: React.FC = () => {
   };
 
   console.log('___________________________id', id);
-  
+
   return (
     <div className="aaa">
       <div style={{ textAlign: 'center' }}>
@@ -66,23 +66,23 @@ const Recommendations: React.FC = () => {
       <Space direction="vertical">
         <Space>
           <Text strong>Kỳ thanh toán: </Text>
-          <Text>{data?.invoice?.payment_period}</Text>
+          {loading ? <Spin spinning={true} size="small" /> : <Text>{data?.invoice?.payment_period}</Text>}
         </Space>
         <Space>
           <Text strong>Mã khách hàng: </Text>
-          <Text>{data?.invoice?.sale?.staff_code}</Text>
+          {loading ? <Spin spinning={true} size="small" /> : <Text>{data?.invoice?.sale?.staff_code}</Text>}
         </Space>
         <Space>
           <Text strong>Tên khách hàng: </Text>
-          <Text>{data?.invoice?.sale?.fullname}</Text>
+          {loading ? <Spin spinning={true} size="small" /> : <Text>{data?.invoice?.sale?.fullname}</Text>}
         </Space>
         <Space>
           <Text strong>SĐT: </Text>
-          <Text>{data?.invoice?.sale?.phone_number}</Text>
+          {loading ? <Spin spinning={true} size="small" /> : <Text>{data?.invoice?.sale?.phone_number}</Text>}
         </Space>
         <Space>
           <Text strong>Email: </Text>
-          <Text>{data?.invoice?.sale?.email}</Text>
+          {loading ? <Spin spinning={true} size="small" /> : <Text>{data?.invoice?.sale?.email}</Text>}
         </Space>
       </Space>
       <div>
