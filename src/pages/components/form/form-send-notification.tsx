@@ -3,7 +3,6 @@ import type { UseMutationResult } from '@tanstack/react-query';
 
 import { useQuery } from '@tanstack/react-query';
 import { AutoComplete, Button, Checkbox, Form, Input, InputNumber, Select, Space, Spin, Typography } from 'antd';
-import TextArea from 'antd/es/input/TextArea';
 import { Fragment, useEffect, useState } from 'react';
 
 import { listCustomerApi } from '@/api/ttd_list_customer';
@@ -22,6 +21,8 @@ interface ICreateUser {
 const SendNotification: React.FC<ICreateUser> = ({ idNotification, useSale }) => {
   const { sendNotificationHandle } = useSale();
   const [form] = Form.useForm();
+  const [listCustomerId, setListCustomerId] = useState<any>([]);
+  const [listGroupId, setListGroupId] = useState<any>([]);
 
   const [option, setOption] = useState<
     { id: string; value: string; name: string; customer_code: string; email: string; phone_number: string }[]
@@ -63,11 +64,11 @@ const SendNotification: React.FC<ICreateUser> = ({ idNotification, useSale }) =>
   }, [userData.data, groupData.data]);
 
   const onFinish = (values: any) => {
-    // console.log('values_____________________', values);
+    console.log('values_____________________', values);
     const customer_id = option.find(item => item.email === values?.email)?.id;
     const notification_id = idNotification;
     const newValues = {
-      customer_id,
+      // customer_id: listCustomerId,
       notification_id,
       ...values,
     };
@@ -94,16 +95,16 @@ const SendNotification: React.FC<ICreateUser> = ({ idNotification, useSale }) =>
           name="send_all"
           label="Gửi đến tất cả:"
           valuePropName="checked"
-          rules={[{ required: true, message: 'Không được bỏ trống!' }]}
+          // rules={[{ required: true, message: 'Không được bỏ trống!' }]}
         >
           <Checkbox />
         </Form.Item>
         <Form.Item
-          name="email"
+          name="customer_id"
           label="Chọn email khách hàng"
           // rules={[{ required: true, message: 'Không đc bỏ trống !', whitespace: true }]}
         >
-          <AutoComplete
+          {/* <AutoComplete
             style={{ width: '100%' }}
             options={option}
             placeholder="Chọn email khách hàng"
@@ -111,6 +112,13 @@ const SendNotification: React.FC<ICreateUser> = ({ idNotification, useSale }) =>
             size="large"
             // onChange={value => setsaleSelect(value)}
             // disabled={initForm}
+          /> */}
+          <Select
+            placeholder="Chọn email khách hàng"
+            mode="multiple"
+            defaultValue={listCustomerId}
+            onChange={value => setListCustomerId(value)}
+            options={[...option?.map(item => ({ label: item.name, value: item.id }))]}
           />
         </Form.Item>
 
@@ -119,21 +127,28 @@ const SendNotification: React.FC<ICreateUser> = ({ idNotification, useSale }) =>
           label="Group"
           // rules={[{ required: true, message: 'Vui lòng nhập chức vụ !', whitespace: true }]}
         >
-          <AutoComplete
+          {/* <AutoComplete
             style={{ width: '100%' }}
             options={option2}
             placeholder="Nhập tên group"
             filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             size="large"
             // disabled={initForm}
+          /> */}
+          <Select
+            placeholder="Nhập tên group"
+            mode="multiple"
+            defaultValue={listGroupId}
+            onChange={value => setListGroupId(value)}
+            options={[...option2?.map(item => ({ label: item.value, value: item.id }))]}
           />
         </Form.Item>
 
         <Form.Item style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '' }}>
           <Spin spinning={sendNotificationHandle.isLoading}>
-          <Button type="primary" htmlType="submit">
-            Gửi
-          </Button>
+            <Button type="primary" htmlType="submit">
+              Gửi
+            </Button>
           </Spin>
         </Form.Item>
       </Form>

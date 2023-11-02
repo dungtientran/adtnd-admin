@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { IlistStock } from '@/interface/stock/stock.interface';
+
+import './index.less';
 
 import {
   Alert,
@@ -21,7 +24,10 @@ import { useSelector } from 'react-redux';
 
 import { getGroupList } from '@/api/group';
 import { searchStock } from '@/api/stock.api';
+import { listCustomerApi } from '@/api/ttd_list_customer';
 import { adminGetUser } from '@/api/user.api';
+
+const { getListUser } = listCustomerApi;
 
 interface SendSignalModalProps {
   open?: boolean;
@@ -35,10 +41,13 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
   const [targetSubscriptions, setTargetSubscriptions] = useState<any>([]);
   const [groups, setGroups] = useState<any>([]);
   const [targetGroup, setTargetGroup] = useState<any>([]);
+  const [targetUser, setTargetUser] = useState<any>([]);
   const [step, setStep] = useState(0);
   const [form] = Form.useForm();
   const [stockList, setStockList] = useState<IlistStock[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [listUser, setListUser] = useState<any>([]);
+  const [listUserId, setListUserId] = useState<any>([]);
   const [sendAll, setSendAll] = useState(false);
 
   const handleSearchStock = async (query: string) => {
@@ -64,7 +73,7 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
     (email: string) => {
       adminGetUser(email)
         .then((res: any) => {
-          console.log('user', res);
+          console.log('user________________________________', res);
 
           if (res?.customer) {
             setUser(res.customer);
@@ -91,6 +100,17 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
     });
   };
 
+  const fetchListUser = async () => {
+    try {
+      const listUserResponse = await getListUser('');
+
+      setListUser(listUserResponse);
+      // console.log('listUserResponse______________________', listUserResponse);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleFormSubmit = async (value: any) => {
     if (!value.subscription_product_id && !value.customer_id && !value.group_id && sendAll == false) {
       console.log(targetSubscriptions, targetGroup);
@@ -99,6 +119,8 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
         message: 'Khuyến nghị phải được gửi đến ít nhất 1 trong 3 loại khách hàng trên',
       });
     } else {
+
+      // console.log("value__________________________", value);
       handleOk({
         ...value,
         is_send_all: sendAll,
@@ -108,6 +130,7 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
 
   useEffect(() => {
     fetchGroups();
+    fetchListUser();
   }, []);
 
   return (
@@ -120,56 +143,59 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
       // confirmLoading={form?.loading ? true : false}
       onCancel={handleCancel}
     >
-      <Form onFinish={handleFormSubmit} form={form}>
-        <Typography.Title style={{ marginBottom: 20 }}>Gửi khuyến nghị này đến</Typography.Title>
-        <Form.Item label={'Gửi đến tất cả'} name="is_send_all">
-          <Checkbox name="is_send_all" defaultChecked={sendAll} onChange={e => setSendAll(e.target.checked)} />
-        </Form.Item>
-        <Form.Item name={subscriptions.length > 0 ? 'subscription_product_id' : ''} label={`Gói dịch vụ`}>
-          <Select
-            placeholder={'Chọn gói dịch vụ'}
-            mode="multiple"
-            defaultValue={targetSubscriptions}
-            onChange={value => setTargetSubscriptions(value)}
-            options={[...subscriptions?.map(item => ({ label: item.name, value: item.id }))]}
-          />
-        </Form.Item>
-        <Form.Item name={groups.length > 0 ? 'group_id' : ''} label={`Nhóm khách hàng`}>
-          <Select
-            mode="multiple"
-            placeholder={'Chọn nhóm khách hàng'}
-            options={[
-              ...groups?.map((item: any) => ({ label: item.name, value: item.id })),
-              { label: 'None', value: null },
-            ]}
-            onChange={value => setTargetGroup(value)}
-          />
-        </Form.Item>
-        <Form.Item
-          label={'Khách hàng'}
-          name="email"
-          rules={[
-            {
-              type: 'email',
-              message: 'Email không hợp lệ',
-            },
-          ]}
-        >
-          <Input
-            placeholder={'Nhập email người dùng cần gửi'}
-            onChange={async e => {
-              const value = e.target.value;
+      <div className="form_send_signal">
+        <Form onFinish={handleFormSubmit} form={form}>
+          <Typography.Title style={{ marginBottom: 20 }}>Gửi khuyến nghị này đến</Typography.Title>
+          <Form.Item label={'Gửi đến tất cả'} name="is_send_all">
+            <Checkbox name="is_send_all" defaultChecked={sendAll} onChange={e => setSendAll(e.target.checked)} />
+          </Form.Item>
+          <Form.Item name={subscriptions.length > 0 ? 'subscription_product_id' : ''} label={`Gói dịch vụ`}>
+            <Select
+              placeholder={'Chọn gói dịch vụ'}
+              mode="multiple"
+              defaultValue={targetSubscriptions}
+              onChange={value => setTargetSubscriptions(value)}
+              options={[...subscriptions?.map(item => ({ label: item.name, value: item.id }))]}
+            />
+          </Form.Item>
+          <Form.Item name={groups.length > 0 ? 'group_id' : ''} label={`Nhóm khách hàng`}>
+            <Select
+              mode="multiple"
+              placeholder={'Chọn nhóm khách hàng'}
+              options={[
+                ...groups?.map((item: any) => ({ label: item.name, value: item.id })),
+                { label: 'None', value: null },
+              ]}
+              onChange={value => setTargetGroup(value)}
+            />
+          </Form.Item>
+          <Form.Item label={'Khách hàng'} name="customer_id">
+            {/* <Input
+              placeholder={'Nhập email người dùng cần gửi'}
+              onChange={async e => {
+                const value = e.target.value;
 
-              if (value) fetchUser(value);
-              else form.setFieldValue('customer_id', null);
-            }}
-          />
-        </Form.Item>
-        <Form.Item name="customer_id" hidden></Form.Item>
-        {user && (
-          <Alert style={{ width: 180, marginBottom: 10 }} message={'Tài khoản hợp lệ'} type="success" showIcon />
-        )}
-      </Form>
+                if (value) fetchUser(value);
+                else form.setFieldValue('customer_id', null);
+              }}
+            /> */}
+            <Select
+              placeholder={'Chọn email người dùng cần gửi'}
+              mode="multiple"
+              defaultValue={targetUser}
+              onChange={value => {
+                // setTargetUser(value);
+                setListUserId(value);
+              }}
+              options={[...listUser?.map((item: any) => ({ label: item?.email, value: item?.id }))]}
+            />
+          </Form.Item>
+          <Form.Item name="customer_id" hidden></Form.Item>
+          {/* {user && (
+            <Alert style={{ width: 180, marginBottom: 10 }} message={'Tài khoản hợp lệ'} type="success" showIcon />
+          )} */}
+        </Form>
+      </div>
     </Modal>
   );
 }
