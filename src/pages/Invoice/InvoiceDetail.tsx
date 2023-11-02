@@ -97,7 +97,7 @@ const Recommendations: React.FC = () => {
 
       <div>
         <Typography.Title level={3} style={{ textAlign: 'center' }}>
-          Hoa hồng tạm tính
+          Hoa hồng
         </Typography.Title>
         <Typography.Title level={5} style={{ textAlign: 'center' }}>
           Tổng cộng : {getTotalContractValue()?.toLocaleString()}
