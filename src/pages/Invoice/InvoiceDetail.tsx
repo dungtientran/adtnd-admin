@@ -25,7 +25,7 @@ const Recommendations: React.FC = () => {
   const [data, setData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
-  const getData = async () => {
+  const getData = async (id: string) => {
     setLoading(true);
     await getInvoiceDetail(id)
       .then((data: any) => {
@@ -41,7 +41,7 @@ const Recommendations: React.FC = () => {
   };
 
   useEffect(() => {
-    getData();
+    getData(id as string);
   }, [id]);
 
   const getTotalContractValue = () => {
@@ -56,6 +56,8 @@ const Recommendations: React.FC = () => {
     }, 0);
   };
 
+  console.log('___________________________id', id);
+  
   return (
     <div className="aaa">
       <div style={{ textAlign: 'center' }}>

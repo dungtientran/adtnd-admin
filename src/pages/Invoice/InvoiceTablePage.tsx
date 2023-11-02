@@ -110,7 +110,7 @@ const Invoicetable: React.FC = () => {
           en_US: `${name}`,
           zh_CN: 'asdas',
         },
-        path: `/customer-management/customer-group/detail/${id}`,
+        path: `/invoice/detail/${id}`,
       }),
     );
   };
