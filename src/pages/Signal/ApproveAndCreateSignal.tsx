@@ -477,7 +477,7 @@ const Recommendations: React.FC = () => {
 
     return bool;
   };
-
+  
   // console.log("check_________selectrow", selectedRow.includes("7d92e2a2-9c2f-4436-a355-26993a564b7b"));
   const handleDeleteSignal = (id: string) => {
     if (loading) return;
