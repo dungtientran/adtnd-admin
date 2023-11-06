@@ -384,13 +384,16 @@ const Recommendations: React.FC = () => {
               status: item?.is_approved ? 'Đã duyệt' : 'Mới',
               is_closed: item?.is_closed,
               is_approved: item?.is_approved,
+              note: item?.note,
+              description: item?.description,
             };
 
             return column;
           });
 
           setData(columns);
-          setCount(data?.data?.count);
+          // setCount(data?.data?.count);
+          getSignalDataExcel(data?.data?.count);
         }
       })
       .catch(error => {
@@ -418,6 +421,8 @@ const Recommendations: React.FC = () => {
               status: item?.is_approved ? 'Đã duyệt' : 'Mới',
               is_closed: item?.is_closed,
               is_approved: item?.is_approved,
+              note: item?.note,
+              description: item?.description,
             };
 
             return column;
@@ -437,9 +442,9 @@ const Recommendations: React.FC = () => {
     getSignal();
   }, [JSON.stringify(tableParams), filterQuery, codeFilter, dateSort]);
 
-  useEffect(() => {
-    if (count) getSignalDataExcel(count);
-  }, [count]);
+  // useEffect(() => {
+  //   if (count) getSignalDataExcel(count);
+  // }, [count]);
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     // console.log(pagination);
@@ -462,13 +467,13 @@ const Recommendations: React.FC = () => {
   const checkIsNewSignal = () => {
     const filter = data.filter((item: any) => selectedRow.includes(item.id)) || [];
 
-    console.log('data______________________', data);
+    // console.log('data______________________', data);
     // console.log('checkIsNewSignal______________________', selectedRow);
-    console.log('filter______________________selectedRow', filter);
+    // console.log('filter______________________selectedRow', filter);
 
     const bool = filter.every((item: any) => item?.is_approved === false);
 
-    console.log('check______________________bool', bool);
+    // console.log('check______________________bool', bool);
 
     return bool;
   };
@@ -527,28 +532,32 @@ const Recommendations: React.FC = () => {
   };
 
   const handleUpdateSignal = async (payload: any) => {
-    console.log(payload);
-    if (loading) return;
-    setLoading(true);
+    // console.log(payload);
+    // if (loading) return;
+    // setLoading(true);
+    setSpining(true);
 
     return await updateSignal({
       ...payload,
       id: updateData.id,
     })
       .then((res: any) => {
-        console.log(res);
-        const new_data = [...data].map((item: SignalModel) => {
-          if (item.id === res.id) {
-            return {
-              ...item,
-              ...payload,
-            };
-          }
+        // console.log(res);
+        // const new_data = [...data].map((item: SignalModel) => {
+        //   if (item.id === res.id) {
+        //     return {
+        //       ...item,
+        //       ...payload,
+        //     };
+        //   }
 
-          return item;
-        });
+        //   return item;
+        // });
 
-        setData(new_data);
+        // setData(new_data);
+        getSignal();
+        // getSignalDataExcel();
+        setOpenUpdateDrawer(false);
         notification.success({
           message: 'Cập nhật khuyến nghị thành công',
         });
@@ -565,6 +574,7 @@ const Recommendations: React.FC = () => {
       })
       .finally(() => {
         setLoading(false);
+        setSpining(false);
       });
   };
 
@@ -821,7 +831,7 @@ const Recommendations: React.FC = () => {
         rowSelection={{
           type: 'checkbox',
           onChange: (value: any) => {
-            console.log('value___________________rowSelection', value);
+            // console.log('value___________________rowSelection', value);
             setSelectedRow(value);
           },
         }}
@@ -838,6 +848,7 @@ const Recommendations: React.FC = () => {
         onClose={() => setOpenUpdateDrawer(false)}
         onSubmit={handleUpdateSignal}
         data={updateData}
+        spining={spining}
       />
     </div>
   );

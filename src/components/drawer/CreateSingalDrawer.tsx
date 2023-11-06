@@ -48,8 +48,8 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
   const handleSubmit = async (value: any) => {
     if (loading) return;
     setLoading(true);
-    console.log('form value: ', value);
-    console.log('stock_id: ', stockId);
+    // console.log('form value: ', value);
+    // console.log('stock_id: ', stockId);
     const res = await onSubmit({
       ...value,
       stock_id: stockId,

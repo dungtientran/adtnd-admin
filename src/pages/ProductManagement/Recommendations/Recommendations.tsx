@@ -494,7 +494,7 @@ const Recommendations: React.FC = () => {
   }, [count]);
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    console.log('sorter_________________', sorter);
+    // console.log('sorter_________________', sorter);
     setTableParams({
       pagination,
       filters,
@@ -508,12 +508,12 @@ const Recommendations: React.FC = () => {
     if (sorter.order === 'ascend') {
       const sorte = `${sorter.field}_order=ASC`;
 
-      console.log('sorte asc_____________________', sorte);
+      // console.log('sorte asc_____________________', sorte);
       setSortedInfo(sorte);
     } else if (sorter.order === 'descend') {
       const sorte = `${sorter.field}_order=DESC`;
 
-      console.log('sorte desc_____________________', sorte);
+      // console.log('sorte desc_____________________', sorte);
 
       setSortedInfo(sorte);
     }
@@ -682,6 +682,7 @@ const Recommendations: React.FC = () => {
     });
   };
 
+  // console.log("data____________________________", data);
   return (
     <div className="aaa">
       <div style={{ textAlign: 'center' }}>
@@ -888,7 +889,7 @@ const Recommendations: React.FC = () => {
         }}
         expandable={{
           expandedRowRender: record => {
-            console.log(record);
+            console.log("record__________________", record);
 
             return (
               <div
