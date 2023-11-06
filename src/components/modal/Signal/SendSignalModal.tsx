@@ -36,7 +36,7 @@ interface SendSignalModalProps {
   handleCancel?: () => void;
 }
 
-function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps) {
+function SendSignalModal({ open, handleOk, handleCancel, confirmLoading }: SendSignalModalProps) {
   const subscriptions = useSelector(state => state.subsciptions.subscriptions);
   const [targetSubscriptions, setTargetSubscriptions] = useState<any>([]);
   const [groups, setGroups] = useState<any>([]);
@@ -46,7 +46,7 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
   const [form] = Form.useForm();
   const [stockList, setStockList] = useState<IlistStock[]>([]);
   const [user, setUser] = useState<any>(null);
-  const [listUser, setListUser] = useState<any>([]);
+  const [listUser, setListUser] = useState<{ label: string; value: string }[]>([]);
   const [listUserId, setListUserId] = useState<any>([]);
   const [sendAll, setSendAll] = useState(false);
 
@@ -104,7 +104,15 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
     try {
       const listUserResponse = await getListUser('');
 
-      setListUser(listUserResponse);
+      const newListUser = listUserResponse?.map((user: any) => {
+        return {
+          label: user?.email,
+          value: user?.id,
+        };
+      });
+
+      // console.log('listUserResponse_________________', newListUser);
+      setListUser(newListUser);
       // console.log('listUserResponse______________________', listUserResponse);
     } catch (error) {
       console.log(error);
@@ -119,7 +127,6 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
         message: 'Khuyến nghị phải được gửi đến ít nhất 1 trong 3 loại khách hàng trên',
       });
     } else {
-
       // console.log("value__________________________", value);
       handleOk({
         ...value,
@@ -140,7 +147,7 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
       onOk={() => form.submit()}
       okText={'Gửi'}
       cancelText={'Hủy'}
-      // confirmLoading={form?.loading ? true : false}
+      confirmLoading={confirmLoading}
       onCancel={handleCancel}
     >
       <div className="form_send_signal">
@@ -151,15 +158,21 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
           </Form.Item>
           <Form.Item name={subscriptions.length > 0 ? 'subscription_product_id' : ''} label={`Gói dịch vụ`}>
             <Select
+              showSearch
               placeholder={'Chọn gói dịch vụ'}
               mode="multiple"
-              defaultValue={targetSubscriptions}
+              // defaultValue={targetSubscriptions}
+              optionFilterProp="children"
               onChange={value => setTargetSubscriptions(value)}
+              filterOption={(input: string, option?: { label: string; value: string }) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
               options={[...subscriptions?.map(item => ({ label: item.name, value: item.id }))]}
             />
           </Form.Item>
           <Form.Item name={groups.length > 0 ? 'group_id' : ''} label={`Nhóm khách hàng`}>
             <Select
+              showSearch
               mode="multiple"
               placeholder={'Chọn nhóm khách hàng'}
               options={[
@@ -167,6 +180,9 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
                 { label: 'None', value: null },
               ]}
               onChange={value => setTargetGroup(value)}
+              filterOption={(input: string, option?: { label: string; value: string }) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
             />
           </Form.Item>
           <Form.Item label={'Khách hàng'} name="customer_id">
@@ -180,14 +196,15 @@ function SendSignalModal({ open, handleOk, handleCancel }: SendSignalModalProps)
               }}
             /> */}
             <Select
-              placeholder={'Chọn email người dùng cần gửi'}
+              showSearch
               mode="multiple"
-              defaultValue={targetUser}
-              onChange={value => {
-                // setTargetUser(value);
-                setListUserId(value);
-              }}
-              options={[...listUser?.map((item: any) => ({ label: item?.email, value: item?.id }))]}
+              placeholder="Chọn email người dùng cần gửi"
+              optionFilterProp="children"
+              onChange={value => setTargetUser(value)}
+              filterOption={(input: string, option?: { label: string; value: string }) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={listUser}
             />
           </Form.Item>
           <Form.Item name="customer_id" hidden></Form.Item>

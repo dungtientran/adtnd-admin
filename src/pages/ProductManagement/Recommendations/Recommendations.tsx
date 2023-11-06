@@ -580,6 +580,7 @@ const Recommendations: React.FC = () => {
   };
 
   const handleSendManySignal = async (target: any) => {
+    setLoading(true)
     await sendManySignal({
       signal_ids: selectedRow || [],
       target: target,
@@ -600,6 +601,7 @@ const Recommendations: React.FC = () => {
           message: err.message,
         });
       });
+      setLoading(false)
   };
 
   const handleClosedSignal = async () => {
@@ -946,6 +948,7 @@ const Recommendations: React.FC = () => {
             open: false,
           });
         }}
+        confirmLoading={loading}
       />
     </div>
   );
