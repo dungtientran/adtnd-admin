@@ -321,6 +321,9 @@ const Recommendations: React.FC = () => {
       title: 'Giá cắt lỗ',
       dataIndex: 'target_stop_loss',
       width: '10%',
+      render: (_, record) => {
+        return <Tag color="red">{record?.target_stop_loss}</Tag>;
+      },
     },
     // {
     //   title: 'Giá đóng',

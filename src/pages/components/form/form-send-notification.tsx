@@ -79,6 +79,7 @@ const SendNotification: React.FC<ICreateUser> = ({ idNotification, useSale }) =>
 
   // console.log('gorup__________________', groupData.data);
   // console.log('id__________________', idNotification);
+  console.log('userData.data____________________________', groupData.data);
 
   return (
     <Fragment>
@@ -118,7 +119,8 @@ const SendNotification: React.FC<ICreateUser> = ({ idNotification, useSale }) =>
             mode="multiple"
             defaultValue={listCustomerId}
             onChange={value => setListCustomerId(value)}
-            options={[...option?.map(item => ({ label: item.name, value: item.id }))]}
+            // options={[...option?.map(item => ({ label: item.name, value: item.id }))]}
+            options={option}
           />
         </Form.Item>
 
@@ -140,7 +142,8 @@ const SendNotification: React.FC<ICreateUser> = ({ idNotification, useSale }) =>
             mode="multiple"
             defaultValue={listGroupId}
             onChange={value => setListGroupId(value)}
-            options={[...option2?.map(item => ({ label: item.value, value: item.id }))]}
+            // options={[...option2?.map(item => ({ label: item.value, value: item.id }))]}
+            options={option2}
           />
         </Form.Item>
 

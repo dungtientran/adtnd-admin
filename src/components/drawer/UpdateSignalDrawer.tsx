@@ -71,7 +71,7 @@ function UpdateSingalDrawer({ open, onClose, onSubmit, data, spining }: UpdateSi
       setPriority(data.priority);
     }
   }, [data]);
-  //   console.log('data____________________update', data);
+    console.log('data____________________update', data);
 
   return (
     <Drawer

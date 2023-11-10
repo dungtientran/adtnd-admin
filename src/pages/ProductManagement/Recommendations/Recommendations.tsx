@@ -267,6 +267,7 @@ const Recommendations: React.FC = () => {
       title: 'Giá cắt lỗ',
       dataIndex: 'target_stop_loss',
       width: '6%',
+      render: (_, record) => <Tag color="red">{record?.target_stop_loss}</Tag>,
     },
     {
       title: 'Giá hiện tại',
@@ -365,9 +366,9 @@ const Recommendations: React.FC = () => {
       dataIndex: 'priority',
       width: '5%',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      render: data => (
-        <div style={{ width: '30px' }}>
-          <StarFilled style={data ? { color: '#eb8f19' } : {}} size={20} />
+      render: (_, record) => (
+        <div style={{ width: '30px', cursor: 'pointer' }}>
+          <StarFilled style={record?.priority ? { color: '#eb8f19' } : {}} size={20} />
         </div>
       ),
     },
@@ -580,7 +581,7 @@ const Recommendations: React.FC = () => {
   };
 
   const handleSendManySignal = async (target: any) => {
-    setLoading(true)
+    setLoading(true);
     await sendManySignal({
       signal_ids: selectedRow || [],
       target: target,
@@ -601,7 +602,7 @@ const Recommendations: React.FC = () => {
           message: err.message,
         });
       });
-      setLoading(false)
+    setLoading(false);
   };
 
   const handleClosedSignal = async () => {
@@ -685,6 +686,7 @@ const Recommendations: React.FC = () => {
   };
 
   // console.log("data____________________________", data);
+
   return (
     <div className="aaa">
       <div style={{ textAlign: 'center' }}>
@@ -891,7 +893,7 @@ const Recommendations: React.FC = () => {
         }}
         expandable={{
           expandedRowRender: record => {
-            console.log("record__________________", record);
+            // console.log("record__________________", record);
 
             return (
               <div

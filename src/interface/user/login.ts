@@ -3,6 +3,7 @@ export type Role = 'guest' | 'admin';
 export interface LoginParams {
   email: string;
   password: string;
+  remember: boolean;
 }
 
 export interface LoginResult {

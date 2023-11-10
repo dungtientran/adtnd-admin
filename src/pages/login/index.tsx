@@ -5,7 +5,10 @@ import './index.less';
 
 import { ArrowLeftOutlined, RollbackOutlined, SwapLeftOutlined } from '@ant-design/icons';
 import { Avatar, Button, Checkbox, Form, Input, notification, Space, Spin, Typography } from 'antd';
-import { Fragment, useState } from 'react';
+import bcrypt from 'bcryptjs';
+import CryptoJS from 'crypto-js';
+import jwt from 'jsonwebtoken';
+import { Fragment, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -19,7 +22,7 @@ import { loginAsync } from '../../stores/user.action';
 const initialValues: LoginParams = {
   email: '',
   password: '',
-  // remember: true
+  remember: false,
 };
 
 const passwordValidator = (value: string): boolean => {
@@ -32,6 +35,13 @@ const passwordValidator = (value: string): boolean => {
   return false;
 };
 
+const encryptCredentials = (email: string, password: string) => {
+  const encryptedUsername = CryptoJS.AES.encrypt(email, 'DungTran_DEVELOPER').toString();
+  const encryptedPassword = CryptoJS.AES.encrypt(password, 'DungTran_DEVELOPER').toString();
+
+  localStorage.setItem('_g', JSON.stringify({ _n: encryptedUsername, _p: encryptedPassword }));
+};
+
 const LoginForm: FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -41,9 +51,9 @@ const LoginForm: FC = () => {
   const [firstLogin, setFirstLogin] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [session, setSession] = useState<string>('');
+  const [form] = Form.useForm();
 
-  const onFinished = async (form: LoginParams) => {
-    // if (loading) return;
+  const onFinished = async (form: any) => {
     setLoading(true);
 
     if (firstLogin) {
@@ -60,17 +70,18 @@ const LoginForm: FC = () => {
           message: res?.message,
         });
       }
-
-      // console.log('newValues____________________________', newValues);
-      // console.log('res____________________________________', res);
     } else {
       const res: any = await dispatch(await loginAsync(form));
-
-      // console.log('ress________________________________', res);
 
       if (res?.success) {
         const search = formatSearch(location.search);
         const from = search.from || { pathname: '/' };
+
+        if (form.remember) {
+          encryptCredentials(form.username, form.password);
+        } else {
+          localStorage.removeItem('_g');
+        }
 
         notification.success({
           message: res.message,
@@ -90,9 +101,30 @@ const LoginForm: FC = () => {
     setLoading(false);
   };
 
+  useEffect(() => {
+    const _g = localStorage.getItem('_g');
+
+    if (_g) {
+      const { _n, _p } = JSON.parse(_g);
+      const decryptedUsername = CryptoJS.AES.decrypt(_n, 'DungTran_DEVELOPER').toString(CryptoJS.enc.Utf8);
+      const decryptedPassword = CryptoJS.AES.decrypt(_p, 'DungTran_DEVELOPER').toString(CryptoJS.enc.Utf8);
+
+      form.setFieldsValue({
+        remember: true,
+        password: decryptedPassword,
+        username: decryptedUsername,
+      });
+    }
+  }, []);
+
   return (
     <div className="login-page">
-      <Form<LoginParams> onFinish={onFinished} className="login-page-form" initialValues={initialValues}>
+      <Form<LoginParams>
+        onFinish={onFinished}
+        className="login-page-form"
+        //  initialValues={initForm}
+        form={form}
+      >
         {firstLogin && (
           <Button onClick={() => setFirstLogin(false)} size="small">
             <ArrowLeftOutlined />{' '}
@@ -142,6 +174,11 @@ const LoginForm: FC = () => {
                   id: 'gloabal.tips.password',
                 })}
               />
+            </Form.Item>
+            <Form.Item name="remember" valuePropName="checked">
+              <Checkbox>
+                <LocaleFormatter id="gloabal.tips.rememberUser" />
+              </Checkbox>
             </Form.Item>
           </Fragment>
         ) : (

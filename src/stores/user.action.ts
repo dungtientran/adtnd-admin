@@ -16,6 +16,7 @@ export const loginAsync = async (payload: any) => {
       const data = await apiLogin({
         email: payload.username,
         password: payload.password,
+        remember: payload.remember,
       });
 
       if (data.code == 200 && data.force_change_password) {
