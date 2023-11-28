@@ -1,7 +1,7 @@
 html,
 body,
 #root,
-#root > * {
+#root>* {
   height: 100%;
 }
 
@@ -15,14 +15,16 @@ a {
   cursor: pointer;
 }
 
-#searchForm > .ant-row > .ant-row.ant-form-item {
+#searchForm>.ant-row>.ant-row.ant-form-item {
   width: 100%;
   text-align: right;
   padding-right: 12px;
+
   .ant-col {
     flex: 1;
     max-width: 100%;
     width: 100%;
+
     .ant-btn:first-child {
       margin-right: 10px;
     }
@@ -40,4 +42,23 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.ck-editor {
+  color: #1e1e1e;
+}
+
+.ck.ck-content.ck-editor__editable.ck-rounded-corners.ck-editor__editable_inline.ck-blurred p {
+  color: #000 !important
+}
+
+.ck.ck-editor {
+  color-scheme: dark;
+  background-color: #1e1e1e;
+  color: #000 !important
+}
+
+/* Tùy chỉnh màu chữ và các phần khác tùy thuộc vào ý muốn của bạn */
+.ck.ck-editor__main {
+  color: #000 !important
 }

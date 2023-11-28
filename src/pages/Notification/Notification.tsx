@@ -188,7 +188,7 @@ const Notification: React.FC = () => {
       </div>
       <Drawer
         title={!customerSelect ? 'Tạo mới thông báo' : 'Chỉnh sửa thông báo '}
-        width={360}
+        width={'40%'}
         onClose={onClose}
         open={open}
         bodyStyle={{ paddingBottom: 80 }}

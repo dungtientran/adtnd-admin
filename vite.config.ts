@@ -3,8 +3,10 @@ import path from 'path';
 import { defineConfig } from 'vite';
 import vitePluginImp from 'vite-plugin-imp';
 import svgrPlugin from 'vite-plugin-svgr';
-
+import ckeditor5 from '@ckeditor/vite-plugin-ckeditor5';
 // https://vitejs.dev/config/
+import { createRequire } from 'node:module';
+const require = createRequire( import.meta.url );
 export default defineConfig({
   resolve: {
     alias: {
@@ -50,5 +52,6 @@ export default defineConfig({
         // ...svgr options (https://react-svgr.com/docs/options/)
       },
     }),
+    ckeditor5( { theme: require.resolve( '@ckeditor/ckeditor5-theme-lark' ) } )
   ],
 });
