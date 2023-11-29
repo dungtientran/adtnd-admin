@@ -3,13 +3,33 @@ import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue } from 'antd/es/table/interface';
 
 import { MenuOutlined, StarFilled } from '@ant-design/icons';
-import { Button, Col, DatePicker, Dropdown, InputNumber, notification, Radio, Row, Table, Tag, Typography } from 'antd';
+import {
+  Button,
+  Col,
+  DatePicker,
+  Dropdown,
+  InputNumber,
+  message,
+  notification,
+  Radio,
+  Row,
+  Table,
+  Tag,
+  Typography,
+} from 'antd';
 import moment from 'moment';
 import qs from 'qs';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { closeSignal, deleteManySignal, getSignalList, sendManySignal, sendSignalNotification } from '@/api/signal';
+import {
+  closeSignal,
+  deleteManySignal,
+  getSignalList,
+  sendManySignal,
+  sendSignalNotification,
+  updateSignal,
+} from '@/api/signal';
 import ClosedSignalModal from '@/components/modal/Signal/ClosedSignalModal';
 import ConfirmDeleteModal from '@/components/modal/Signal/ConfirmDeleteModal';
 import SendSignalNotificationModal from '@/components/modal/Signal/SendNotificationModal';
@@ -33,6 +53,8 @@ const Recommendations: React.FC = () => {
   const [dataExcel, setDataExcel] = useState([]);
 
   const [loading, setLoading] = useState(false);
+  const [prioritize, setPrioritize] = useState(false);
+
   const [selectedRow, setSelectedRow] = useState<any>([]);
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState<boolean>(false);
 
@@ -356,7 +378,7 @@ const Recommendations: React.FC = () => {
       render: (_, record) => {
         return (
           <Tag color={record?.closed_profit_percentage >= 0 ? '#3b5999' : '#f03838'}>
-            {record?.closed_profit_percentage?.toFixed(1)}
+            {record?.closed_profit_percentage && record?.closed_profit_percentage?.toFixed(0) * 100}
           </Tag>
         );
       },
@@ -368,7 +390,11 @@ const Recommendations: React.FC = () => {
       sortDirections: ['ascend', 'descend', 'ascend'],
       render: (_, record) => (
         <div style={{ width: '30px', cursor: 'pointer' }}>
-          <StarFilled style={record?.priority ? { color: '#eb8f19' } : {}} size={20} />
+          <StarFilled
+            style={record?.priority ? { color: '#eb8f19' } : {}}
+            size={20}
+            onClick={() => handleStarClick(record?.id)}
+          />
         </div>
       ),
     },
@@ -685,7 +711,25 @@ const Recommendations: React.FC = () => {
     });
   };
 
-  // console.log("data____________________________", data);
+  const handleStarClick = async (signalId: string) => {
+    setData((prev: any) =>
+      prev.map((product: any) => (product.id === signalId ? { ...product, priority: !product.priority } : product)),
+    );
+
+    try {
+      await updateSignal({
+        id: signalId,
+        priority: !getSignalById(signalId).priority,
+      });
+    } catch (error) {
+      setData((prev: any) => [...prev]);
+      message.error('Update độ ưu tiên thất bại');
+    }
+  };
+
+  const getSignalById = (signalId: string) => {
+    return data.find((signal: any) => signal.id === signalId);
+  };
 
   return (
     <div className="aaa">

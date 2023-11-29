@@ -19,6 +19,7 @@ import Result from '@/pages/components/result/Result';
 import BoxFilter from './boxFilter';
 import { Column } from './columns';
 import DetailsContract from './DetailsContract';
+
 const { getSaleList, getListUser } = listCustomerApi;
 
 const { getListContract, createContract, updateContract } = listContractApi;
@@ -46,6 +47,7 @@ const InterestRate: React.FC = () => {
   const [updateDataSp, setUpdateDataSp] = useState<any>();
   const [customerSelect, setCustomerSelect] = useState<any>();
   const [idDelete, setIdDelete] = useState<string>('');
+  const [contractExists, setContractExists] = useState(false);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['getListContractDone', tableParams, queryFilter, searchText, sort],
@@ -72,9 +74,11 @@ const InterestRate: React.FC = () => {
       message.success('Tạo hợp đồng thành công');
       setNewContract(undefined);
       setOpen(false);
+      setContractExists(false);
     },
-    onError: _ => {
-      message.error('Tạo hợp đồng thất bại');
+    onError: (err: any) => {
+      message.error(`${err?.message}` || 'Tạo hợp đồng thất bại');
+      setContractExists(true);
     },
   });
   const saleData = useQuery({
@@ -300,6 +304,7 @@ const InterestRate: React.FC = () => {
           loading={!customerSelect ? create.isLoading : update.isLoading}
           saleData={saleData.data}
           useData={userData.data}
+          contractExists={contractExists}
         />
         {/* </Spin> */}
       </Drawer>

@@ -22,6 +22,7 @@ interface IEditRequest {
   loading: boolean;
   saleData: any;
   useData: any;
+  contractExists: boolean;
 }
 
 const rangeConfig = {
@@ -35,6 +36,7 @@ const CreateContract: React.FC<IEditRequest> = ({
   loading,
   saleData,
   useData,
+  contractExists,
 }) => {
   const [option, setOption] = useState<{ id: string; value: string; fullname: string }[]>([]);
   const [option2, setOption2] = useState<{ id: string; value: string; email: string; fullname: string }[]>([]);
@@ -284,7 +286,11 @@ const CreateContract: React.FC<IEditRequest> = ({
         <Form.Item name="contract_no" label="Số hợp đồng" rules={[{ required: true, message: 'Không đc bỏ trống !' }]}>
           <Input />
         </Form.Item>
-
+        {contractExists && (
+          <Form.Item>
+            <span style={{ color: 'red', fontSize: '12px' }}>Số hợp đồng trùng!</span>
+          </Form.Item>
+        )}
         <Form.Item name="time_contract" label="Thời gian hợp đồng">
           <RangePicker format="YYYY/MM/DD" onChange={onChange} />
         </Form.Item>

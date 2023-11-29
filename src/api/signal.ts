@@ -28,14 +28,15 @@ export interface CreateSignalData {
 
 export interface UpdateSignal {
   id: string;
-  stock_id: string;
-  target_buy_price: number;
-  target_stop_loss: number;
-  target_sell_price_1: number;
-  target_sell_price_2: number;
-  target_sell_price_3: number;
-  is_long_term: boolean;
-  description: string;
+  stock_id?: string;
+  target_buy_price?: number;
+  target_stop_loss?: number;
+  target_sell_price_1?: number;
+  target_sell_price_2?: number;
+  target_sell_price_3?: number;
+  is_long_term?: boolean;
+  description?: string;
+  priority?: boolean;
 }
 
 interface SendSignalNotification {
@@ -95,7 +96,7 @@ export const getSignalListPageApprove = (
     .get<any>(
       `/signal/admin/signal_list?${params}${searchText ? `&searchText=${searchText}` : ''}${
         filter ? filter : ''
-      }&date_order=${dateSort}`, 
+      }&date_order=${dateSort}`,
     )
     .then(data => data)
     .catch(error => {
