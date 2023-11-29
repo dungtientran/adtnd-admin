@@ -16,6 +16,8 @@ import { Column } from './columns';
 
 const { getListUser, createSale, updateSale, delteleSale } = listUserApi;
 
+export const salePosition = ['Trưởng phòng', 'Giám đốc kinh doanh', 'Giám đốc Khối'];
+
 const UserManagement: React.FC = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -148,7 +150,7 @@ const UserManagement: React.FC = () => {
         />
       </div>
       <Drawer
-        title={!customerSelect ? 'Tạo mới quản trị viên' : 'Update level '}
+        title={!customerSelect ? 'Tạo mới quản trị viên' : 'Chỉnh sửa '}
         width={360}
         onClose={onClose}
         open={open}

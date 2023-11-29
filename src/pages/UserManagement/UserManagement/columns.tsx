@@ -9,6 +9,8 @@ import { Button, Input, Popconfirm, Space, Tag, Typography } from 'antd';
 import moment from 'moment';
 import { useRef } from 'react';
 
+import { salePosition } from './UserManagement';
+
 const { Text } = Typography;
 
 export const ColumnSearchProps = (
@@ -120,7 +122,8 @@ export const Column = (
       dataIndex: 'SaleLevel',
       width: '8%',
       ...ColumnSearchProps('SaleLevel', 'level', setSearchQuery),
-      render: (_, record) => <Text>{record?.SaleLevel?.level}</Text>,
+      render: (_, record) =>
+        record?.role?.id === 'sale' && <Text>{salePosition[Number(record?.SaleLevel?.level) - 1]}</Text>,
     },
     {
       title: '',

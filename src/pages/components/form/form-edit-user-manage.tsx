@@ -6,6 +6,7 @@ import { AutoComplete, Button, Form, Input, InputNumber, Select, Space, Spin, Ty
 import { Fragment, useEffect, useState } from 'react';
 
 import { listCustomerApi } from '@/api/ttd_list_customer';
+import { salePosition } from '@/pages/UserManagement/UserManagement/UserManagement';
 
 const { getListUser } = listCustomerApi;
 
@@ -49,7 +50,24 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
       value: 'Nhân viên nghiệp vụ',
     },
   ]);
+
+  const [optionSalePosition, setOptionSalePosition] = useState([
+    {
+      id: 1,
+      value: 'Trưởng phòng',
+    },
+    {
+      id: 2,
+      value: 'Giám đốc kinh doanh',
+    },
+    {
+      id: 3,
+      value: 'Giám đốc Khối',
+    },
+  ]);
   const [saleSelect, setsaleSelect] = useState('');
+
+  const [salePositionSelect, setSalePosition] = useState('');
 
   const userData = useQuery({
     queryKey: ['getListUser'],
@@ -74,6 +92,21 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
   }, [userData.data]);
 
   useEffect(() => {
+    if (initForm) {
+      const newInit = {
+        ...initForm,
+        role_id: initForm?.role?.name,
+        level: salePosition[Number(initForm?.SaleLevel?.level) - 1],
+      };
+
+      setSalePosition(initForm?.role?.name);
+      form.setFieldsValue(newInit);
+    } else {
+      form.resetFields();
+    }
+  }, [initForm]);
+
+  useEffect(() => {
     if (saleSelect) {
       const sale_id_select = option.find(item => item.value === saleSelect)?.name;
 
@@ -83,19 +116,6 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
     }
   }, [saleSelect]);
 
-  useEffect(() => {
-    if (initForm) {
-      const newInit = {
-        ...initForm,
-        role_id: initForm?.role?.name,
-        level: initForm?.SaleLevel?.level,
-      };
-
-      form.setFieldsValue(newInit);
-    } else {
-      form.resetFields();
-    }
-  }, [initForm]);
   const [form] = Form.useForm();
 
   const handleCreateSale = (newSale: any) => {
@@ -112,11 +132,11 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
     const fullname = option.find(item => item.value === saleSelect)?.name;
     const phone_number = option.find(item => item.value === saleSelect)?.phone_number;
     const sale_id = option2.find(item => item.value === values.role_id)?.id;
-
+    const level = optionSalePosition.find(item => item.value === values.level)?.id;
     const new_Sale = {
       role_id: sale_id,
       password: values?.password,
-      level: values?.level || 1,
+      level,
       customer: {
         id,
         email,
@@ -137,6 +157,8 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
       handleUpDateSale(updateSale);
     }
   };
+
+  console.log('init_________________', initForm);
 
   return (
     <Fragment>
@@ -192,13 +214,23 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
             placeholder="Chức vụ"
             filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             size="large"
-            // disabled={initForm}
+            onChange={value => setSalePosition(value)}
           />
         </Form.Item>
-
-        <Form.Item name="level" label="Level">
-          <InputNumber defaultValue={1} min={1} max={4} />
-        </Form.Item>
+        {salePositionSelect === 'Sale' && (
+          <Form.Item name="level" label="Level">
+            {/* <InputNumber defaultValue={1} min={1} max={4} /> */}
+            <AutoComplete
+              style={{ width: '100%' }}
+              options={optionSalePosition}
+              placeholder="Level"
+              filterOption={(inputValue, option) =>
+                option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+              }
+              size="large"
+            />
+          </Form.Item>
+        )}
 
         {!initForm && (
           <Fragment>
