@@ -28,9 +28,16 @@ const TagsView: FC = () => {
 
   // onRemove tag
   const onClose = (targetKey: string) => {
+    const indexTargetKey = tags.findIndex(tag => tag.path === targetKey);
+
+    if (indexTargetKey === tags.length - 1 && location.pathname !== '/dashboard') {
+      navigate(tags[indexTargetKey - 1].path);
+    }
+
     dispatch(removeTag(targetKey));
   };
 
+  console.log('_____________location', location.pathname);
   const setCurrentTag = useCallback(
     (id?: string) => {
       const tag = tags.find(item => {
@@ -48,12 +55,12 @@ const TagsView: FC = () => {
     [dispatch, location.pathname, tags],
   );
 
+  console.log('tabg_______________', tags);
   useEffect(() => {
     if (menuList.length) {
       const menu = menuList.find(m => m.path === location.pathname);
 
       if (menu) {
-        // console.log('chajy roi ne');
         dispatch(
           addTag({
             ...menu,
@@ -63,10 +70,6 @@ const TagsView: FC = () => {
       }
     }
   }, [dispatch, location.pathname, menuList]);
-
-  // console.log('menu list tag views____________', menuList);
-  // console.log('tag viewssssssss', tags);
-  // console.log('location.pathname________________', location.pathname);
 
   return (
     <div id="pageTabs" style={{ padding: '6px 4px' }}>
