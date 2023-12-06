@@ -191,7 +191,7 @@ const CreateContract: React.FC<IEditRequest> = ({
   const handleOnchange = (value: number) => {
     if (init) {
       // console.log('value_________________', value);
-      const percent = value / init - 1;
+      const percent = (value / init - 1) * 100;
 
       setpercentProfit(percent);
       form.setFieldsValue({
