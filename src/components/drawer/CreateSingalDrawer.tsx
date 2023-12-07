@@ -100,7 +100,7 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
       const res = await onSubmit({
         ...value,
         stock_id: stockId,
-        image_chart: imageChartUrl,
+        detail_chart: imageChartUrl,
       });
 
       if (res) {
