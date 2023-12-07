@@ -1,5 +1,6 @@
 import type { IlistStock } from '@/interface/stock/stock.interface';
 
+import { UploadOutlined } from '@ant-design/icons';
 import {
   AutoComplete,
   Button,
@@ -16,6 +17,7 @@ import {
   Space,
   Spin,
   Typography,
+  Upload,
 } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { error } from 'console';
@@ -23,6 +25,8 @@ import React, { useEffect, useState } from 'react';
 
 import { createSignal } from '@/api/signal';
 import { searchStock } from '@/api/stock.api';
+import { checkImageType } from '@/utils/checkImageType';
+import { getUrlImageUpload } from '@/utils/getUrlImageUpload';
 
 const { Option } = Select;
 
@@ -38,6 +42,7 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
   const [form] = Form.useForm();
   const [stockId, setStockId] = useState<any>('');
   const [stockList, setStockList] = useState<IlistStock[]>([]);
+  const [imageChartUrl, setImageChartUrl] = useState('');
 
   const handleSearchStock = async (query: string) => {
     searchStock(query).then((res: any) => {
@@ -45,23 +50,70 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
     });
   };
 
-  const handleSubmit = async (value: any) => {
-    if (loading) return;
-    setLoading(true);
-    // console.log('form value: ', value);
-    // console.log('stock_id: ', stockId);
-    const res = await onSubmit({
-      ...value,
-      stock_id: stockId,
-    });
+  const normFile = (e: any) => {
+    if (checkImageType(e.file)) {
+      if (Array.isArray(e)) {
+        return e;
+      }
 
-    if (res) {
-      form.resetFields();
+      return e?.fileList;
+    }
+  };
+
+  const handleSubmit = async (value: any) => {
+    // if (loading) return;
+    // setLoading(true);
+    // // console.log('form value: ', value);
+    // // console.log('stock_id: ', stockId);
+    // const res = await onSubmit({
+    //   ...value,
+    //   stock_id: stockId,
+    // });
+
+    // if (res) {
+    //   form.resetFields();
+    // }
+
+    // setLoading(false);
+
+    // console.log('_______________value', value?.image_chart?.[0]?.originFileObj);
+    // console.log('_______________files', files);
+    if (loading) return;
+
+    setLoading(true);
+
+    try {
+      const files = value?.image_chart?.[0]?.originFileObj;
+
+      // eslint-disable-next-line newline-after-var, @typescript-eslint/no-unused-vars
+
+      if (files) {
+        const imageChartUrlResponse = await getUrlImageUpload('chartUpload', files, 'chart');
+
+        if (imageChartUrlResponse) {
+          setImageChartUrl(imageChartUrlResponse);
+        } else {
+          return setLoading(false);
+        }
+      }
+
+      const res = await onSubmit({
+        ...value,
+        stock_id: stockId,
+        image_chart: imageChartUrl,
+      });
+
+      if (res) {
+        form.resetFields();
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.log('errror)__________________________', error);
     }
 
     setLoading(false);
   };
-
 
   return (
     <Drawer
@@ -80,7 +132,7 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
       }
     >
       <Form onFinish={handleSubmit} form={form} layout="vertical">
-        <Spin spinning={spining}>
+        <Spin spinning={loading}>
           <div>
             <Form.Item name="is_long_term" initialValue={false}>
               <Radio.Group defaultValue={false}>
@@ -233,8 +285,40 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
                 min={0}
               />
             </Form.Item>
+
             <Form.Item name="note" label="Ghi chú">
               <TextArea autoSize placeholder={'Ghi chú'}></TextArea>
+            </Form.Item>
+
+            {/* <Form.Item name="image_chart" label="Ảnh chart">
+              <Upload
+                action=""
+                listType="picture"
+                maxCount={1}
+                accept="image/png, image/gif, image/jpeg"
+                onChange={handleChange}
+                beforeUpload={_ => {
+                  return false;
+                }}
+              >
+                <Space size="large">
+                  <Button icon={<UploadOutlined />}>Upload (Max: 1)</Button>
+                </Space>
+              </Upload>
+            </Form.Item> */}
+            <Form.Item name="image_chart" label="Ảnh chart" valuePropName="fileList" getValueFromEvent={normFile}>
+              <Upload
+                name="image"
+                action=""
+                listType="picture"
+                maxCount={1}
+                accept="image/png, image/gif, image/jpeg"
+                beforeUpload={_ => {
+                  return false;
+                }}
+              >
+                <Button icon={<UploadOutlined />}>Click to upload</Button>
+              </Upload>
             </Form.Item>
           </div>
         </Spin>
