@@ -364,9 +364,7 @@ const Recommendations: React.FC = () => {
       sorter: true,
 
       render: (_, record) => {
-        return (
-          <Tag color={record?.closed_profit >= 0 ? '#3b5999' : '#f03838'}>{record?.closed_profit?.toFixed(2)}</Tag>
-        );
+        return <Tag color={record?.closed_profit >= 0 ? '#3b5999' : '#f03838'}>{record?.closed_profit}</Tag>;
       },
     },
     {
@@ -378,7 +376,7 @@ const Recommendations: React.FC = () => {
       render: (_, record) => {
         return (
           <Tag color={record?.closed_profit_percentage >= 0 ? '#3b5999' : '#f03838'}>
-            {record?.closed_profit_percentage && record?.closed_profit_percentage?.toFixed(0) * 100}
+            {record?.closed_profit_percentage && (record?.closed_profit_percentage * 100).toFixed(2)}
           </Tag>
         );
       },
