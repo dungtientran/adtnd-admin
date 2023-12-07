@@ -364,7 +364,11 @@ const Recommendations: React.FC = () => {
       sorter: true,
 
       render: (_, record) => {
-        return <Tag color={record?.closed_profit >= 0 ? '#3b5999' : '#f03838'}>{record?.closed_profit}</Tag>;
+        return (
+          <Tag color={record?.closed_profit >= 0 ? '#3b5999' : '#f03838'}>
+            {Number(record?.closed_profit)?.toFixed(2)}
+          </Tag>
+        );
       },
     },
     {
