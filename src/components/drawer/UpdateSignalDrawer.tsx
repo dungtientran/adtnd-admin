@@ -1,29 +1,28 @@
 import type { IlistStock } from '@/interface/stock/stock.interface';
 
+import { UploadOutlined } from '@ant-design/icons';
 import {
   AutoComplete,
   Button,
   Checkbox,
-  Col,
-  DatePicker,
   Drawer,
   Form,
-  Input,
+  Image,
   InputNumber,
   Radio,
-  Row,
   Select,
   Space,
   Spin,
   Typography,
+  Upload,
 } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { error } from 'console';
-import { setPriority } from 'os';
 import React, { useEffect, useState } from 'react';
 
 import { createSignal } from '@/api/signal';
 import { searchStock } from '@/api/stock.api';
+import { checkImageType } from '@/utils/checkImageType';
+import { getUrlImageUpload } from '@/utils/getUrlImageUpload';
 import { useStates } from '@/utils/use-states';
 
 const { Option } = Select;
@@ -42,6 +41,9 @@ function UpdateSingalDrawer({ open, onClose, onSubmit, data, spining }: UpdateSi
   const [stockId, setStockId] = useState<any>('');
   const [priority, setPriority] = useState<boolean>(false);
   const [stockList, setStockList] = useState<IlistStock[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const [isDetailChart, setIsDetailChart] = useState(false);
 
   const handleSearchStock = async (query: string) => {
     searchStock(query).then((res: any) => {
@@ -49,14 +51,51 @@ function UpdateSingalDrawer({ open, onClose, onSubmit, data, spining }: UpdateSi
     });
   };
 
+  const normFile = (e: any) => {
+    if (checkImageType(e.file)) {
+      if (Array.isArray(e)) {
+        return e;
+      }
+
+      return e?.fileList;
+    }
+  };
+
   const handleSubmit = async (value: any) => {
-    // console.log('form value: ', value);
-    // console.log('stock_id: ', stockId);
-    await onSubmit({
-      ...value,
-      stock_id: stockId,
-      priority: priority,
-    });
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const files = value?.image_chart?.[0]?.originFileObj;
+      const payload = {
+        ...value,
+        stock_id: stockId,
+        priority: priority,
+        image_chart: '',
+      };
+
+      if (files) {
+        const imageChartUrlResponse = await getUrlImageUpload('chartUpload', files, 'chart');
+
+        if (imageChartUrlResponse) {
+          payload.detail_chart = imageChartUrlResponse;
+        } else {
+          return setLoading(false);
+        }
+      }
+
+      const res = await onSubmit(payload);
+
+      if (res) {
+        form.resetFields();
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.log('errror)__________________________', error);
+    }
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -66,12 +105,15 @@ function UpdateSingalDrawer({ open, onClose, onSubmit, data, spining }: UpdateSi
         is_long_term: data?.is_long_term === 'Ngắn hạn' ? false : true,
       };
 
+      if (data?.detail_chart) {
+        setIsDetailChart(true);
+      }
+
       form.setFieldsValue(newData);
       handleSearchStock(data.code);
       setPriority(data.priority);
     }
   }, [data]);
-    console.log('data____________________update', data);
 
   return (
     <Drawer
@@ -92,7 +134,7 @@ function UpdateSingalDrawer({ open, onClose, onSubmit, data, spining }: UpdateSi
       }
     >
       <Form onFinish={handleSubmit} form={form} layout="vertical">
-        <Spin spinning={spining}>
+        <Spin spinning={loading}>
           <div>
             <Form.Item name="is_long_term" initialValue={false}>
               <Radio.Group defaultValue={false}>
@@ -233,6 +275,29 @@ function UpdateSingalDrawer({ open, onClose, onSubmit, data, spining }: UpdateSi
             <Form.Item name="note" label="Ghi chú">
               <TextArea autoSize placeholder={'Ghi chú'}></TextArea>
             </Form.Item>
+            <Form.Item name="image_chart" label="Ảnh chart" valuePropName="fileList" getValueFromEvent={normFile}>
+              <Upload
+                name="image"
+                action=""
+                listType="picture"
+                maxCount={1}
+                accept="image/png, image/gif, image/jpeg"
+                beforeUpload={_ => {
+                  return false;
+                }}
+              >
+                <Button icon={<UploadOutlined />}>Click to upload</Button>
+              </Upload>
+            </Form.Item>
+            {isDetailChart && (
+              <Image
+                alt="detailchart"
+                src={data?.detail_chart}
+                width={100}
+                height={100}
+                style={{ borderRadius: '8px', objectFit: 'cover' }}
+              />
+            )}
           </div>
         </Spin>
       </Form>

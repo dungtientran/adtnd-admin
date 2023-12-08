@@ -9,6 +9,7 @@ import {
   Col,
   DatePicker,
   Dropdown,
+  Image,
   Input,
   InputNumber,
   notification,
@@ -202,33 +203,49 @@ const Recommendations: React.FC = () => {
     const actionList = [];
 
     if (!record.is_approved) {
-      actionList.push({
-        key: '3',
-        label: (
-          <Typography
-            onClick={() => {
-              handleApproveSignal([record.id], true);
-            }}
-          >
-            {'Duyệt'}
-          </Typography>
-        ),
-      });
+      actionList.push(
+        {
+          key: '3',
+          label: (
+            <Typography
+              onClick={() => {
+                handleApproveSignal([record.id], true);
+              }}
+            >
+              {'Duyệt'}
+            </Typography>
+          ),
+        },
+
+        {
+          key: '2',
+          label: (
+            <Typography
+              onClick={() => {
+                setUpdateData(record);
+                setOpenUpdateDrawer(true);
+              }}
+            >
+              {'Sửa'}
+            </Typography>
+          ),
+        },
+      );
     }
 
-    actionList.push({
-      key: '2',
-      label: (
-        <Typography
-          onClick={() => {
-            setUpdateData(record);
-            setOpenUpdateDrawer(true);
-          }}
-        >
-          {'Sửa'}
-        </Typography>
-      ),
-    });
+    // actionList.push({
+    //   key: '2',
+    //   label: (
+    //     <Typography
+    //       onClick={() => {
+    //         setUpdateData(record);
+    //         setOpenUpdateDrawer(true);
+    //       }}
+    //     >
+    //       {'Sửa'}
+    //     </Typography>
+    //   ),
+    // });
     actionList.push({
       key: '6',
       label: (
@@ -389,6 +406,7 @@ const Recommendations: React.FC = () => {
               is_approved: item?.is_approved,
               note: item?.note,
               description: item?.description,
+              detail_chart: item?.detail_chart,
             };
 
             return column;
@@ -426,6 +444,7 @@ const Recommendations: React.FC = () => {
               is_approved: item?.is_approved,
               note: item?.note,
               description: item?.description,
+              detail_chart: item?.detail_chart,
             };
 
             return column;
@@ -817,7 +836,7 @@ const Recommendations: React.FC = () => {
         scroll={{ x: 'max-content', y: '100%' }}
         expandable={{
           expandedRowRender: record => {
-            console.log(record);
+            console.log('record__________________________', record);
 
             return (
               <div className="text-left" style={{ textAlign: 'left' }}>
@@ -827,6 +846,17 @@ const Recommendations: React.FC = () => {
                 <div>
                   <Typography style={{ margin: 0 }}>Ghi chú : {record?.note}</Typography>
                 </div>
+                {record?.detail_chart && (
+                  <Space direction="vertical">
+                    <Typography style={{ margin: 0 }}>Image Chart:</Typography>
+                    <Image
+                      src={record.detail_chart}
+                      width={100}
+                      height={100}
+                      style={{ borderRadius: '8px', objectFit: 'cover' }}
+                    />
+                  </Space>
+                )}
               </div>
             );
           },

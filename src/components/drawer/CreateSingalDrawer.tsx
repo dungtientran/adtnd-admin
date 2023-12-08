@@ -1,29 +1,10 @@
 import type { IlistStock } from '@/interface/stock/stock.interface';
 
 import { UploadOutlined } from '@ant-design/icons';
-import {
-  AutoComplete,
-  Button,
-  Col,
-  DatePicker,
-  Drawer,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Radio,
-  Row,
-  Select,
-  Space,
-  Spin,
-  Typography,
-  Upload,
-} from 'antd';
+import { AutoComplete, Button, Drawer, Form, InputNumber, Radio, Select, Space, Spin, Typography, Upload } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { error } from 'console';
 import React, { useEffect, useState } from 'react';
 
-import { createSignal } from '@/api/signal';
 import { searchStock } from '@/api/stock.api';
 import { checkImageType } from '@/utils/checkImageType';
 import { getUrlImageUpload } from '@/utils/getUrlImageUpload';
@@ -42,7 +23,6 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
   const [form] = Form.useForm();
   const [stockId, setStockId] = useState<any>('');
   const [stockList, setStockList] = useState<IlistStock[]>([]);
-  const [imageChartUrl, setImageChartUrl] = useState('');
 
   const handleSearchStock = async (query: string) => {
     searchStock(query).then((res: any) => {
@@ -61,25 +41,7 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
   };
 
   const handleSubmit = async (value: any) => {
-    // if (loading) return;
-    // setLoading(true);
-    // // console.log('form value: ', value);
-    // // console.log('stock_id: ', stockId);
-    // const res = await onSubmit({
-    //   ...value,
-    //   stock_id: stockId,
-    // });
-
-    // if (res) {
-    //   form.resetFields();
-    // }
-
-    // setLoading(false);
-
-    // console.log('_______________value', value?.image_chart?.[0]?.originFileObj);
-    // console.log('_______________files', files);
     if (loading) return;
-
     setLoading(true);
 
     try {
@@ -89,12 +51,9 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
         stock_id: stockId,
         image_chart: '',
       };
-      // eslint-disable-next-line newline-after-var, @typescript-eslint/no-unused-vars
 
       if (files) {
         const imageChartUrlResponse = await getUrlImageUpload('chartUpload', files, 'chart');
-
-        console.log('imageChartUrlResponse______________________________', imageChartUrlResponse);
 
         if (imageChartUrlResponse) {
           payload.detail_chart = imageChartUrlResponse;
@@ -292,22 +251,6 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
               <TextArea autoSize placeholder={'Ghi chú'}></TextArea>
             </Form.Item>
 
-            {/* <Form.Item name="image_chart" label="Ảnh chart">
-              <Upload
-                action=""
-                listType="picture"
-                maxCount={1}
-                accept="image/png, image/gif, image/jpeg"
-                onChange={handleChange}
-                beforeUpload={_ => {
-                  return false;
-                }}
-              >
-                <Space size="large">
-                  <Button icon={<UploadOutlined />}>Upload (Max: 1)</Button>
-                </Space>
-              </Upload>
-            </Form.Item> */}
             <Form.Item name="image_chart" label="Ảnh chart" valuePropName="fileList" getValueFromEvent={normFile}>
               <Upload
                 name="image"
