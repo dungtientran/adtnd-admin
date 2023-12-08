@@ -87,6 +87,7 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
       const payload = {
         ...value,
         stock_id: stockId,
+        image_chart: '',
       };
       // eslint-disable-next-line newline-after-var, @typescript-eslint/no-unused-vars
 
@@ -102,7 +103,6 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
         }
       }
 
-      console.log('imageChartUrl_____________________________________', imageChartUrl);
       const res = await onSubmit(payload);
 
       if (res) {
