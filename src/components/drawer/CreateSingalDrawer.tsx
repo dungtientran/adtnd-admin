@@ -90,6 +90,8 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
       if (files) {
         const imageChartUrlResponse = await getUrlImageUpload('chartUpload', files, 'chart');
 
+        console.log('imageChartUrlResponse______________________________', imageChartUrlResponse);
+
         if (imageChartUrlResponse) {
           setImageChartUrl(imageChartUrlResponse);
         } else {
@@ -97,6 +99,7 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
         }
       }
 
+      console.log('imageChartUrl_____________________________________', imageChartUrl);
       const res = await onSubmit({
         ...value,
         stock_id: stockId,
