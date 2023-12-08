@@ -84,7 +84,10 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
 
     try {
       const files = value?.image_chart?.[0]?.originFileObj;
-
+      const payload = {
+        ...value,
+        stock_id: stockId,
+      };
       // eslint-disable-next-line newline-after-var, @typescript-eslint/no-unused-vars
 
       if (files) {
@@ -93,18 +96,14 @@ function CreateSingalDrawer({ open, onClose, onSubmit, spining }: CreateSingalDr
         console.log('imageChartUrlResponse______________________________', imageChartUrlResponse);
 
         if (imageChartUrlResponse) {
-          setImageChartUrl(imageChartUrlResponse);
+          payload.detail_chart = imageChartUrlResponse;
         } else {
           return setLoading(false);
         }
       }
 
       console.log('imageChartUrl_____________________________________', imageChartUrl);
-      const res = await onSubmit({
-        ...value,
-        stock_id: stockId,
-        detail_chart: imageChartUrl,
-      });
+      const res = await onSubmit(payload);
 
       if (res) {
         form.resetFields();
