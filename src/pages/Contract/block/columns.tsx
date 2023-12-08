@@ -153,12 +153,12 @@ export const Column = (
       render: (_, record) => <Text>{record?.commission?.toLocaleString()}</Text>,
       sorter: true,
     },
-    {
-      title: 'Tổng hoa hồng (Fila)',
-      dataIndex: 'total_commission',
-      width: '12%',
-      render: (_, record) => <Text>{ record?.total_commission ? record?.total_commission?.toLocaleString() : '0'}</Text>,
-    },
+    // {
+    //   title: 'Tổng hoa hồng (Fila)',
+    //   dataIndex: 'total_commission',
+    //   width: '12%',
+    //   render: (_, record) => <Text>{ record?.total_commission ? record?.total_commission?.toLocaleString() : '0'}</Text>,
+    // },
     {
       title: 'Tình trạng',
       dataIndex: 'status',
