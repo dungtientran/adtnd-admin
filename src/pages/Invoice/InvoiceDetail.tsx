@@ -46,7 +46,17 @@ const Recommendations: React.FC = () => {
 
   const getTotalContractValue = () => {
     return data?.contract?.reduce((accumulator: any, currentValue: any) => {
-      return accumulator + parseInt(currentValue?.contract_commission?.sales_commission);
+      let commission = 0
+      if(data?.invoice?.sale_id == currentValue.sale_id){
+        commission += parseInt(currentValue?.contract_commission?.sales_commission);
+      }
+      if(data?.invoice?.sale_id == currentValue.director_id){
+        commission += parseInt(currentValue?.contract_commission?.director_commission);
+      }
+      if(data?.invoice?.sale_id == currentValue.manager_id){
+        commission += parseInt(currentValue?.contract_commission?.manager_commission);
+      }
+      return accumulator + commission 
     }, 0);
   };
 

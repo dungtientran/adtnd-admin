@@ -28,12 +28,12 @@ const columns: ColumnsType<any> = [
     {
         title: 'Mã khách hàng',
         dataIndex: ['customer', 'fullname'],
-        width: '15%',
+        width: '10%',
     },
     {
         title: 'Giá trị ban đầu',
         dataIndex: 'initial_value',
-        width: '15%',
+        width: '10%',
         render: (_, item) => parseInt(_).toLocaleString()
     },
     {
@@ -45,8 +45,24 @@ const columns: ColumnsType<any> = [
         }
     },
     {
-        title: 'Hoa hồng',
+        title: 'Hoa hồng sale',
         dataIndex: ['contract_commission', 'sales_commission'],
+        width: '10%',
+        render: (_: any, record: any) => {
+            return parseInt(_).toLocaleString()
+        }
+    },
+    {
+        title: 'Hoa hồng trưởng phòng',
+        dataIndex: ['contract_commission', 'manager_commission'],
+        width: '10%',
+        render: (_: any, record: any) => {
+            return parseInt(_).toLocaleString()
+        }
+    },
+    {
+        title: 'Hoa hồng giám đốc',
+        dataIndex: ['contract_commission', 'director_commission'],
         width: '10%',
         render: (_: any, record: any) => {
             return parseInt(_).toLocaleString()
@@ -55,7 +71,7 @@ const columns: ColumnsType<any> = [
     {
         title: 'Ngày bắt đầu hợp đồng',
         dataIndex: 'start_date',
-        width: '15%',
+        width: '10%',
         render: (_: any, record: any) => {
             return moment(_).format('DD/MM/YYYY')
         }
@@ -63,7 +79,7 @@ const columns: ColumnsType<any> = [
     {
         title: 'Ngày kết thúc hợp đồng',
         dataIndex: 'end_date',
-        width: '15%',
+        width: '10%',
         render: (_: any, record: any) => {
             return moment(_).format('DD/MM/YYYY')
         }

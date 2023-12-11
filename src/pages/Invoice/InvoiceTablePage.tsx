@@ -3,8 +3,8 @@ import type { SignalModel } from '@/interface/signal';
 import type { RangePickerProps } from 'antd/es/date-picker';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue } from 'antd/es/table/interface';
-
 import './index.less';
+import { LoadingOutlined } from '@ant-design/icons';
 
 import { MenuOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Dropdown, notification, Table, Typography } from 'antd';
@@ -322,25 +322,26 @@ const Invoicetable: React.FC = () => {
   };
 
   const handleCreateInvoice = async () => {
-    {
-      await createInvoice(period)
-        .then((res: any) => {
-          console.log(res);
-
-          if (res.code === 200) {
-            getData();
-            notification.success({
-              message: 'Thao tác thành công!',
-            });
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          notification.error({
-            message: err.message,
+    if(loading) return;
+    setLoading(true)
+    await createInvoice(period)
+      .then((res: any) => {
+        console.log(res);
+        if (res.code === 200) {
+          getData();
+          notification.success({
+            message: 'Thao tác thành công!',
           });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        notification.error({
+          message: err.message,
         });
-    }
+      }).finally(()=>{
+        setLoading(false)
+      });
   };
 
   const handleResetFilter = () => {
@@ -353,7 +354,7 @@ const Invoicetable: React.FC = () => {
       <div style={{ textAlign: 'center' }}>
         <Typography.Title level={2}>Chứng từ thanh toán</Typography.Title>
       </div>
-      <BoxFilter setQueryFilter={setFilterQueryBox} resetQuery={handleResetFilter}/>
+      <BoxFilter setQueryFilter={setFilterQueryBox} resetQuery={handleResetFilter} />
       <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
         <DatePicker
           onChange={(e: any) => {
@@ -370,7 +371,7 @@ const Invoicetable: React.FC = () => {
             handleCreateInvoice();
           }}
         >
-          Tính toán
+          {loading ? <LoadingOutlined /> : 'Tính toán'}
         </Button>
       </div>
       {/* <Button onClick={handleResetFilter}>Reset bộ lọc</Button> */}
