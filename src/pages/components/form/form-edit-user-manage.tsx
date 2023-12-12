@@ -133,6 +133,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
     const phone_number = option.find(item => item.value === saleSelect)?.phone_number;
     const sale_id = option2.find(item => item.value === values.role_id)?.id;
     const level = optionSalePosition.find(item => item.value === values.level)?.id;
+    console.log('level: ' + level)
     const new_Sale = {
       role_id: sale_id,
       password: values?.password,
@@ -147,7 +148,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
     const updateSale = {
       // admin_id: initForm?.id,
       sale_id: initForm?.id,
-      level: values?.level,
+      level: level || 0,
       role_id: sale_id,
     };
 
@@ -214,7 +215,9 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
             placeholder="Chức vụ"
             filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             size="large"
-            onChange={value => setSalePosition(value)}
+            onChange={value => {
+              setSalePosition(value)
+            }}
           />
         </Form.Item>
         {salePositionSelect === 'Sale' && (

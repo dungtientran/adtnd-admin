@@ -14,7 +14,8 @@ export const listCustomerApi = {
     return axiosInstance.get(`/admin/group/search?searchText=${searchText}`);
   },
   getSaleList(): Promise<any> {
-    return axiosInstance.get('/admin/sale/list');
+    console.log('alooo123')
+    return axiosInstance.get('/admin/sale/list?page=1&size=1000');
   },
   addSaleCustomer(data: any): Promise<any> {
     return axiosInstance.post('/admin/customer/add_careby', data);
