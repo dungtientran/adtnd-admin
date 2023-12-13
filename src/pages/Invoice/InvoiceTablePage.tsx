@@ -3,10 +3,10 @@ import type { SignalModel } from '@/interface/signal';
 import type { RangePickerProps } from 'antd/es/date-picker';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue } from 'antd/es/table/interface';
-import './index.less';
-import { LoadingOutlined } from '@ant-design/icons';
 
-import { MenuOutlined } from '@ant-design/icons';
+import './index.less';
+
+import { LoadingOutlined, MenuOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Dropdown, notification, Table, Typography } from 'antd';
 import dayjs from 'dayjs';
 import moment from 'moment';
@@ -29,8 +29,7 @@ interface TableParams {
 }
 
 const disabledDate: RangePickerProps['disabledDate'] = current => {
-  // Can not select days before today and today
-  return current && current > dayjs().endOf('day');
+  return current && current > dayjs().subtract(1, 'month').endOf('month');
 };
 
 const Invoicetable: React.FC = () => {
@@ -322,11 +321,12 @@ const Invoicetable: React.FC = () => {
   };
 
   const handleCreateInvoice = async () => {
-    if(loading) return;
-    setLoading(true)
+    if (loading) return;
+    setLoading(true);
     await createInvoice(period)
       .then((res: any) => {
         console.log(res);
+
         if (res.code === 200) {
           getData();
           notification.success({
@@ -339,8 +339,9 @@ const Invoicetable: React.FC = () => {
         notification.error({
           message: err.message,
         });
-      }).finally(()=>{
-        setLoading(false)
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -348,6 +349,8 @@ const Invoicetable: React.FC = () => {
     setFilterQuery('');
     setFilterQueryBox('');
   };
+
+  console.log('___to day______________________', dayjs().endOf('day'));
 
   return (
     <div className="aaa">
