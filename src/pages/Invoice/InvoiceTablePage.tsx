@@ -344,6 +344,7 @@ const Invoicetable: React.FC = () => {
         notification.error({
           message: err.message,
         });
+        setData([]);
       })
       .finally(() => {
         setLoading(false);
@@ -354,8 +355,6 @@ const Invoicetable: React.FC = () => {
     setFilterQuery('');
     setFilterQueryBox('');
   };
-
-  console.log('compareDate_____________________', compareDate('202/11'));
 
   return (
     <div className="aaa">
