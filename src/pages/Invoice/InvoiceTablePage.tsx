@@ -7,7 +7,7 @@ import type { FilterValue } from 'antd/es/table/interface';
 import './index.less';
 
 import { LoadingOutlined, MenuOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Dropdown, notification, Table, Typography } from 'antd';
+import { Button, DatePicker, Dropdown, notification, Table, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 
 import { approveInvoice, createInvoice, getInvoice } from '@/api/invoice';
 import { addTag } from '@/stores/tags-view.store';
+import { compareDate } from '@/utils/compareDate';
 
 import Result from '../components/result/Result';
 import { getColumnSearchProps } from '../components/Table/SearchInTable';
@@ -175,7 +176,11 @@ const Invoicetable: React.FC = () => {
       dataIndex: 'commission_in_period',
       width: '15%',
       render: (_: any, record: any) => {
-        return parseInt(_).toLocaleString();
+        if (compareDate(record?.payment_period)) {
+          return <Typography.Text>{parseInt(_).toLocaleString()}</Typography.Text>;
+        } else {
+          return <Tag color="blue"></Tag>;
+        }
       },
       sorter: true,
     },
@@ -350,7 +355,7 @@ const Invoicetable: React.FC = () => {
     setFilterQueryBox('');
   };
 
-  console.log('___to day______________________', dayjs().endOf('day'));
+  console.log('compareDate_____________________', compareDate('202/11'));
 
   return (
     <div className="aaa">
