@@ -96,7 +96,7 @@ export const Column = (
     {
       title: 'Loại hỗ trợ',
       dataIndex: 'type',
-      width: '8%',
+      width: '6%',
       filters: [
         { text: 'Tư vấn mở tài khoản', value: 'Tư vấn mở tài khoản' },
         { text: 'Tư vấn đầu tư', value: 'Tư vấn đầu tư' },
@@ -104,9 +104,22 @@ export const Column = (
       ],
     },
     {
+      title: 'Khẩu vị rủi ro',
+      dataIndex: 'risk',
+      width: '8%',
+    },
+    {
+      title: 'Ngân sách',
+      dataIndex: 'budget',
+      width: '8%',
+      render : (value, _) => {
+        return Number(value || 0).toLocaleString()
+      }
+    },
+    {
       title: 'Liên lạc',
       dataIndex: 'is_contact',
-      width: '8%',
+      width: '6%',
       render: (_, record) => (
         <>{record.is_contact ? <Tag color="processing">Đã liên lạc</Tag> : <Tag color="magenta">Chưa liên lạc</Tag>}</>
       ),
@@ -114,7 +127,7 @@ export const Column = (
     {
       title: '',
       dataIndex: 'action',
-      width: '8%',
+      width: '5%',
       render: (_, record) => (
         <Space size="small">
           <Button
