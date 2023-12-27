@@ -42,6 +42,8 @@ const Support = lazy(() => import('@/pages/Application/Support/Support'));
 
 const Notification = lazy(() => import('@/pages/Notification/Notification'));
 
+const Director = lazy(() => import('@/pages/TeamManagement/Director/Director'));
+const Manager = lazy(() => import('@/pages/TeamManagement/Manager/Manager'));
 
 const routeList: RouteObject[] = [
   {
@@ -74,14 +76,14 @@ const routeList: RouteObject[] = [
         element: <WrapperRouteComponent element={<Recommendations />} titleId="Khuyến nghị" />,
       },
       {
-        path: 'signal/create', 
+        path: 'signal/create',
         element: <WrapperRouteComponent element={<CreateSignal />} titleId="Khuyến nghị" />,
       },
       {
         path: '/signal/create-and-approve',
         element: <WrapperRouteComponent element={<ApproveAndCreateSignal />} titleId="Duyệt/ Tạo Khuyến nghị" />,
       },
-      // 
+      //
       {
         path: 'customer-management/customer-group',
         element: <WrapperRouteComponent element={<GroupList />} titleId="Nhóm khách hàng" />,
@@ -98,7 +100,7 @@ const routeList: RouteObject[] = [
         path: 'customer-management/list-request',
         element: <WrapperRouteComponent element={<ListRequests />} titleId="Danh sách yêu cầu" />,
       },
-      // 
+      //
       {
         path: '/interest-rate/set-interest-rate',
         element: <WrapperRouteComponent element={<SetInterestRate />} titleId="Thiết lập hoa hồng" />,
@@ -111,12 +113,12 @@ const routeList: RouteObject[] = [
         path: '/contract/block',
         element: <WrapperRouteComponent element={<BlockContract />} titleId="Hợp đồng đã thanh lý" />,
       },
-      // 
+      //
       {
         path: '/transaction/transaction-history',
         element: <WrapperRouteComponent element={<TransactionHistory />} titleId="Lịch sử giao dịch" />,
       },
-      // 
+      //
       {
         path: '/user-management/list',
         element: <WrapperRouteComponent element={<UserManagement />} titleId="Danh sách quản trị viên" />,
@@ -129,7 +131,7 @@ const routeList: RouteObject[] = [
         path: '/invoice/detail/:id',
         element: <WrapperRouteComponent element={<InvoiceDetail />} titleId="Danh sách chứng từ thanh toán!" />,
       },
-      // 
+      //
       {
         path: '/application/greeting',
         element: <WrapperRouteComponent element={<Greeting />} titleId="Thiết lập câu chào" />,
@@ -141,6 +143,14 @@ const routeList: RouteObject[] = [
       {
         path: '/notification',
         element: <WrapperRouteComponent element={<Notification />} titleId="Thiết lập thông báo" />,
+      },
+      {
+        path: '/team-management/director',
+        element: <WrapperRouteComponent element={<Director />} titleId="Cấp giám đốc" />,
+      },
+      {
+        path: '/team-management/manager',
+        element: <WrapperRouteComponent element={<Manager />} titleId="Cấp trưởng phòng" />,
       },
       {
         path: '*',

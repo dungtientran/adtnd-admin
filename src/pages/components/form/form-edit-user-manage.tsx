@@ -133,7 +133,8 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
     const phone_number = option.find(item => item.value === saleSelect)?.phone_number;
     const sale_id = option2.find(item => item.value === values.role_id)?.id;
     const level = optionSalePosition.find(item => item.value === values.level)?.id;
-    console.log('level: ' + level)
+
+    console.log('level: ' + level);
     const new_Sale = {
       role_id: sale_id,
       password: values?.password,
@@ -158,8 +159,6 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
       handleUpDateSale(updateSale);
     }
   };
-
-  console.log('init_________________', initForm);
 
   return (
     <Fragment>
@@ -216,7 +215,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
             filterOption={(inputValue, option) => option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             size="large"
             onChange={value => {
-              setSalePosition(value)
+              setSalePosition(value);
             }}
           />
         </Form.Item>

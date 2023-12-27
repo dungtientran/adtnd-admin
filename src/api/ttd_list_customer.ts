@@ -14,7 +14,6 @@ export const listCustomerApi = {
     return axiosInstance.get(`/admin/group/search?searchText=${searchText}`);
   },
   getSaleList(): Promise<any> {
-    console.log('alooo123')
     return axiosInstance.get('/admin/sale/list?page=1&size=1000');
   },
   addSaleCustomer(data: any): Promise<any> {
@@ -32,5 +31,4 @@ export const listCustomerApi = {
   deleteCustomerSupport(ticket_id: string): Promise<any> {
     return axiosInstance.delete(`/admin/customer/support/ticket/${ticket_id}`);
   },
-  
 };

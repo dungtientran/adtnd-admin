@@ -235,4 +235,31 @@ export const menuListHandle: MenuList = [
       },
     ],
   },
+  {
+    code: 'team-management',
+    icon: 'send_notification',
+    label: {
+      en_US: 'Quản lý đội nhóm',
+      zh_CN: '文档',
+    },
+    path: '',
+    children: [
+      {
+        code: 'notification',
+        label: {
+          en_US: 'Cấp giám đốc',
+          zh_CN: '基本',
+        },
+        path: '/team-management/director',
+      },
+      {
+        code: 'notification',
+        label: {
+          en_US: 'Cấp trưởng phòng',
+          zh_CN: '基本',
+        },
+        path: '/team-management/manager',
+      },
+    ],
+  },
 ];
