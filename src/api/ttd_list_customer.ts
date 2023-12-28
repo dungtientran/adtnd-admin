@@ -31,4 +31,7 @@ export const listCustomerApi = {
   deleteCustomerSupport(ticket_id: string): Promise<any> {
     return axiosInstance.delete(`/admin/customer/support/ticket/${ticket_id}`);
   },
+  changeSubscription(data: any): Promise<any> {
+    return axiosInstance.post(`/subscription/admin/upgrade/customer`, data);
+  },
 };

@@ -1,15 +1,14 @@
 import type { ColumnListCustomerType, DataIndex, DataType } from './index.interface';
+import type { UseMutationResult } from '@tanstack/react-query';
 import type { InputRef } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 import type { ColumnsType, FilterConfirmProps } from 'antd/es/table/interface';
 
-import { SearchOutlined, UserAddOutlined } from '@ant-design/icons';
+import { EditOutlined, SearchOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Avatar, Button, Input, Popconfirm, Space, Typography } from 'antd';
 import { useRef, useState } from 'react';
 
 import user from '@/assets/logo/user.png';
-import { UseMutationResult } from '@tanstack/react-query';
-
 
 const { Text, Link } = Typography;
 
@@ -69,9 +68,10 @@ export const Column = (
   setCustomerSelect: (customer: any) => void,
   useCustomer: () => {
     deleteSale: UseMutationResult<any, unknown, any, unknown>;
-  }
+  },
+  setOpenChange: (isOpen: boolean) => void,
 ) => {
-  const {deleteSale} = useCustomer();
+  const { deleteSale } = useCustomer();
   const columns: ColumnsType<ColumnListCustomerType> = [
     {
       title: 'Mã',
@@ -101,24 +101,24 @@ export const Column = (
       title: 'Số điện thoại',
       // sorter: true,
       dataIndex: 'phone_number',
-      width: '14%',
+      width: '10%',
       ...ColumnSearchProps('phone_number', 'sđt', setSearchQuery),
     },
     {
       title: 'Email',
       dataIndex: 'email',
-      width: '18%',
+      width: '10%',
       ...ColumnSearchProps('email', 'email', setSearchQuery),
     },
     {
       title: 'Gói dịch vụ',
       dataIndex: 'subscription_product',
       width: '8%',
-      // filters: [
-      //   { text: 'Trial', value: 'trial' },
-      //   { text: 'Vip', value: 'vip' },
-      //   { text: 'Premium', value: 'premium' },
-      // ],
+      filters: [
+        { text: 'Trial', value: 'trial' },
+        { text: 'Vip', value: 'vip' },
+        { text: 'Premium', value: 'premium' },
+      ],
       // render: (_, record) => <Text>{record.subscription?.subscription_product?.name}</Text>,
     },
     {
@@ -127,7 +127,7 @@ export const Column = (
       width: '8%',
       sorter: true,
 
-      render: (_, record) => <Text>{record?.nav?  record?.nav?.toLocaleString() : 0}</Text>,
+      render: (_, record) => <Text>{record?.nav ? record?.nav?.toLocaleString() : 0}</Text>,
     },
     {
       title: 'Số ngày còn lại',
@@ -161,6 +161,24 @@ export const Column = (
             </Button>
           )}
         </Space>
+      ),
+    },
+    {
+      title: 'Thay đổi gói dịch vụ',
+      dataIndex: 'day_remaining',
+      width: '15%',
+      sorter: true,
+      render: (_, record) => (
+        <Button
+          type="primary"
+          size="middle"
+          onClick={() => {
+            setOpenChange(true);
+            setCustomerSelect(record);
+          }}
+        >
+          <EditOutlined />
+        </Button>
       ),
     },
   ];

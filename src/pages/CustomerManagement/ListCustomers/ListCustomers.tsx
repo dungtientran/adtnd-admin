@@ -13,16 +13,18 @@ import { listCustomerApi } from '@/api/ttd_list_customer';
 import BoxFilterListCustomer from '@/pages/components/box-filter/BoxFilterListCustomer';
 import ExportExcel from '@/pages/components/button-export-excel/ExportExcel';
 import CreateUser from '@/pages/components/form/form-add-user';
+import ChangeSubscription from '@/pages/components/form/form-change-subscription';
 import HeadTitle from '@/pages/components/head-title/HeadTitle';
 import Result from '@/pages/components/result/Result';
 
 import { Column } from './columns';
 
-const { getListCustomer, createCustomer, addSaleCustomer, removeSaleCustomer } = listCustomerApi;
+const { getListCustomer, createCustomer, addSaleCustomer, removeSaleCustomer, changeSubscription } = listCustomerApi;
 
 const ListCustomers: React.FC = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [openChange, setOpenChange] = useState(false);
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
@@ -121,7 +123,18 @@ const ListCustomers: React.FC = () => {
       },
     });
 
-    return { create, update, deleteSale };
+    const subscriptionChage = useMutation(changeSubscription, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['getListCustomer']);
+        message.success('Thay đổi gói dịch vụ thành công');
+        setOpenChange(false);
+      },
+      onError: (err: any) => {
+        message.error(err?.message || 'Thay đổi gói dịch vụ thất bại');
+      },
+    });
+
+    return { create, update, deleteSale, subscriptionChage };
   };
 
   const showDrawer = () => {
@@ -131,6 +144,10 @@ const ListCustomers: React.FC = () => {
 
   const onClose = () => {
     setOpen(false);
+  };
+
+  const onCloseChange = () => {
+    setOpenChange(false);
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -236,17 +253,17 @@ const ListCustomers: React.FC = () => {
       <Result
         total={data?.data?.count}
         searchText={searchedColumn}
-        columns={Column(setSearchText, setOpen, setCustomerSelect, useCustomer)}
+        columns={Column(setSearchText, setOpen, setCustomerSelect, useCustomer, setOpenChange)}
         dataSource={dataExcel}
         title="Danh sách khách hàng"
       />
       <div className="table_list_customer">
         <Table
-          columns={Column(setSearchText, setOpen, setCustomerSelect, useCustomer)}
+          columns={Column(setSearchText, setOpen, setCustomerSelect, useCustomer, setOpenChange)}
           rowKey={record => record.id}
           dataSource={listCustomer}
           pagination={tableParams.pagination}
-          // loading={isLoading}
+          loading={isLoading}
           onChange={handleTableChange}
           scroll={{ x: 'max-content', y: '100%' }}
         />
@@ -259,6 +276,15 @@ const ListCustomers: React.FC = () => {
         bodyStyle={{ paddingBottom: 80 }}
       >
         <CreateUser initForm={customerSelect} setSaleCustomer={setSale} useCustomer={useCustomer} />
+      </Drawer>
+      <Drawer
+        title="Thay đổi gói dịch vụ"
+        width={360}
+        onClose={onCloseChange}
+        open={openChange}
+        bodyStyle={{ paddingBottom: 80 }}
+      >
+        <ChangeSubscription initForm={customerSelect} setSaleCustomer={setSale} useCustomer={useCustomer} />
       </Drawer>
     </div>
   );
