@@ -237,7 +237,7 @@ export const menuListHandle: MenuList = [
   },
   {
     code: 'team-management',
-    icon: 'send_notification',
+    icon: 'team',
     label: {
       en_US: 'Quản lý đội nhóm',
       zh_CN: '文档',

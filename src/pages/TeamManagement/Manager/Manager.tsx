@@ -93,6 +93,7 @@ const Manager: React.FC = () => {
         return directorColum;
       });
 
+      setTotal(data?.data?.count);
       setListCustomerSp(directorColums);
     }
   }, [data]);
@@ -110,7 +111,7 @@ const Manager: React.FC = () => {
           Tạo quản lý mới
         </Button>
       </div>
-      <Result total={data?.data?.count} searchText={searchedColumn} isButtonExcel={false} />
+      <Result total={total} searchText={searchedColumn} isButtonExcel={false} />
       <div className="">
         <Table
           columns={Column(listCustomerSp, setTotal, useDirector)}

@@ -13,6 +13,7 @@ import { ReactComponent as ProductSvg } from '@/assets/menu/product.svg';
 import { ReactComponent as RateSvg } from '@/assets/menu/rate.svg';
 import { ReactComponent as Send_NotificationgSvg } from '@/assets/menu/send_notification.svg';
 import { ReactComponent as SettingSvg } from '@/assets/menu/setting.svg';
+import { ReactComponent as TeamSvg } from '@/assets/menu/team.svg';
 
 interface CustomIconProps {
   type: string;
@@ -48,6 +49,8 @@ export const CustomIcon: FC<CustomIconProps> = props => {
     com = <Send_NotificationgSvg />;
   } else if (type === 'contract') {
     com = <ContractSvg />;
+  } else if (type === 'team') {
+    com = <TeamSvg />;
   } else {
     com = <GuideSvg />;
   }
