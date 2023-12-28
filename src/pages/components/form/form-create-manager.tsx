@@ -56,7 +56,7 @@ const CreateManager: React.FC<ICreateUser> = ({ initForm, useSale }) => {
       const directorOptions = saleData?.data?.data?.rows?.filter((item: any) => item?.SaleLevel?.level === 1);
 
       const newOption2 = managerOptions?.map((item: any) => ({
-        value: item?.staff_code,
+        value: `${item?.staff_code} | ${item?.fullname}`,
         id: item?.id,
         name: item?.fullname,
         email: item?.email,
@@ -65,7 +65,7 @@ const CreateManager: React.FC<ICreateUser> = ({ initForm, useSale }) => {
       }));
 
       const newDirectorOptions = directorOptions?.map((item: any) => ({
-        value: item?.staff_code,
+        value: `${item?.staff_code} | ${item?.fullname}`,
         id: item?.id,
         name: item?.fullname,
       }));
@@ -157,9 +157,6 @@ const CreateManager: React.FC<ICreateUser> = ({ initForm, useSale }) => {
                 disabled={initForm}
               />
             </Form.Item>
-            <Form.Item name="fullname" label="Họ tên">
-              <Input disabled />
-            </Form.Item>
           </>
         ) : (
           <Form.Item
@@ -189,13 +186,6 @@ const CreateManager: React.FC<ICreateUser> = ({ initForm, useSale }) => {
                 onChange={value => setDerectorSelect(value)}
                 disabled={initForm}
               />
-            </Form.Item>
-            <Form.Item
-              name="director_name"
-              label="Họ tên"
-              rules={[{ required: true, message: 'Không đc bỏ trống !', whitespace: true }]}
-            >
-              <Input disabled />
             </Form.Item>
           </>
         ) : (

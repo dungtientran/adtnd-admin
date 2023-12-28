@@ -79,7 +79,7 @@ const EditUserManagement: React.FC<ICreateUser> = ({ initForm, useSale }) => {
   useEffect(() => {
     if (userData.data) {
       const newOption2 = userData.data?.map((item: any) => ({
-        value: item?.customer_code,
+        value: `${item?.customer_code} | ${item?.fullname}`,
         id: item?.id,
         name: item?.fullname,
         email: item?.email,

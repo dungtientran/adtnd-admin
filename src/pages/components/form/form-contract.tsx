@@ -57,7 +57,7 @@ const CreateContract: React.FC<IEditRequest> = ({
   useEffect(() => {
     if (saleData) {
       const newOption = saleData?.data?.rows?.map((item: any) => ({
-        value: item?.staff_code,
+        value: `${item?.staff_code} | ${item?.fullname}`,
         id: item?.id,
         fullname: item?.fullname,
       }));
@@ -67,7 +67,7 @@ const CreateContract: React.FC<IEditRequest> = ({
 
     if (useData) {
       const newOption2 = useData?.map((item: any) => ({
-        value: item?.customer_code,
+        value: `${item?.customer_code} | ${item?.fullname}`,
         id: item?.id,
         email: item?.email,
         fullname: item?.fullname,
