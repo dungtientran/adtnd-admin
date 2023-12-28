@@ -413,7 +413,7 @@ const Recommendations: React.FC = () => {
           });
 
           setData(columns);
-          // setCount(data?.data?.count);
+          setCount(data?.data?.count);
           getSignalDataExcel(data?.data?.count);
         }
       })
