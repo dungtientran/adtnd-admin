@@ -10,10 +10,11 @@ import { setGlobalState } from '@/stores/global.store';
 
 const TESTING_URL = import.meta.env.VITE_TESTING_URL as string;
 const PROD_URL = import.meta.env.VITE_PROD_URL as string;
+const VITE_PROD__MIGRATE_URL = import.meta.env.VITE_PROD__MIGRATE_URL as string;
 
 export const axiosInstance = axios.create({
   // timeout: 6000,
-  baseURL: TESTING_URL,
+  baseURL: VITE_PROD__MIGRATE_URL,
 });
 
 axiosInstance.interceptors.request.use(
