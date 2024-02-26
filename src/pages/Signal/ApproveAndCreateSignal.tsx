@@ -202,36 +202,36 @@ const Recommendations: React.FC = () => {
   const actions = (record: any) => {
     const actionList = [];
 
-    if (!record.is_approved) {
-      actionList.push(
-        {
-          key: '3',
-          label: (
-            <Typography
-              onClick={() => {
-                handleApproveSignal([record.id], true);
-              }}
-            >
-              {'Duyệt'}
-            </Typography>
-          ),
-        },
+    // if (!record.is_approved) {
+    actionList.push(
+      {
+        key: '3',
+        label: (
+          <Typography
+            onClick={() => {
+              handleApproveSignal([record.id], true);
+            }}
+          >
+            {'Duyệt'}
+          </Typography>
+        ),
+      },
 
-        {
-          key: '2',
-          label: (
-            <Typography
-              onClick={() => {
-                setUpdateData(record);
-                setOpenUpdateDrawer(true);
-              }}
-            >
-              {'Sửa'}
-            </Typography>
-          ),
-        },
-      );
-    }
+      {
+        key: '2',
+        label: (
+          <Typography
+            onClick={() => {
+              setUpdateData(record);
+              setOpenUpdateDrawer(true);
+            }}
+          >
+            {'Sửa'}
+          </Typography>
+        ),
+      },
+    );
+    // }
 
     // actionList.push({
     //   key: '2',
@@ -277,6 +277,21 @@ const Recommendations: React.FC = () => {
   };
 
   const columns: ColumnsType<any> = [
+    {
+      title: 'ID',
+      dataIndex: 'index',
+      width: '10%',
+      sorter: () => {
+        if (dateSort == 'DESC') {
+          setDateSort('ASC');
+        } else {
+          setDateSort('DESC');
+        }
+
+        return 1;
+      },
+      sortDirections: ['ascend', 'descend'],
+    },
     {
       title: 'Ngày tạo',
       dataIndex: 'date',
@@ -407,6 +422,7 @@ const Recommendations: React.FC = () => {
               note: item?.note,
               description: item?.description,
               detail_chart: item?.detail_chart,
+              index: item?.index,
             };
 
             return column;
@@ -836,8 +852,6 @@ const Recommendations: React.FC = () => {
         scroll={{ x: 'max-content', y: '100%' }}
         expandable={{
           expandedRowRender: record => {
-            console.log('record__________________________', record);
-
             return (
               <div className="text-left" style={{ textAlign: 'left' }}>
                 <div>
