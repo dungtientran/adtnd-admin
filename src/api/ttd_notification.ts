@@ -4,6 +4,9 @@ export const listNotificationApi = {
   getListNotification(param: string, queryFilter: string, searchText: string): Promise<any> {
     return axiosInstance.get(`notification/admin/get_all?${queryFilter}&${param}&${searchText}`);
   },
+  getNotificationDetail(notification_id: string): Promise<any> {
+    return axiosInstance.get(`notification/admin/detail/${notification_id}`);
+  },
   createNotification(data: any): Promise<any> {
     return axiosInstance.post(`/notification/admin/create`, data);
   },

@@ -1,5 +1,5 @@
-import type { UseMutationResult } from '@tanstack/react-query';
-import { Button, Form, Input, Select, Spin } from 'antd';
+import { useQuery, type UseMutationResult } from '@tanstack/react-query';
+import { Button, Form, Input, Select, Spin, message } from 'antd';
 import { useEffect } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { ClassicEditor } from '@ckeditor/ckeditor5-editor-classic';
@@ -15,6 +15,9 @@ import { BlockQuote } from '@ckeditor/ckeditor5-block-quote';
 import { AutoLink, Link } from '@ckeditor/ckeditor5-link';
 import { List } from '@ckeditor/ckeditor5-list';
 import { useState } from 'react';
+import { listNotificationApi } from '@/api/ttd_notification';
+import store from '@/stores';
+import { setGlobalState } from '@/stores/global.store';
 interface ICreateUser {
     initForm?: any;
     useSale: () => {
@@ -22,24 +25,38 @@ interface ICreateUser {
         update: UseMutationResult<any, any, any, unknown>;
     };
 }
-
+const { getNotificationDetail } =
+    listNotificationApi;
 const NotificationForm: React.FC<ICreateUser> = ({ initForm, useSale }) => {
     const { create, update } = useSale();
     const [content, setContent] = useState('')
-
     const handleEditorChange = (event: any, editor: any) => {
         const data = editor.getData();
         setContent(data);
     };
-    useEffect(() => {
-        if (initForm) {
+
+    const GetData = async () => {
+        try {
+            store.dispatch(
+                setGlobalState({
+                    loading: true,
+                }),
+            );
+            const data = await getNotificationDetail(initForm.id)
             const newInit = {
-                ...initForm,
+                ...data.data,
                 role_id: initForm?.role?.name,
                 level: initForm?.SaleLevel?.level,
             };
-
             form.setFieldsValue(newInit);
+            setContent(data.data.content || '')
+        } catch (error) {
+            message.error('Có lỗi khi tải dữ liệu')
+        }
+    }
+    useEffect(() => {
+        if (initForm) {
+            GetData()
         } else {
             form.resetFields();
         }
@@ -50,24 +67,24 @@ const NotificationForm: React.FC<ICreateUser> = ({ initForm, useSale }) => {
         if (!initForm) {
             return create.mutate({
                 ...values,
-                content:content
+                content: content
             });
         } else {
             return update.mutate({
                 ...values,
                 id: initForm?.id,
-                content:content
+                content: content
             });
         }
     };
 
-    useEffect(()=>{
-        if(initForm?.content) {
-            setContent(initForm.content)
-        }else {
-            setContent('')
-        }
-    },[initForm?.id])
+    // useEffect(()=>{
+    //     if(initForm?.content) {
+    //         setContent(initForm.content)
+    //     }else {
+    //         setContent('')
+    //     }
+    // },[initForm?.id])
 
     return (
         <Form
@@ -78,6 +95,7 @@ const NotificationForm: React.FC<ICreateUser> = ({ initForm, useSale }) => {
             onFinish={onFinish}
             style={{ maxWidth: '100%' }}
             scrollToFirstError
+
         >
             <Form.Item name="title" label="Tiêu đề: " rules={[{ required: true, message: 'Không được bỏ trống!' }]}>
                 <Input />
